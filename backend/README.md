@@ -99,10 +99,13 @@ The backend includes an extensible tool system that allows the AI to perform act
 
 ### Built-in Tools
 
-- **web_search**: Search the web for current information
-- **file_read**: Read file contents
-- **file_write**: Write content to files
-- **execute_command**: Execute system commands
+- **web_search**: Real web search using DuckDuckGo API with fallback to web scraping
+- **file_read**: Secure file reading with workspace sandboxing and size limits
+- **file_write**: Safe file writing with automatic backups and directory creation
+- **list_files**: Directory listing with recursive options and file metadata
+- **create_directory**: Directory creation with recursive parent creation
+- **execute_command**: Secure command execution with timeout, shell selection, and dangerous command blocking
+- **browser_action**: Full browser automation with Puppeteer for navigation, interaction, content extraction, and screenshots
 
 ### Adding Custom Tools
 

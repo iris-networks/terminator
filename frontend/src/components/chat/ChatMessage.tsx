@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FiUser, FiCpu, FiCopy } from 'react-icons/fi';
+import { FiUser, FiCpu, FiCopy, FiTool, FiChevronDown, FiChevronRight, FiCheck, FiX } from 'react-icons/fi';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
@@ -13,11 +13,99 @@ interface Message {
   content: string;
   timestamp: Date;
   thinking?: boolean;
+  metadata?: {
+    tokens?: number;
+    toolCalls?: ToolCall[];
+  };
+}
+
+interface ToolCall {
+  id: string;
+  name: string;
+  arguments: Record<string, any>;
+  result?: any;
+  error?: string;
+  timestamp: Date;
 }
 
 interface ChatMessageProps {
   message: Message;
 }
+
+const ToolCallRenderer: React.FC<{ toolCall: ToolCall }> = ({ toolCall }) => {
+  const [expanded, setExpanded] = useState(false);
+  
+  const getToolIcon = (toolName: string) => {
+    switch (toolName) {
+      case 'web_search': return '🔍';
+      case 'file_read': return '📖';
+      case 'file_write': return '✍️';
+      case 'execute_command': return '⚡';
+      case 'browser_action': return '🌐';
+      case 'list_files': return '📁';
+      case 'create_directory': return '📁';
+      default: return '🛠️';
+    }
+  };
+
+  const formatToolName = (toolName: string) => {
+    return toolName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
+
+  return (
+    <div className="mt-2 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 flex items-center justify-between text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+      >
+        <div className="flex items-center space-x-2">
+          <span className="text-lg">{getToolIcon(toolCall.name)}</span>
+          <span className="font-medium">{formatToolName(toolCall.name)}</span>
+          {toolCall.error ? (
+            <FiX className="w-4 h-4 text-red-500" />
+          ) : (
+            <FiCheck className="w-4 h-4 text-green-500" />
+          )}
+        </div>
+        {expanded ? <FiChevronDown className="w-4 h-4" /> : <FiChevronRight className="w-4 h-4" />}
+      </button>
+      
+      {expanded && (
+        <div className="p-3 bg-white dark:bg-gray-850 border-t border-gray-200 dark:border-gray-700">
+          {/* Arguments */}
+          {Object.keys(toolCall.arguments).length > 0 && (
+            <div className="mb-3">
+              <h4 className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Arguments:</h4>
+              <pre className="text-xs bg-gray-100 dark:bg-gray-700 p-2 rounded overflow-x-auto">
+                {JSON.stringify(toolCall.arguments, null, 2)}
+              </pre>
+            </div>
+          )}
+          
+          {/* Result or Error */}
+          {toolCall.error ? (
+            <div>
+              <h4 className="text-xs font-semibold text-red-600 dark:text-red-400 mb-1">Error:</h4>
+              <div className="text-xs text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/20 p-2 rounded">
+                {toolCall.error}
+              </div>
+            </div>
+          ) : toolCall.result && (
+            <div>
+              <h4 className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Result:</h4>
+              <pre className="text-xs bg-gray-100 dark:bg-gray-700 p-2 rounded overflow-x-auto max-h-48 overflow-y-auto">
+                {typeof toolCall.result === 'string' 
+                  ? toolCall.result 
+                  : JSON.stringify(toolCall.result, null, 2)
+                }
+              </pre>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   const isUser = message.role === 'user';
@@ -116,6 +204,19 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                 >
                   {message.content}
                 </ReactMarkdown>
+                
+                {/* Render tool calls if present */}
+                {message.metadata?.toolCalls && message.metadata.toolCalls.length > 0 && (
+                  <div className="mt-3">
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-2 flex items-center">
+                      <FiTool className="w-3 h-3 mr-1" />
+                      Tool Usage
+                    </div>
+                    {message.metadata.toolCalls.map((toolCall) => (
+                      <ToolCallRenderer key={toolCall.id} toolCall={toolCall} />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>

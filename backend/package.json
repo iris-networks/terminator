@@ -20,7 +20,9 @@
     "@ai-sdk/anthropic": "^0.0.20",
     "dotenv": "^16.4.1",
     "uuid": "^9.0.1",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "puppeteer": "^21.11.0",
+    "axios": "^1.6.7"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
