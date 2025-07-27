@@ -77,6 +77,7 @@ export class SocketService {
 
           // Generate AI response using streaming
           let assistantContent = '';
+          const toolCalls: any[] = [];
           const assistantMessageId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
           try {
@@ -93,21 +94,28 @@ export class SocketService {
                   break;
 
                 case 'tool_call':
-                  // Handle tool calls
-                  socket.emit('message_chunk', {
+                  // Collect tool calls and emit them
+                  const toolCall = {
+                    ...chunk.data,
+                    status: chunk.data.error ? 'error' : 'success',
+                  };
+                  toolCalls.push(toolCall);
+                  
+                  socket.emit('tool_result', {
                     messageId: assistantMessageId,
-                    content: chunk.data,
-                    type: 'tool_call',
+                    toolCall: toolCall,
                   });
                   break;
 
                 case 'done':
-                  // Finalize message
+                  // Finalize message with tool calls
                   const assistantMessage = sessionService.addMessage(sessionId, {
                     role: 'assistant',
                     content: assistantContent,
+                    toolCalls: toolCalls,
                     metadata: {
                       tokens: chunk.data.usage?.totalTokens || 0,
+                      agentType: metadata?.agentType,
                     },
                   });
 

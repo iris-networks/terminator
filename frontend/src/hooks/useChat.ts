@@ -3,15 +3,27 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSocket } from './useSocket';
 
+export interface ToolCall {
+  id: string;
+  name: string;
+  arguments: Record<string, any>;
+  result?: any;
+  error?: string;
+  timestamp: Date;
+  duration?: number;
+  status: 'running' | 'success' | 'error';
+}
+
 interface Message {
   id: string;
   role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: Date;
   thinking?: boolean;
+  toolCalls?: ToolCall[];
   metadata?: {
     tokens?: number;
-    toolCalls?: any[];
+    agentType?: string;
   };
 }
 
@@ -164,6 +176,33 @@ export const useChat = () => {
       }
     };
 
+    const handleToolResult = (data: {
+      messageId: string;
+      toolCall: ToolCall;
+    }) => {
+      // Add or update tool call to the streaming message
+      setMessages(prev => {
+        return prev.map(msg => {
+          if (msg.id === data.messageId) {
+            const updatedToolCalls = [...(msg.toolCalls || [])];
+            const existingIndex = updatedToolCalls.findIndex(tc => tc.id === data.toolCall.id);
+            
+            if (existingIndex >= 0) {
+              updatedToolCalls[existingIndex] = data.toolCall;
+            } else {
+              updatedToolCalls.push(data.toolCall);
+            }
+            
+            return {
+              ...msg,
+              toolCalls: updatedToolCalls,
+            };
+          }
+          return msg;
+        });
+      });
+    };
+
     const handleMessageComplete = (data: {
       messageId: string;
       message: Message;
@@ -174,6 +213,10 @@ export const useChat = () => {
         return [...filtered, {
           ...data.message,
           timestamp: new Date(data.message.timestamp),
+          toolCalls: data.message.toolCalls?.map(tc => ({
+            ...tc,
+            timestamp: new Date(tc.timestamp),
+          })),
         }];
       });
       setIsThinking(false);
@@ -202,6 +245,7 @@ export const useChat = () => {
     socket.on('new_message', handleNewMessage);
     socket.on('assistant_thinking', handleAssistantThinking);
     socket.on('message_chunk', handleMessageChunk);
+    socket.on('tool_result', handleToolResult);
     socket.on('message_complete', handleMessageComplete);
     socket.on('error', handleError);
 
@@ -213,6 +257,7 @@ export const useChat = () => {
       socket.off('new_message', handleNewMessage);
       socket.off('assistant_thinking', handleAssistantThinking);
       socket.off('message_chunk', handleMessageChunk);
+      socket.off('tool_result', handleToolResult);
       socket.off('message_complete', handleMessageComplete);
       socket.off('error', handleError);
     };

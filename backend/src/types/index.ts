@@ -4,11 +4,12 @@ export interface ChatMessage {
   content: string;
   timestamp: Date;
   sessionId: string;
+  toolCalls?: ToolCall[];
   metadata?: {
     model?: string;
     tokens?: number;
     thinking?: boolean;
-    toolCalls?: ToolCall[];
+    agentType?: string;
   };
 }
 
@@ -32,6 +33,8 @@ export interface ToolCall {
   result?: any;
   error?: string;
   timestamp: Date;
+  duration?: number;
+  status: 'running' | 'success' | 'error';
 }
 
 export interface AgentResponse {

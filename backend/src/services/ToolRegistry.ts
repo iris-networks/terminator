@@ -507,7 +507,9 @@ export const browserActionTool = tool({
           
           await page.waitForSelector(selector, { timeout: 10000 });
           await page.focus(selector);
-          await page.keyboard.selectAll();
+          await page.keyboard.down('Meta');
+          await page.keyboard.press('a');
+          await page.keyboard.up('Meta');
           await page.type(selector, text, { delay: 50 });
           
           result = {

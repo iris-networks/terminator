@@ -77,7 +77,7 @@ export class AIService {
     data: any;
   }> {
     try {
-      const stream = streamText({
+      const stream = await streamText({
         model: this.getModel(),
         messages: this.formatMessages(messages),
         tools: this.getToolsForCurrentAgent(),
@@ -92,15 +92,16 @@ export class AIService {
         };
       }
 
-      // Handle tool calls after streaming
-      const result = await stream.finishReason;
-      if (result === 'tool-calls') {
-        const finalResult = await stream.response;
-        for (const toolCall of finalResult.toolCalls || []) {
+      // Get final result for tool calls and usage
+      const finalResult = await stream.response;
+      
+      // Handle tool calls if present
+      if (finalResult.toolCalls && finalResult.toolCalls.length > 0) {
+        for (const toolCall of finalResult.toolCalls) {
           yield {
             type: 'tool_call',
             data: {
-              id: `tool_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+              id: `tool_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
               name: toolCall.toolName,
               arguments: toolCall.args,
               result: toolCall.result,
@@ -113,7 +114,7 @@ export class AIService {
       yield {
         type: 'done',
         data: {
-          usage: (await stream.response).usage,
+          usage: finalResult.usage || { totalTokens: 0, promptTokens: 0, completionTokens: 0 },
         },
       };
     } catch (error) {
