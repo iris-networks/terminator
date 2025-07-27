@@ -1,8 +1,8 @@
-import { generateText, streamText, CoreMessage, CoreTool } from 'ai';
+import { generateText, streamText, CoreMessage } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { anthropic } from '@ai-sdk/anthropic';
 import { AgentConfig, AgentResponse, ChatMessage, ToolCall } from '../types/index.js';
-import { toolRegistry } from './ToolRegistry.js';
+import { tools } from './ToolRegistry.js';
 
 export class AIService {
   private config: AgentConfig;
@@ -31,29 +31,7 @@ export class AIService {
     }));
   }
 
-  private formatTools(): Record<string, CoreTool> {
-    const tools: Record<string, CoreTool> = {};
-    
-    for (const [name, tool] of toolRegistry.getTools()) {
-      tools[name] = {
-        description: tool.description,
-        parameters: tool.parameters,
-        execute: async (args) => {
-          try {
-            const result = await tool.handler(args);
-            return { success: true, result };
-          } catch (error) {
-            return { 
-              success: false, 
-              error: error instanceof Error ? error.message : 'Unknown error' 
-            };
-          }
-        },
-      };
-    }
-    
-    return tools;
-  }
+  // No need for formatTools anymore - AI SDK handles this directly
 
   async generateResponse(messages: ChatMessage[]): Promise<AgentResponse> {
     const startTime = Date.now();
@@ -62,7 +40,7 @@ export class AIService {
       const result = await generateText({
         model: this.getModel(),
         messages: this.formatMessages(messages),
-        tools: this.formatTools(),
+        tools,
         temperature: this.config.temperature || 0.7,
         maxTokens: this.config.maxTokens || 4000,
       });
@@ -97,7 +75,7 @@ export class AIService {
       const stream = streamText({
         model: this.getModel(),
         messages: this.formatMessages(messages),
-        tools: this.formatTools(),
+        tools,
         temperature: this.config.temperature || 0.7,
         maxTokens: this.config.maxTokens || 4000,
       });

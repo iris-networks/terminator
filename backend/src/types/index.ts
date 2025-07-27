@@ -56,18 +56,6 @@ export interface AgentConfig {
   provider: 'openai' | 'anthropic';
   temperature?: number;
   maxTokens?: number;
-  tools?: Tool[];
-}
-
-export interface Tool {
-  name: string;
-  description: string;
-  parameters: {
-    type: 'object';
-    properties: Record<string, any>;
-    required?: string[];
-  };
-  handler: (args: Record<string, any>) => Promise<any>;
 }
 
 export interface ApiError extends Error {

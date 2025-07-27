@@ -67,8 +67,16 @@ router.post('/message', async (req, res, next) => {
             assistantContent += chunk.data;
           }
           
+          if (chunk.type === 'tool_call') {
+            // Tool call results are already included in the stream
+            res.write(`data: ${JSON.stringify({
+              type: 'tool_result',
+              data: chunk.data,
+            })}\\n\\n`);
+          }
+          
           if (chunk.type === 'done') {
-            // Save assistant message
+            // Save assistant message with tool call results
             const assistantMessage = sessionService.addMessage(sessionId, {
               role: 'assistant',
               content: assistantContent,

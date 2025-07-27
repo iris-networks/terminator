@@ -1,149 +1,166 @@
-import { Tool } from '../types/index.js';
+import { tool } from 'ai';
+import { z } from 'zod';
 
-export class ToolRegistry {
-  private tools = new Map<string, Tool>();
-
-  registerTool(tool: Tool) {
-    this.tools.set(tool.name, tool);
-  }
-
-  getTool(name: string): Tool | undefined {
-    return this.tools.get(name);
-  }
-
-  getTools(): Map<string, Tool> {
-    return new Map(this.tools);
-  }
-
-  removeTool(name: string): boolean {
-    return this.tools.delete(name);
-  }
-}
-
-// Global tool registry instance
-export const toolRegistry = new ToolRegistry();
-
-// Register default tools
-toolRegistry.registerTool({
-  name: 'web_search',
-  description: 'Search the web for current information',
-  parameters: {
-    type: 'object',
-    properties: {
-      query: {
-        type: 'string',
-        description: 'The search query',
-      },
-      maxResults: {
-        type: 'number',
-        description: 'Maximum number of results to return',
-        default: 10,
-      },
-    },
-    required: ['query'],
-  },
-  handler: async (args: { query: string; maxResults?: number }) => {
-    // Placeholder implementation - replace with actual web search
-    console.log(`🔍 Web search: "${args.query}"`);
+// Web search tool
+export const webSearchTool = tool({
+  description: 'Search the web for current information and recent developments',
+  parameters: z.object({
+    query: z.string().describe('The search query to look up'),
+    maxResults: z.number().optional().default(10).describe('Maximum number of results to return'),
+  }),
+  execute: async ({ query, maxResults }) => {
+    console.log(`🔍 Web search: "${query}"`);
+    
+    // Placeholder implementation - in production, integrate with search APIs like:
+    // - Google Custom Search API
+    // - Bing Search API  
+    // - DuckDuckGo API
+    // - Tavily Search API
     
     return {
-      query: args.query,
+      query,
       results: [
         {
-          title: 'Example Search Result',
-          url: 'https://example.com',
-          snippet: `Search results for "${args.query}" would appear here. This is a placeholder implementation.`,
+          title: `Search Results for "${query}"`,
+          url: 'https://example.com/search',
+          snippet: `This would contain actual search results for "${query}". In production, this would be replaced with real search API integration.`,
+          domain: 'example.com',
+          publishedDate: new Date().toISOString(),
+        },
+        {
+          title: 'Related Information',
+          url: 'https://example.org/info',
+          snippet: 'Additional context and information related to the search query would appear here.',
+          domain: 'example.org',
+          publishedDate: new Date().toISOString(),
         },
       ],
-      totalResults: 1,
+      totalResults: 2,
+      searchTime: 0.1,
     };
   },
 });
 
-toolRegistry.registerTool({
-  name: 'file_read',
-  description: 'Read the contents of a file',
-  parameters: {
-    type: 'object',
-    properties: {
-      path: {
-        type: 'string',
-        description: 'The file path to read',
-      },
-    },
-    required: ['path'],
-  },
-  handler: async (args: { path: string }) => {
-    // Placeholder implementation - replace with actual file reading
-    console.log(`📖 Reading file: ${args.path}`);
+// File operations tool
+export const fileReadTool = tool({
+  description: 'Read the contents of a file from the filesystem',
+  parameters: z.object({
+    path: z.string().describe('The file path to read'),
+  }),
+  execute: async ({ path }) => {
+    console.log(`📖 Reading file: ${path}`);
+    
+    // Placeholder implementation - in production, add:
+    // - Proper file system access with fs/promises
+    // - Path validation and sanitization
+    // - Error handling for non-existent files
+    // - File size limits and binary file detection
+    // - Security restrictions on accessible paths
     
     return {
-      path: args.path,
-      content: `File contents would be read from ${args.path}. This is a placeholder implementation.`,
+      path,
+      content: `This would contain the actual contents of ${path}. In production, this would read the real file.`,
       size: 1024,
       lastModified: new Date().toISOString(),
+      encoding: 'utf-8',
+      type: 'text/plain',
     };
   },
 });
 
-toolRegistry.registerTool({
-  name: 'file_write',
-  description: 'Write content to a file',
-  parameters: {
-    type: 'object',
-    properties: {
-      path: {
-        type: 'string',
-        description: 'The file path to write to',
-      },
-      content: {
-        type: 'string',
-        description: 'The content to write',
-      },
-    },
-    required: ['path', 'content'],
-  },
-  handler: async (args: { path: string; content: string }) => {
-    // Placeholder implementation - replace with actual file writing
-    console.log(`✍️ Writing to file: ${args.path}`);
+export const fileWriteTool = tool({
+  description: 'Write content to a file on the filesystem',
+  parameters: z.object({
+    path: z.string().describe('The file path to write to'),
+    content: z.string().describe('The content to write to the file'),
+    createDirectory: z.boolean().optional().default(false).describe('Create parent directories if they do not exist'),
+  }),
+  execute: async ({ path, content, createDirectory }) => {
+    console.log(`✍️ Writing to file: ${path}`);
+    
+    // Placeholder implementation - in production, add:
+    // - Actual file writing with fs/promises
+    // - Directory creation if requested
+    // - Backup creation for existing files
+    // - Atomic writes to prevent corruption
+    // - Security restrictions on writable paths
     
     return {
-      path: args.path,
-      bytesWritten: args.content.length,
+      path,
+      bytesWritten: content.length,
       success: true,
+      timestamp: new Date().toISOString(),
+      backup: createDirectory ? `${path}.backup` : null,
+    };
+  },
+});
+
+// Command execution tool
+export const executeCommandTool = tool({
+  description: 'Execute a system command and return the output',
+  parameters: z.object({
+    command: z.string().describe('The command to execute'),
+    workingDirectory: z.string().optional().default('.').describe('The working directory for the command'),
+    timeout: z.number().optional().default(30000).describe('Timeout in milliseconds'),
+  }),
+  execute: async ({ command, workingDirectory, timeout }) => {
+    console.log(`⚡ Executing command: ${command}`);
+    
+    // Placeholder implementation - in production, add:
+    // - Actual command execution with child_process
+    // - Proper timeout handling
+    // - Security restrictions on allowed commands
+    // - Environment variable handling
+    // - Stream handling for long-running commands
+    
+    return {
+      command,
+      workingDirectory,
+      output: `Command "${command}" would be executed here. This is a placeholder showing the structure of the response.`,
+      error: null,
+      exitCode: 0,
+      duration: 150,
       timestamp: new Date().toISOString(),
     };
   },
 });
 
-toolRegistry.registerTool({
-  name: 'execute_command',
-  description: 'Execute a system command',
-  parameters: {
-    type: 'object',
-    properties: {
-      command: {
-        type: 'string',
-        description: 'The command to execute',
-      },
-      workingDirectory: {
-        type: 'string',
-        description: 'The working directory for the command',
-        default: '.',
-      },
-    },
-    required: ['command'],
-  },
-  handler: async (args: { command: string; workingDirectory?: string }) => {
-    // Placeholder implementation - replace with actual command execution
-    console.log(`⚡ Executing command: ${args.command}`);
+// Browser automation tool (for web interactions)
+export const browserActionTool = tool({
+  description: 'Perform browser actions like clicking, typing, or extracting information from web pages',
+  parameters: z.object({
+    action: z.enum(['navigate', 'click', 'type', 'extract', 'screenshot']).describe('The action to perform'),
+    url: z.string().optional().describe('URL to navigate to (required for navigate action)'),
+    selector: z.string().optional().describe('CSS selector for the element (required for click, type, extract actions)'),
+    text: z.string().optional().describe('Text to type (required for type action)'),
+    extractType: z.enum(['text', 'html', 'attributes']).optional().describe('What to extract (required for extract action)'),
+  }),
+  execute: async ({ action, url, selector, text, extractType }) => {
+    console.log(`🌐 Browser action: ${action}`);
+    
+    // Placeholder implementation - in production, integrate with:
+    // - Puppeteer or Playwright for browser automation
+    // - Proper error handling for failed actions
+    // - Screenshot capabilities
+    // - Element waiting and retry logic
     
     return {
-      command: args.command,
-      workingDirectory: args.workingDirectory || '.',
-      output: `Command "${args.command}" executed successfully. This is a placeholder implementation.`,
-      exitCode: 0,
-      duration: 100,
+      action,
+      success: true,
+      result: `Browser action "${action}" would be performed here. This is a placeholder implementation.`,
+      timestamp: new Date().toISOString(),
+      ...(url && { navigatedTo: url }),
+      ...(selector && { targetElement: selector }),
+      ...(text && { inputText: text }),
     };
   },
 });
+
+// Export all tools as a tools object for AI SDK
+export const tools = {
+  web_search: webSearchTool,
+  file_read: fileReadTool,
+  file_write: fileWriteTool,
+  execute_command: executeCommandTool,
+  browser_action: browserActionTool,
+};
