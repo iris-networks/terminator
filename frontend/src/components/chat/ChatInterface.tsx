@@ -1,22 +1,22 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
-import { FiMessageSquare, FiInfo } from 'react-icons/fi';
-
-interface Message {
-  id: string;
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  timestamp: Date;
-  thinking?: boolean;
-}
+import { FiMessageSquare, FiInfo, FiWifiOff } from 'react-icons/fi';
+import { useChat } from '@/hooks/useChat';
 
 export const ChatInterface: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    messages,
+    currentSessionId,
+    isLoading,
+    isThinking,
+    connected,
+    sendMessage,
+  } = useChat();
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -27,48 +27,8 @@ export const ChatInterface: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async (content: string) => {
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content,
-      timestamp: new Date(),
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setIsLoading(true);
-
-    try {
-      // Add thinking message
-      const thinkingMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: '',
-        timestamp: new Date(),
-        thinking: true,
-      };
-      setMessages(prev => [...prev, thinkingMessage]);
-
-      // Simulate API call - replace with actual Vercel AI SDK call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Remove thinking message and add response
-      setMessages(prev => prev.filter(msg => !msg.thinking));
-      
-      const assistantMessage: Message = {
-        id: (Date.now() + 2).toString(),
-        role: 'assistant',
-        content: `I understand you're asking about: "${content}". This is a placeholder response. In the full implementation, this would connect to the Vercel AI SDK to provide intelligent responses with tool calling capabilities for web search, file operations, and more.`,
-        timestamp: new Date(),
-      };
-
-      setMessages(prev => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error('Error sending message:', error);
-      setMessages(prev => prev.filter(msg => !msg.thinking));
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSendMessage = (content: string) => {
+    sendMessage(content);
   };
 
   const isEmpty = messages.length === 0;
@@ -77,6 +37,19 @@ export const ChatInterface: React.FC = () => {
     <div className="flex flex-col h-full">
       {/* Messages Container */}
       <div className="flex-1 overflow-y-auto chat-scrollbar">
+        {/* Connection Status */}
+        {!connected && (
+          <div className="mx-6 mt-4 px-4 py-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-sm rounded-xl border border-red-200 dark:border-red-800">
+            <div className="flex items-center">
+              <FiWifiOff className="mr-2 text-red-500" />
+              <span className="font-medium">Disconnected from server</span>
+            </div>
+            <div className="text-xs mt-1 opacity-75">
+              Attempting to reconnect...
+            </div>
+          </div>
+        )}
+
         {isEmpty ? (
           <motion.div
             initial={{ opacity: 0 }}
@@ -105,7 +78,10 @@ export const ChatInterface: React.FC = () => {
                 transition={{ delay: 0.2 }}
                 className="text-gray-600 dark:text-gray-400 mb-5 text-sm leading-relaxed"
               >
-                Start a conversation with your AI assistant. TARS can help with web research, file operations, and complex tasks.
+                {currentSessionId 
+                  ? 'Start a conversation with your AI assistant. TARS can help with web research, file operations, and complex tasks.'
+                  : 'Create a new session from the sidebar to begin chatting with Agent TARS.'
+                }
               </motion.p>
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
@@ -144,8 +120,8 @@ export const ChatInterface: React.FC = () => {
       <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6">
         <ChatInput 
           onSendMessage={handleSendMessage} 
-          isLoading={isLoading}
-          disabled={isLoading}
+          isLoading={isLoading || isThinking}
+          disabled={isLoading || isThinking || !connected || !currentSessionId}
         />
       </div>
     </div>
