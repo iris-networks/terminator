@@ -56,6 +56,7 @@ export interface AgentConfig {
   provider: 'openai' | 'anthropic';
   temperature?: number;
   maxTokens?: number;
+  agentType?: 'basic' | 'codeact' | 'deep_research' | 'gui' | 'multi_agent';
 }
 
 export interface ApiError extends Error {

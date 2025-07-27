@@ -10,6 +10,8 @@
   ],
   "scripts": {
     "dev": "pnpm --parallel --filter frontend --filter backend dev",
+    "dev:watch": "concurrently \"pnpm --filter ./frontend dev\" \"pnpm --filter ./backend dev\" \"pnpm run watch:build\"",
+    "watch:build": "chokidar \"frontend/src/**/*\" -c \"pnpm --filter ./frontend build && cp -r frontend/.next backend/public\"",
     "build": "pnpm --filter backend build && pnpm --filter frontend build",
     "start": "pnpm --filter backend start",
     "clean": "pnpm --recursive clean",
@@ -19,7 +21,9 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "concurrently": "^8.2.2",
+    "chokidar-cli": "^3.0.0"
   },
   "engines": {
     "node": ">=18.0.0",

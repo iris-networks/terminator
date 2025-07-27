@@ -2,7 +2,7 @@ import { generateText, streamText, CoreMessage } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { anthropic } from '@ai-sdk/anthropic';
 import { AgentConfig, AgentResponse, ChatMessage, ToolCall } from '../types/index.js';
-import { tools } from './ToolRegistry.js';
+import { defaultAgentTools, getAgentTools, AgentType } from '../agents/AgentTARS.js';
 
 export class AIService {
   private config: AgentConfig;
@@ -31,7 +31,12 @@ export class AIService {
     }));
   }
 
-  // No need for formatTools anymore - AI SDK handles this directly
+  private getToolsForCurrentAgent() {
+    if (this.config.agentType) {
+      return getAgentTools(this.config.agentType as AgentType);
+    }
+    return defaultAgentTools;
+  }
 
   async generateResponse(messages: ChatMessage[]): Promise<AgentResponse> {
     const startTime = Date.now();
@@ -40,7 +45,7 @@ export class AIService {
       const result = await generateText({
         model: this.getModel(),
         messages: this.formatMessages(messages),
-        tools,
+        tools: this.getToolsForCurrentAgent(),
         temperature: this.config.temperature || 0.7,
         maxTokens: this.config.maxTokens || 4000,
       });
@@ -75,7 +80,7 @@ export class AIService {
       const stream = streamText({
         model: this.getModel(),
         messages: this.formatMessages(messages),
-        tools,
+        tools: this.getToolsForCurrentAgent(),
         temperature: this.config.temperature || 0.7,
         maxTokens: this.config.maxTokens || 4000,
       });

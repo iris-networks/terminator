@@ -44,6 +44,27 @@ const ToolCallRenderer: React.FC<{ toolCall: ToolCall }> = ({ toolCall }) => {
       case 'browser_action': return '🌐';
       case 'list_files': return '📁';
       case 'create_directory': return '📁';
+      // CodeAct tools
+      case 'python_execute': return '🐍';
+      case 'node_execute': return '📦';
+      case 'shell_execute': return '🐚';
+      // Deep Research tools
+      case 'create_research_plan': return '📋';
+      case 'execute_research_plan': return '🔍';
+      case 'generate_research_report': return '📊';
+      case 'list_research_plans': return '📚';
+      // GUI Agent tools
+      case 'visual_navigate': return '🌐';
+      case 'visual_click': return '👆';
+      case 'visual_type': return '⌨️';
+      case 'visual_analyze': return '🔍';
+      case 'close_browser_session': return '❌';
+      case 'list_browser_sessions': return '📋';
+      // Orchestration tools
+      case 'select_agent': return '🤖';
+      case 'list_agents': return '👥';
+      case 'switch_agent': return '🔄';
+      case 'coordinate_agents': return '👥';
       default: return '🛠️';
     }
   };
@@ -168,6 +189,17 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
               ? 'bg-blue-600 text-white ml-auto'
               : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
           }`}>
+            {/* Agent indicator for assistant messages */}
+            {!isUser && message.metadata?.agentType && (
+              <div className="mb-2 pb-2 border-b border-gray-100 dark:border-gray-700">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 capitalize">
+                    {message.metadata.agentType.replace('_', ' ')} Agent
+                  </span>
+                </div>
+              </div>
+            )}
             {isUser ? (
               <p className="text-sm whitespace-pre-wrap">{message.content}</p>
             ) : (

@@ -54,13 +54,14 @@ export const useChat = () => {
   }, [socket, currentSessionId]);
 
   // Send a message
-  const sendMessage = useCallback((content: string) => {
+  const sendMessage = useCallback((content: string, metadata?: { agentType?: string }) => {
     if (!socket || !currentSessionId || isLoading) return;
     
     setIsLoading(true);
     socket.emit('send_message', {
       sessionId: currentSessionId,
       content,
+      metadata,
     });
   }, [socket, currentSessionId, isLoading]);
 

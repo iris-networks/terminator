@@ -5,16 +5,9 @@ import { ChatMessage } from '../types/index.js';
 
 export class SocketService {
   private io: Server;
-  private aiService: AIService;
 
   constructor(io: Server) {
     this.io = io;
-    this.aiService = new AIService({
-      model: 'gpt-4-turbo-preview',
-      provider: 'openai',
-      temperature: 0.7,
-      maxTokens: 4000,
-    });
   }
 
   initialize() {
@@ -41,9 +34,10 @@ export class SocketService {
       socket.on('send_message', async (data: {
         sessionId: string;
         content: string;
+        metadata?: { agentType?: string };
       }) => {
         try {
-          const { sessionId, content } = data;
+          const { sessionId, content, metadata } = data;
           
           // Create session if it doesn't exist
           let session = sessionService.getSession(sessionId);
@@ -51,10 +45,11 @@ export class SocketService {
             session = sessionService.createSession();
           }
 
-          // Add user message
+          // Add user message with metadata
           const userMessage = sessionService.addMessage(sessionId, {
             role: 'user',
             content,
+            metadata,
           });
 
           if (!userMessage) {
@@ -68,6 +63,15 @@ export class SocketService {
           // Send thinking indicator
           socket.emit('assistant_thinking', true);
 
+          // Create AI service with agent type if specified
+          const aiService = new AIService({
+            model: process.env.AI_MODEL || 'gpt-4-turbo-preview',
+            provider: (process.env.AI_PROVIDER as 'openai' | 'anthropic') || 'openai',
+            temperature: parseFloat(process.env.AI_TEMPERATURE || '0.7'),
+            maxTokens: parseInt(process.env.AI_MAX_TOKENS || '4000'),
+            agentType: metadata?.agentType as any || 'basic',
+          });
+
           // Get all messages for context
           const allMessages = sessionService.getMessages(sessionId);
 
@@ -76,7 +80,7 @@ export class SocketService {
           const assistantMessageId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
           try {
-            for await (const chunk of this.aiService.streamResponse(allMessages)) {
+            for await (const chunk of aiService.streamResponse(allMessages)) {
               switch (chunk.type) {
                 case 'content':
                   assistantContent += chunk.data;
