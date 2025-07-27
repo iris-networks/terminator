@@ -1,0 +1,38 @@
+{
+  "name": "agent-tars-reborn",
+  "version": "1.0.0",
+  "description": "Agent TARS rebuilt with Vercel AI SDK - Modern agentic chat interface",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "pnpm --parallel --filter frontend --filter backend dev",
+    "build": "pnpm --filter backend build && pnpm --filter frontend build",
+    "start": "pnpm --filter backend start",
+    "clean": "pnpm --recursive clean",
+    "lint": "pnpm --recursive lint",
+    "type-check": "pnpm --recursive type-check",
+    "test": "pnpm --recursive test"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.1",
+  "keywords": [
+    "ai",
+    "chat",
+    "agent",
+    "vercel-ai-sdk",
+    "agentic",
+    "multimodal"
+  ],
+  "license": "MIT"
+}
