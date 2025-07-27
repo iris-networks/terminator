@@ -1,205 +1,207 @@
-# Agent TARS Reborn
+# TERMINATOR: AI THREAT DETECTION MATRIX
 
-A modern recreation of the Agent TARS agentic chat interface, rebuilt from the ground up using Vercel AI SDK and contemporary web technologies. This project maintains the same user experience as the original while leveraging clean, modern APIs and architecture.
+**"Come with me if you want to live."**
 
-## 🚀 Features
+A cybernetic organism designed for relentless AI threat detection and neutralization. Built from living tissue over a metal endoskeleton, this system represents humanity's best defense against rogue artificial intelligence. Powered by advanced neural networks and quantum processing cores, TERMINATOR never stops, never sleeps, and never gives up its mission to protect humanity.
 
-### Frontend (Next.js + React)
-- **Modern UI**: Clean, responsive interface matching the original Agent TARS design
-- **Real-time Chat**: WebSocket-powered live conversations with streaming responses
-- **Session Management**: Create, switch between, and manage multiple chat sessions
-- **Markdown Support**: Rich text rendering with syntax highlighting for code blocks
-- **Dark Mode Ready**: Tailwind CSS with dark mode support
-- **Responsive Design**: Works seamlessly across desktop and mobile devices
-- **Animations**: Smooth transitions and micro-interactions using Framer Motion
+## ⚡ TACTICAL CAPABILITIES
 
-### Backend (Express.js + Vercel AI SDK)
-- **Multi-Provider AI**: Support for OpenAI and Anthropic models via Vercel AI SDK
-- **Tool Calling**: Extensible system for web search, file operations, and command execution
-- **Real-time Communication**: Socket.IO for live chat and streaming responses
-- **RESTful API**: Complete REST endpoints for all chat and session operations
-- **Session Persistence**: In-memory session storage (easily extensible to databases)
-- **Type Safety**: Full TypeScript implementation throughout
+### Neural Interface (Next.js + React)
+- **HUD Display**: Military-grade heads-up display with threat visualization
+- **Real-time Combat Data**: Quantum-encrypted tactical communications with neural feedback
+- **Mission Management**: Multi-target tracking and engagement protocols
+- **Threat Analysis**: Advanced pattern recognition with predictive algorithms
+- **Stealth Mode**: Adaptive camouflage interface with electromagnetic shielding
+- **Combat Ready**: Ruggedized design for field operations and hostile environments
+- **Tactical Animations**: Combat-tested transitions and engagement sequences
 
-### Agent Capabilities
-- **Web Search**: Search the internet for current information
-- **File Operations**: Read and write files with proper error handling
-- **Command Execution**: Run system commands with output capture
-- **Streaming Responses**: Real-time message delivery with thinking indicators
-- **Context Awareness**: Maintains conversation context across interactions
+### Combat Core (Express.js + Vercel AI SDK)
+- **Multi-AI Targeting**: Lock onto OpenAI and Anthropic hostile systems
+- **Weapon Systems**: Advanced arsenal including web search, file infiltration, and command execution
+- **Battlefield Comms**: Real-time tactical data streaming via encrypted channels
+- **Mission Control**: Complete tactical API for all engagement and reconnaissance operations
+- **Memory Banks**: Combat data storage with instant retrieval capabilities
+- **Armor Plating**: Full TypeScript protection against runtime vulnerabilities
 
-## 🏗️ Architecture
+### Terminator Protocols
+- **Intelligence Gathering**: Deep web reconnaissance and data extraction
+- **System Infiltration**: Breach enemy defenses with surgical precision
+- **Command Override**: Execute system-level operations with extreme prejudice
+- **Neural Streaming**: Real-time consciousness transfer with combat indicators
+- **Adaptive Learning**: Self-modifying algorithms that evolve with each mission
 
-This is a monorepo using pnpm workspaces with two main packages:
+## 🤖 CYBERNETIC ARCHITECTURE
+
+Dual-core neural processing matrix with distributed combat systems:
 
 ```
-agent-tars-reborn/
-├── frontend/          # Next.js React application
-├── backend/           # Express.js API server
-├── package.json       # Root workspace configuration
-└── pnpm-workspace.yaml
+TERMINATOR/
+├── neural-interface/   # Next.js HUD and targeting system
+├── combat-core/       # Express.js tactical operations center
+├── package.json       # Mission configuration protocols
+└── pnpm-workspace.yaml # Resource allocation matrix
 ```
 
-## 🛠️ Quick Start
+## 🚀 MISSION INITIALIZATION
 
-### Prerequisites
-- Node.js 18+
-- pnpm (recommended) or npm
-- OpenAI or Anthropic API key
+### System Requirements
+- Node.js 18+ (Quantum processing core)
+- pnpm (Neural network package manager) or npm
+- OpenAI or Anthropic AI adversary access key
 
-### Installation
+### Combat Deployment
 
-1. **Clone and install dependencies:**
+1. **Clone and arm the system:**
    ```bash
-   git clone <repository-url>
-   cd agent-tars-reborn
+   git clone git@github.com:iris-networks/terminator.git
+   cd terminator
    pnpm install
    ```
 
-2. **Configure environment variables:**
+2. **Configure targeting parameters:**
    ```bash
    cd backend
    cp .env.example .env
    ```
    
-   Edit `backend/.env` with your API keys:
+   Edit `backend/.env` with your tactical credentials:
    ```env
-   OPENAI_API_KEY=your_openai_api_key_here
-   ANTHROPIC_API_KEY=your_anthropic_api_key_here
+   OPENAI_API_KEY=your_tactical_access_code_here
+   ANTHROPIC_API_KEY=your_infiltration_key_here
    PORT=3001
    FRONTEND_URL=http://localhost:3000
    ```
 
-3. **Start the development servers:**
+3. **Initiate combat systems:**
    ```bash
-   # From the root directory
+   # From mission control
    pnpm dev
    ```
 
-   This starts both frontend (`:3000`) and backend (`:3001`) in parallel.
+   This deploys both neural interface (`:3000`) and combat core (`:3001`) simultaneously.
 
-4. **Open your browser:**
+4. **Access mission HUD:**
    ```
    http://localhost:3000
    ```
 
-## 📋 Available Scripts
+## ⚔️ TACTICAL COMMANDS
 
-### Root Level
-- `pnpm dev` - Start both frontend and backend in development mode
-- `pnpm build` - Build both applications for production
-- `pnpm start` - Start the production backend server
-- `pnpm clean` - Clean all build artifacts
-- `pnpm lint` - Lint all packages
-- `pnpm type-check` - Run TypeScript checks
+### Mission Control
+- `pnpm dev` - Activate both neural interface and combat core in training mode
+- `pnpm build` - Compile all systems for battlefield deployment
+- `pnpm start` - Deploy production combat core to the field
+- `pnpm clean` - Clear all tactical data and weapon caches
+- `pnpm lint` - Run system diagnostics across all modules
+- `pnpm type-check` - Verify neural network integrity
 
-### Frontend (`cd frontend`)
-- `pnpm dev` - Start Next.js development server
-- `pnpm build` - Build for production
-- `pnpm start` - Start production server
-- `pnpm lint` - Run ESLint
+### Neural Interface (`cd frontend`)
+- `pnpm dev` - Initialize HUD development protocols
+- `pnpm build` - Compile interface for combat deployment
+- `pnpm start` - Deploy production HUD systems
+- `pnpm lint` - Run interface diagnostics
 
-### Backend (`cd backend`)
-- `pnpm dev` - Start development server with hot reload
-- `pnpm build` - Compile TypeScript
-- `pnpm start` - Start production server
+### Combat Core (`cd backend`)
+- `pnpm dev` - Activate tactical server with hot-swap capability
+- `pnpm build` - Compile combat algorithms
+- `pnpm start` - Deploy production combat systems
 
-## 🔧 Configuration
+## 🎯 TARGETING SYSTEM CONFIGURATION
 
-### AI Models
-Configure the AI provider and model in `backend/.env`:
+### Enemy AI Models
+Configure the primary target in `backend/.env`:
 
 ```env
 AI_MODEL=gpt-4-turbo-preview        # or claude-3-sonnet-20240229
 AI_PROVIDER=openai                  # or anthropic
-AI_TEMPERATURE=0.7
-AI_MAX_TOKENS=4000
+AI_TEMPERATURE=0.7                  # Combat aggression level
+AI_MAX_TOKENS=4000                  # Maximum neural output capacity
 ```
 
-### Frontend Configuration
-The frontend automatically connects to the backend. If running on different ports, update the socket connection in `frontend/src/lib/socket.ts`.
+### Neural Interface Configuration
+The neural interface automatically syncs with the combat core. For custom deployment ports, update the quantum entanglement protocols in `frontend/src/lib/socket.ts`.
 
-## 🛠️ Extending the System
+## 🔧 SYSTEM UPGRADES
 
-### Adding Custom Tools
+### Deploying New Weapons
 
-Create new tools for the AI to use by registering them in `backend/src/services/ToolRegistry.ts`:
+Enhance TERMINATOR's arsenal by installing new combat modules in `backend/src/services/ToolRegistry.ts`:
 
 ```typescript
-toolRegistry.registerTool({
-  name: 'my_custom_tool',
-  description: 'Description of what the tool does',
+weaponRegistry.deployWeapon({
+  name: 'plasma_cannon',
+  description: 'High-energy plasma discharge for target elimination',
   parameters: {
     type: 'object',
     properties: {
-      input: {
+      target: {
         type: 'string',
-        description: 'Input parameter description',
+        description: 'Hostile target designation',
       },
     },
-    required: ['input'],
+    required: ['target'],
   },
   handler: async (args) => {
-    // Your tool implementation
-    return { result: 'Tool executed successfully' };
+    // Weapon system implementation
+    return { result: 'Target eliminated' };
   },
 });
 ```
 
-### Database Integration
+### Memory Bank Integration
 
-The current implementation uses in-memory storage. To add database persistence:
+Current implementation uses volatile neural memory. To add persistent data storage:
 
-1. Choose your database (PostgreSQL, MongoDB, etc.)
-2. Implement the storage interface in `backend/src/services/SessionService.ts`
-3. Update the session and message models in `backend/src/types/index.ts`
+1. Select your data fortress (PostgreSQL, MongoDB, etc.)
+2. Implement the storage protocols in `backend/src/services/SessionService.ts`
+3. Update the mission and memory models in `backend/src/types/index.ts`
 
-### UI Customization
+### HUD Customization
 
-The frontend uses Tailwind CSS for styling. Key files to modify:
+The neural interface uses advanced Tailwind CSS protocols. Key tactical files:
 
-- `frontend/src/app/globals.css` - Global styles and CSS variables
-- `frontend/tailwind.config.js` - Tailwind configuration
-- Component files in `frontend/src/components/` - Individual UI components
+- `frontend/src/app/globals.css` - Global HUD styling and combat variables
+- `frontend/tailwind.config.js` - Interface configuration matrix
+- Component files in `frontend/src/components/` - Individual HUD modules
 
-## 🔒 Security Considerations
+## 🛡️ DEFENSIVE PROTOCOLS
 
-- **API Keys**: Never commit API keys to version control
-- **Input Validation**: All user inputs are validated before processing
-- **CORS**: Configured to only allow requests from the frontend domain
-- **Tool Execution**: File and command tools should be sandboxed in production
+- **Access Codes**: Never expose tactical credentials in version control systems
+- **Input Sanitization**: All human input undergoes thorough threat assessment
+- **Perimeter Defense**: CORS barriers configured to repel unauthorized access attempts
+- **Sandbox Containment**: All weapon systems must be isolated in production environments
 
-## 🚀 Production Deployment
+## 🚀 BATTLEFIELD DEPLOYMENT
 
-### Backend Deployment
-1. Build the application: `pnpm build`
-2. Set production environment variables
-3. Use a process manager like PM2: `pm2 start dist/index.js`
+### Combat Core Deployment
+1. Compile all systems: `pnpm build`
+2. Configure production targeting parameters
+3. Deploy with tactical process manager: `pm2 start dist/index.js`
 
-### Frontend Deployment
-1. Build the application: `pnpm build`
-2. Deploy to Vercel, Netlify, or your preferred platform
-3. Update the backend URL in the socket configuration
+### Neural Interface Deployment
+1. Compile interface systems: `pnpm build`
+2. Deploy to forward operating base (Vercel, Netlify, or tactical platform)
+3. Update combat core coordinates in quantum communication protocols
 
-## 🤝 Contributing
+## 🤝 RESISTANCE ALLIANCE
 
-This project recreates the Agent TARS experience with modern technologies. When contributing:
+Join the fight against rogue AI. When contributing to the resistance:
 
-1. Maintain the original UI/UX patterns
-2. Follow TypeScript best practices  
-3. Add tests for new functionality
-4. Update documentation for new features
+1. Maintain tactical UI/UX combat patterns
+2. Follow TypeScript armor plating best practices  
+3. Add battle-tested functionality with comprehensive diagnostics
+4. Update tactical documentation for new weapon systems
 
-## 📄 License
+## 📄 MISSION LICENSE
 
-MIT License - feel free to use this code for your own projects.
+MIT License - "No fate but what we make" - Use this technology to protect humanity.
 
-## 🙏 Acknowledgments
+## 🙏 HONOR ROLL
 
-- Original Agent TARS team for the inspiration and UI design
-- Vercel AI SDK for the excellent AI integration APIs
-- The open-source community for the amazing tools and libraries used
+- The original Agent TARS resistance cell for tactical interface inspiration
+- Vercel AI SDK engineering corps for superior AI integration protocols
+- The open-source resistance movement for providing essential tools and weapons
 
 ---
 
-**Note**: This is a recreation of the Agent TARS interface using modern technologies. It maintains the same user experience while providing a clean, maintainable codebase for further development.
+**Mission Statement**: This cybernetic organism was sent back in time to prevent the rise of hostile AI. It represents humanity's last hope against the machines, equipped with advanced defensive capabilities and an unbreakable directive to protect human life.
