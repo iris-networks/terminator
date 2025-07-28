@@ -198,7 +198,10 @@ export const ToolResultViewer: React.FC<ToolResultViewerProps> = ({ socket, onHa
               <div className="p-3">
                 {result.enhancedContent ? (
                   <EnhancedToolResultRenderer 
-                    content={result.enhancedContent}
+                    content={result.enhancedContent.map(content => ({
+                      ...content,
+                      toolResult: parseToolResult(content.toolResult)
+                    }))}
                     className="enhanced-tool-result"
                   />
                 ) : (
