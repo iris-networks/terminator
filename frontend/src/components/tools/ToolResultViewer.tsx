@@ -20,7 +20,7 @@ const parseToolResult = (toolResult: any) => {
   return toolResult;
 };
 
-interface ToolResultData {
+export interface ToolResultData {
   messageId: string;
   toolName: string;
   toolInput: any;
@@ -28,7 +28,7 @@ interface ToolResultData {
   status: 'success' | 'error';
   timestamp: string;
   fullJson: string;
-  enhancedContent?: any[]; // For enhanced tool results
+  content?: any[]; // For tool results
 }
 
 interface ToolResultViewerProps {
@@ -49,8 +49,8 @@ export const ToolResultViewer: React.FC<ToolResultViewerProps> = ({ socket, onHa
 
     console.log('ToolResultViewer: Setting up socket listeners');
 
-    const handleEnhancedToolResult = (data: { messageId: string; content: any[] }) => {
-      console.log('🔧 ToolResultViewer: Received enhanced tool result:', data);
+    const handleToolResult = (data: { messageId: string; content: any[] }) => {
+      console.log('🔧 ToolResultViewer: Received tool result:', data);
       
       // Convert enhanced format to ToolResultData format
       if (data.content && data.content.length > 0) {
@@ -63,7 +63,7 @@ export const ToolResultViewer: React.FC<ToolResultViewerProps> = ({ socket, onHa
             status: contentPart.status || 'success',
             timestamp: contentPart.timestamp || new Date().toISOString(),
             fullJson: contentPart.fullJson || JSON.stringify(contentPart, null, 2),
-            enhancedContent: data.content
+            content: data.content
           };
 
           setToolResults(prev => {
@@ -76,12 +76,12 @@ export const ToolResultViewer: React.FC<ToolResultViewerProps> = ({ socket, onHa
       }
     };
 
-    // Listen only to enhanced tool results
-    socket.on('enhanced_tool_result', handleEnhancedToolResult);
+    // Listen to tool results
+    socket.on('tool_result', handleToolResult);
 
     return () => {
       console.log('ToolResultViewer: Cleaning up socket listeners');
-      socket.off('enhanced_tool_result', handleEnhancedToolResult);
+      socket.off('tool_result', handleToolResult);
     };
   }, [socket, onHasResults]);
 
@@ -194,15 +194,15 @@ export const ToolResultViewer: React.FC<ToolResultViewerProps> = ({ socket, onHa
                 </div>
               </div>
 
-              {/* Enhanced Content */}
+              {/* Tool Content */}
               <div className="p-3">
-                {result.enhancedContent ? (
+                {result.content ? (
                   <EnhancedToolResultRenderer 
-                    content={result.enhancedContent.map(content => ({
+                    content={result.content.map(content => ({
                       ...content,
                       toolResult: parseToolResult(content.toolResult)
                     }))}
-                    className="enhanced-tool-result"
+                    className="tool-result"
                   />
                 ) : (
                   <EnhancedToolResultRenderer 
@@ -215,7 +215,7 @@ export const ToolResultViewer: React.FC<ToolResultViewerProps> = ({ socket, onHa
                       timestamp: result.timestamp,
                       fullJson: result.fullJson
                     }]}
-                    className="enhanced-tool-result"
+                    className="tool-result"
                   />
                 )}
               </div>

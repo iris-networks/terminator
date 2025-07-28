@@ -68,65 +68,6 @@ export const fileReadTool = tool({
   },
 });
 
-export const fileWriteTool = tool({
-  description: 'Write content to a file on the filesystem',
-  parameters: z.object({
-    path: z.string().describe('The file path to write to'),
-    content: z.string().describe('The content to write to the file'),
-    createDirectory: z.boolean().optional().default(false).describe('Create parent directories if they do not exist'),
-  }),
-  execute: async ({ path: filePath, content, createDirectory }) => {
-    console.log(`✍️ Writing to file: ${filePath}`);
-    
-    try {
-      await ensureWorkspace();
-      const fullPath = validatePath(filePath);
-      
-      // Create directories if requested
-      if (createDirectory) {
-        const dirPath = path.dirname(fullPath);
-        await fs.mkdir(dirPath, { recursive: true });
-      }
-
-      // Check if file already exists and create backup
-      let backupPath = null;
-      try {
-        await fs.access(fullPath);
-        // File exists, create backup
-        backupPath = `${fullPath}.backup.${Date.now()}`;
-        await fs.copyFile(fullPath, backupPath);
-      } catch {
-        // File doesn't exist, no backup needed
-      }
-
-      // Write content to file
-      await fs.writeFile(fullPath, content, 'utf-8');
-      
-      // Get file stats after writing
-      const stats = await fs.stat(fullPath);
-
-      return {
-        path: filePath,
-        bytesWritten: Buffer.byteLength(content, 'utf-8'),
-        success: true,
-        timestamp: new Date().toISOString(),
-        backup: backupPath,
-        size: stats.size
-      };
-
-    } catch (error) {
-      console.error('File write error:', error);
-      return {
-        path: filePath,
-        bytesWritten: 0,
-        success: false,
-        timestamp: new Date().toISOString(),
-        error: error instanceof Error ? error.message : 'Unknown error'
-      };
-    }
-  },
-});
-
 export const listFilesTool = tool({
   description: 'List files and directories in a given path',
   parameters: z.object({

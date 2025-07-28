@@ -176,32 +176,6 @@ export const useChat = () => {
       }
     };
 
-    const handleToolResult = (data: {
-      messageId: string;
-      toolCall: ToolCall;
-    }) => {
-      // Add or update tool call to the streaming message
-      setMessages(prev => {
-        return prev.map(msg => {
-          if (msg.id === data.messageId) {
-            const updatedToolCalls = [...(msg.toolCalls || [])];
-            const existingIndex = updatedToolCalls.findIndex(tc => tc.id === data.toolCall.id);
-            
-            if (existingIndex >= 0) {
-              updatedToolCalls[existingIndex] = data.toolCall;
-            } else {
-              updatedToolCalls.push(data.toolCall);
-            }
-            
-            return {
-              ...msg,
-              toolCalls: updatedToolCalls,
-            };
-          }
-          return msg;
-        });
-      });
-    };
 
     const handleMessageComplete = (data: {
       messageId: string;
@@ -223,11 +197,11 @@ export const useChat = () => {
       setIsLoading(false);
     };
 
-    const handleEnhancedToolResult = (data: {
+    const handleToolResult = (data: {
       messageId: string;
       content: any[];
     }) => {
-      // Process enhanced tool result data
+      // Process tool result data
       if (data.content && data.content.length > 0) {
         data.content.forEach((contentPart: any) => {
           // Convert to ToolCall format for inline display in messages
@@ -284,7 +258,6 @@ export const useChat = () => {
     socket.on('assistant_thinking', handleAssistantThinking);
     socket.on('message_chunk', handleMessageChunk);
     socket.on('tool_result', handleToolResult);
-    socket.on('enhanced_tool_result', handleEnhancedToolResult);
     socket.on('message_complete', handleMessageComplete);
     socket.on('error', handleError);
 
@@ -297,7 +270,6 @@ export const useChat = () => {
       socket.off('assistant_thinking', handleAssistantThinking);
       socket.off('message_chunk', handleMessageChunk);
       socket.off('tool_result', handleToolResult);
-      socket.off('enhanced_tool_result', handleEnhancedToolResult);
       socket.off('message_complete', handleMessageComplete);
       socket.off('error', handleError);
     };
