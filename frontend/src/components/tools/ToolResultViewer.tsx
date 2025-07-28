@@ -5,6 +5,21 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiCode, FiCopy, FiCheck, FiX, FiCheckCircle, FiXCircle } from 'react-icons/fi';
 import { EnhancedToolResultRenderer } from './renderers/EnhancedToolResultRenderer';
 
+/**
+ * Parse tool result data, handling both JSON strings and objects
+ */
+const parseToolResult = (toolResult: any) => {
+  if (typeof toolResult === 'string') {
+    try {
+      return JSON.parse(toolResult);
+    } catch (e) {
+      console.error('Failed to parse toolResult:', e);
+      return toolResult;
+    }
+  }
+  return toolResult;
+};
+
 interface ToolResultData {
   messageId: string;
   toolName: string;
@@ -187,9 +202,18 @@ export const ToolResultViewer: React.FC<ToolResultViewerProps> = ({ socket, onHa
                     className="enhanced-tool-result"
                   />
                 ) : (
-                  <pre className="text-xs font-mono bg-gray-100 dark:bg-gray-900 p-3 rounded-md overflow-x-auto text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
-                    {result.fullJson}
-                  </pre>
+                  <EnhancedToolResultRenderer 
+                    content={[{
+                      type: result.toolName,
+                      toolName: result.toolName,
+                      toolInput: result.toolInput,
+                      toolResult: parseToolResult(result.toolResult),
+                      status: result.status,
+                      timestamp: result.timestamp,
+                      fullJson: result.fullJson
+                    }]}
+                    className="enhanced-tool-result"
+                  />
                 )}
               </div>
             </motion.div>

@@ -6,7 +6,6 @@ import { FiUser, FiCpu, FiCopy, FiTool, FiChevronDown, FiChevronRight, FiCheck, 
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-import { ToolResults, ToolResult } from './ToolResults';
 
 interface Message {
   id: string;
@@ -136,10 +135,6 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
                   {message.content}
                 </ReactMarkdown>
                 
-                {/* Render tool results if present */}
-                {message.toolCalls && message.toolCalls.length > 0 && (
-                  <ToolResults toolCalls={message.toolCalls} />
-                )}
               </div>
             )}
           </div>

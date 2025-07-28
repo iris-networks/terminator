@@ -5,6 +5,7 @@ import { CommandResultRenderer } from './CommandResultRenderer';
 import { ScriptResultRenderer } from './ScriptResultRenderer';
 import { JsonResultRenderer } from './JsonResultRenderer';
 import { GenericResultRenderer } from './GenericResultRenderer';
+import { WebSearchResultRenderer } from './WebSearchResultRenderer';
 
 export interface ToolResultContentPart {
   type: string;
@@ -44,6 +45,7 @@ const CONTENT_RENDERERS: Record<
   bash: CommandResultRenderer,
   python: ScriptResultRenderer,
   json: JsonResultRenderer,
+  web_search: WebSearchResultRenderer,
   generic: GenericResultRenderer,
 };
 
@@ -95,6 +97,8 @@ export const EnhancedToolResultRenderer: React.FC<EnhancedToolResultRendererProp
             'python_execute': 'script_result',
             'node_execute': 'script_result',
             'script_execute': 'script_result',
+            'web_search': 'web_search',
+            'browser_action': 'json',
           };
           
           rendererKey = toolNameMap[part.toolName] || part.type;

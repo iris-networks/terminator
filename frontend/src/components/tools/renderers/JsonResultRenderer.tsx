@@ -75,10 +75,8 @@ export const JsonResultRenderer: React.FC<JsonResultRendererProps> = ({ part }) 
 
   return (
     <div className="json-result-container">
-      {/* JSON viewer with professional styling */}
-      <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm">
-        {/* Header */}
-        <div className="bg-gray-50 dark:bg-gray-800 px-3 py-2 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+      {/* Header */}
+      <div className="bg-gray-50 dark:bg-gray-800 px-3 py-2 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between rounded-t-lg">
           <div className="flex items-center space-x-3">
             {/* macOS-style controls */}
             <div className="flex space-x-1.5">
@@ -137,26 +135,25 @@ export const JsonResultRenderer: React.FC<JsonResultRendererProps> = ({ part }) 
           </div>
         </div>
 
-        {/* Status bar */}
-        <div className="bg-gray-100 dark:bg-gray-800 px-3 py-1 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-            <div className="flex items-center space-x-4">
-              <span>Format: JSON</span>
-              <span>Size: {(jsonString.length / 1024).toFixed(1)} KB</span>
-              {part.status && (
-                <span className={`px-1.5 py-0.5 rounded text-[10px] ${
-                  part.status === 'success' 
-                    ? 'bg-green-900/30 text-green-400' 
-                    : 'bg-red-900/30 text-red-400'
-                }`}>
-                  {part.status}
-                </span>
-              )}
-            </div>
-            <div className="flex items-center space-x-2">
-              <span>UTF-8</span>
-              <span>Valid JSON</span>
-            </div>
+      {/* Status bar */}
+      <div className="bg-gray-100 dark:bg-gray-800 px-3 py-1 border-t border-gray-200 dark:border-gray-700 rounded-b-lg">
+        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+          <div className="flex items-center space-x-4">
+            <span>Format: JSON</span>
+            <span>Size: {(jsonString.length / 1024).toFixed(1)} KB</span>
+            {part.status && (
+              <span className={`px-1.5 py-0.5 rounded text-[10px] ${
+                part.status === 'success' 
+                  ? 'bg-green-900/30 text-green-400' 
+                  : 'bg-red-900/30 text-red-400'
+              }`}>
+                {part.status}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center space-x-2">
+            <span>UTF-8</span>
+            <span>Valid JSON</span>
           </div>
         </div>
       </div>
