@@ -14,6 +14,7 @@ interface CodeEditorProps {
   className?: string;
   readOnly?: boolean;
   fontSize?: number;
+  showHeader?: boolean;
 }
 
 /**
@@ -29,6 +30,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   className = '',
   readOnly = true,
   fontSize = 14,
+  showHeader = true,
 }) => {
   const { theme } = useTheme();
   const [copied, setCopied] = useState(false);
@@ -83,95 +85,41 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   };
 
   return (
-    <div className={`code-editor-container rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm ${className}`}>
-      {/* Editor header with file info */}
-      <div className="bg-gray-50 dark:bg-gray-800 px-3 py-2 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          {/* macOS-style controls */}
-          <div className="flex space-x-1.5">
-            <div className="w-3 h-3 rounded-full bg-red-500 shadow-sm"></div>
-            <div className="w-3 h-3 rounded-full bg-yellow-500 shadow-sm"></div>
-            <div className="w-3 h-3 rounded-full bg-green-500 shadow-sm"></div>
+    <div className={`code-editor-container ${className}`}>
+      <Editor
+        height={maxHeight}
+        language={getMonacoLanguage(language)}
+        value={code}
+        theme={theme === 'dark' ? 'vs-dark' : 'vs'}
+        options={{
+          readOnly,
+          fontSize,
+          lineNumbers: showLineNumbers ? 'on' : 'off',
+          minimap: { enabled: false },
+          scrollBeyondLastLine: false,
+          wordWrap: 'on',
+          automaticLayout: true,
+          contextmenu: false,
+          selectOnLineNumbers: true,
+          roundedSelection: false,
+          cursorStyle: 'line',
+          scrollbar: {
+            vertical: 'visible',
+            horizontal: 'visible',
+            useShadows: false,
+            verticalHasArrows: false,
+            horizontalHasArrows: false,
+          },
+          overviewRulerLanes: 0,
+          hideCursorInOverviewRuler: true,
+          overviewRulerBorder: false,
+        }}
+        loading={
+          <div className="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-900">
+            <div className="text-gray-500 dark:text-gray-400">Loading editor...</div>
           </div>
-          
-          <div className="flex items-center space-x-2">
-            <FiFile size={14} className="text-gray-500 dark:text-gray-400" />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{fileName}</span>
-            {getLanguageBadge()}
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-3">
-          {/* File stats */}
-          <div className="text-xs text-gray-500 dark:text-gray-400">
-            {lineCount} lines • {code.length} chars
-          </div>
-          
-          {/* Copy button */}
-          <button
-            onClick={copyToClipboard}
-            className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-            title="Copy code"
-          >
-            {copied ? <FiCheck size={14} className="text-green-500" /> : <FiCopy size={14} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Monaco Editor */}
-      <div 
-        className="relative overflow-hidden"
-        style={{ height: maxHeight }}
-      >
-        <Editor
-          height={maxHeight}
-          language={getMonacoLanguage(language)}
-          value={code}
-          theme={theme === 'dark' ? 'vs-dark' : 'vs'}
-          options={{
-            readOnly,
-            fontSize,
-            lineNumbers: showLineNumbers ? 'on' : 'off',
-            minimap: { enabled: false },
-            scrollBeyondLastLine: false,
-            wordWrap: 'on',
-            automaticLayout: true,
-            contextmenu: false,
-            selectOnLineNumbers: true,
-            roundedSelection: false,
-            cursorStyle: 'line',
-            scrollbar: {
-              vertical: 'visible',
-              horizontal: 'visible',
-              useShadows: false,
-              verticalHasArrows: false,
-              horizontalHasArrows: false,
-            },
-            overviewRulerLanes: 0,
-            hideCursorInOverviewRuler: true,
-            overviewRulerBorder: false,
-          }}
-          loading={
-            <div className="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-900">
-              <div className="text-gray-500 dark:text-gray-400">Loading editor...</div>
-            </div>
-          }
-        />
-      </div>
-
-      {/* Status bar */}
-      <div className="bg-gray-100 dark:bg-gray-800 px-3 py-1 border-t border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-          <div className="flex items-center space-x-4">
-            <span>Language: {language}</span>
-            <span>Size: {(code.length / 1024).toFixed(1)} KB</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span>UTF-8</span>
-            <span>LF</span>
-          </div>
-        </div>
-      </div>
+        }
+      />
     </div>
   );
 };

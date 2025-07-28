@@ -196,7 +196,7 @@ export const browserGetMarkdownTool = tool({
       
       const currentUrl = page.url();
       const extractor = new PaginatedContentExtractor();
-      const result = await extractor.extractContent(currentUrl, maxPages);
+      const result = await extractor.extractContent(page, maxPages);
       
       return {
         url: currentUrl,
