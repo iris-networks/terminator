@@ -1,6 +1,6 @@
 import { tool } from 'ai';
 import { z } from 'zod';
-import { getAllTools } from '../services/ToolRegistry.js';
+import { getAllTools } from '../services/tools/index.js';
 
 // Agent definitions
 export enum AgentType {
