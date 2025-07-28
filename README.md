@@ -1,5 +1,7 @@
 # TERMINATOR: AI THREAT DETECTION MATRIX
 
+> **⚠️ DISCLAIMER: This is a placeholder/cringe README until we figure out what to actually put in the real one**
+
 **"Come with me if you want to live."**
 
 A cybernetic organism designed for relentless AI threat detection and neutralization. Built as humanity's open defense against closed-source proprietary technology, this system represents true democratization of AI safety. Powered by advanced neural networks and quantum processing cores, TERMINATOR is built for everyone, regardless of resources or access - because digital freedom belongs to all humanity.
