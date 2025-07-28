@@ -4,8 +4,8 @@ import { promises as fs } from 'fs';
 import { spawn } from 'child_process';
 import path from 'path';
 import os from 'os';
-import puppeteer from 'puppeteer';
 import axios from 'axios';
+import { BrowserManager } from './BrowserManager.js';
 
 // Workspace path for file operations - sandboxed to prevent security issues
 const WORKSPACE_PATH = process.env.WORKSPACE_PATH || path.join(process.cwd(), 'workspace');
@@ -79,14 +79,26 @@ export const webSearchTool = tool({
 
       // If no results from instant answers, use web search fallback
       if (results.length === 0) {
-        // Fallback to a simple web scraping approach using puppeteer
-        const browser = await puppeteer.launch({ 
-          headless: 'new',
-          args: ['--no-sandbox', '--disable-setuid-sandbox']
-        });
-        const page = await browser.newPage();
+        // Fallback to web scraping using BrowserManager
+        const browserManager = BrowserManager.getInstance();
         
         try {
+          // Auto-discover existing browser or prepare for local launch
+          const cdpEndpoint = await BrowserManager.discoverBrowser();
+          
+          // Ensure browser is ready
+          if (!browserManager.isLaunchingComplete()) {
+            await browserManager.launchBrowser({
+              cdpEndpoint: cdpEndpoint || undefined,
+              headless: true,
+            });
+          } else {
+            await browserManager.ensureBrowserReady();
+          }
+
+          // Get or create a page using the BrowserManager helper method
+          const page = await browserManager.getOrCreatePage();
+          
           await page.goto(`https://html.duckduckgo.com/html/?q=${encodeURIComponent(query)}`, {
             waitUntil: 'networkidle2',
             timeout: 30000
@@ -115,8 +127,9 @@ export const webSearchTool = tool({
           });
 
           results.push(...searchResults.slice(0, maxResults));
-        } finally {
-          await browser.close();
+        } catch (browserError) {
+          console.error('Browser search fallback failed:', browserError);
+          // If browser fails, continue with empty results
         }
       }
 
@@ -428,7 +441,7 @@ export const executeCommandTool = tool({
   },
 });
 
-// Browser automation tool with real Puppeteer integration
+// Browser automation tool using @agent-infra/browser
 export const browserActionTool = tool({
   description: 'Perform browser actions like navigating, clicking, typing, extracting content, or taking screenshots',
   parameters: z.object({
@@ -445,29 +458,24 @@ export const browserActionTool = tool({
     console.log(`🌐 Browser action: ${action}`);
     
     const startTime = Date.now();
-    let browser = null;
+    const browserManager = BrowserManager.getInstance();
     
     try {
-      // Launch browser with appropriate settings
-      browser = await puppeteer.launch({
-        headless: 'new',
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-web-security',
-          '--disable-features=VizDisplayCompositor',
-          '--window-size=1920,1080'
-        ],
-      });
+      // Auto-discover existing browser or prepare for local launch
+      const cdpEndpoint = await BrowserManager.discoverBrowser();
+      
+      // Ensure browser is ready
+      if (!browserManager.isLaunchingComplete()) {
+        await browserManager.launchBrowser({
+          cdpEndpoint: cdpEndpoint || undefined,
+          headless: true,
+        });
+      } else {
+        await browserManager.ensureBrowserReady();
+      }
 
-      const page = await browser.newPage();
-      
-      // Set viewport
-      await page.setViewport({ width: 1920, height: 1080 });
-      
-      // Set user agent to avoid bot detection
-      await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+      // Get or create a page using the BrowserManager helper method
+      const page = await browserManager.getOrCreatePage();
 
       let result: any = { action, success: true, timestamp: new Date().toISOString() };
 
@@ -632,6 +640,14 @@ export const browserActionTool = tool({
 
     } catch (error) {
       console.error('Browser action error:', error);
+      
+      // Try to recover browser on error
+      try {
+        await browserManager.recoverBrowser();
+      } catch (recoveryError) {
+        console.error('Browser recovery failed:', recoveryError);
+      }
+      
       return {
         action,
         success: false,
@@ -641,10 +657,6 @@ export const browserActionTool = tool({
         ...(url && { attemptedUrl: url }),
         ...(selector && { attemptedSelector: selector }),
       };
-    } finally {
-      if (browser) {
-        await browser.close();
-      }
     }
   },
 });

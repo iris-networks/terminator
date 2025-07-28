@@ -11,18 +11,19 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "helmet": "^7.1.0",
-    "socket.io": "^4.7.2",
-    "ai": "^3.0.0",
-    "@ai-sdk/openai": "^0.0.24",
+    "@agent-infra/browser": "^0.1.1",
     "@ai-sdk/anthropic": "^0.0.20",
+    "@ai-sdk/openai": "^0.0.24",
+    "ai": "^3.0.0",
+    "axios": "^1.6.7",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.1",
-    "uuid": "^9.0.1",
-    "zod": "^3.22.4",
+    "express": "^4.18.2",
+    "helmet": "^7.1.0",
     "puppeteer": "^21.11.0",
-    "axios": "^1.6.7"
+    "socket.io": "^4.7.2",
+    "uuid": "^9.0.1",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
