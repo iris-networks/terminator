@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 
 import { chatRouter } from './routes/chat.js';
 import { sessionRouter } from './routes/sessions.js';
+import createReplayRouter from './routes/replay.js';
 import { SocketService } from './services/SocketService.js';
 import { errorHandler } from './utils/errorHandler.js';
 
@@ -46,13 +47,17 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API Routes
-app.use('/api/chat', chatRouter);
-app.use('/api/sessions', sessionRouter);
-
 // Socket.IO service
 const socketService = new SocketService(io);
 socketService.initialize();
+
+// API Routes
+app.use('/api/chat', chatRouter);
+app.use('/api/sessions', sessionRouter);
+app.use('/api/replay', createReplayRouter(socketService));
+
+// Export socketService for use in routes
+export { socketService };
 
 // Error handling
 app.use(errorHandler);
