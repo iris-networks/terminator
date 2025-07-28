@@ -8,6 +8,8 @@ import { GenericResultRenderer } from './GenericResultRenderer';
 import { WebSearchResultRenderer } from './WebSearchResultRenderer';
 import { BrowserResultRenderer } from './BrowserResultRenderer';
 import { BrowserControlRenderer } from './BrowserControlRenderer';
+import { CodeActRenderer } from './CodeActRenderer';
+import { DeepResearchRenderer } from './DeepResearchRenderer';
 
 export interface ToolResultContentPart {
   type: string;
@@ -54,6 +56,15 @@ const CONTENT_RENDERERS: Record<
   browser_control: BrowserControlRenderer,
   browser_click: BrowserControlRenderer,
   browser_screenshot: BrowserResultRenderer,
+  node_codeact: CodeActRenderer,
+  python_codeact: CodeActRenderer,
+  shell_codeact: CodeActRenderer,
+  codeact_memory: CodeActRenderer,
+  enhanced_search: DeepResearchRenderer,
+  enhanced_visit: DeepResearchRenderer,
+  deep_dive: DeepResearchRenderer,
+  research_plan: DeepResearchRenderer,
+  research_report: DeepResearchRenderer,
   generic: GenericResultRenderer,
 };
 
@@ -114,6 +125,15 @@ export const EnhancedToolResultRenderer: React.FC<EnhancedToolResultRendererProp
             'browser_evaluate': 'browser_result',
             'browser_get_markdown': 'browser_result',
             'browser_action': 'browser_result',
+            'node_codeact': 'node_codeact',
+            'python_codeact': 'python_codeact', 
+            'shell_codeact': 'shell_codeact',
+            'codeact_memory': 'codeact_memory',
+            'enhanced_search': 'enhanced_search',
+            'enhanced_visit_link': 'enhanced_visit',
+            'deep_dive': 'deep_dive',
+            'research_plan': 'research_plan',
+            'report_generator': 'research_report',
           };
           
           rendererKey = toolNameMap[part.toolName] || part.type;

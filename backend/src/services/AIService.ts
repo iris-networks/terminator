@@ -107,15 +107,51 @@ export class AIService {
                   contentPart.stderr = result.result?.stderr || result.result?.error || '';
                   contentPart.exitCode = result.result?.exitCode ?? result.result?.exit_code;
                 }
-                // Script execution tools
-                else if (['python_execute', 'node_execute', 'script_execute'].includes(result.toolName)) {
-                  contentPart.type = 'script_result';
-                  contentPart.script = result.args?.script || result.args?.code || '';
-                  contentPart.interpreter = result.args?.interpreter || 'python';
-                  contentPart.stdout = result.result?.stdout || result.result?.output || '';
-                  contentPart.stderr = result.result?.stderr || result.result?.error || '';
-                  contentPart.exitCode = result.result?.exitCode ?? result.result?.exit_code;
-                  contentPart.cwd = result.args?.cwd || '';
+                // CodeAct tools
+                else if (['node_codeact', 'python_codeact', 'shell_codeact'].includes(result.toolName)) {
+                  contentPart.type = result.toolName; // Use specific type for CodeAct renderer
+                  contentPart.code = result.args?.code || '';
+                  contentPart.output = result.result?.output || '';
+                  contentPart.error = result.result?.error || '';
+                  contentPart.exitCode = result.result?.exitCode;
+                  contentPart.success = result.result?.success;
+                  contentPart.duration = result.result?.duration;
+                  contentPart.filename = result.result?.filename;
+                  contentPart.workspace = result.result?.workspace;
+                  contentPart.memoryKey = result.result?.memoryKey;
+                }
+                // CodeAct memory tool
+                else if (result.toolName === 'codeact_memory') {
+                  contentPart.type = 'codeact_memory';
+                  contentPart.action = result.args?.action || '';
+                  contentPart.key = result.args?.key || '';
+                  contentPart.value = result.result?.value;
+                  contentPart.success = result.result?.success;
+                }
+                // DeepResearch tools
+                else if (['enhanced_search', 'enhanced_visit_link', 'deep_dive', 'research_plan', 'report_generator'].includes(result.toolName)) {
+                  contentPart.type = result.toolName; // Use specific type for DeepResearch renderer
+                  // Keep all result data for specialized renderers
+                  contentPart.query = result.args?.query;
+                  contentPart.sessionId = result.args?.sessionId;
+                  contentPart.topic = result.result?.topic;
+                  contentPart.plan = result.result?.plan;
+                  contentPart.report = result.result?.report;
+                  contentPart.sources = result.result?.sources;
+                  contentPart.insights = result.result?.insights;
+                  contentPart.isDeepResearch = result.result?.isDeepResearch || false;
+                }
+                // Web search (enhanced)
+                else if (result.toolName === 'web_search') {
+                  contentPart.type = 'web_search';
+                }
+                // Browser tools
+                else if (result.toolName.startsWith('browser_')) {
+                  if (['browser_vision_control', 'browser_control', 'browser_click'].includes(result.toolName)) {
+                    contentPart.type = 'browser_control';
+                  } else {
+                    contentPart.type = 'browser_result';
+                  }
                 }
                 // JSON/data tools
                 else if (result.toolName.includes('json') || typeof result.result === 'object') {

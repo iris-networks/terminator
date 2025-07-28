@@ -1,10 +1,14 @@
 import { tool } from 'ai';
 import { z } from 'zod';
 import { getAllTools } from '../services/tools/index.js';
+import { codeActTools } from './CodeActAgent.js';
+import { deepResearchTools } from './DeepResearchAgent.js';
 
 // Agent definitions
 export enum AgentType {
-  MULTI_AGENT = 'multi_agent'
+  MULTI_AGENT = 'multi_agent',
+  CODEACT = 'codeact',
+  DEEP_RESEARCH = 'deep_research'
 }
 
 interface AgentCapability {
@@ -31,19 +35,87 @@ export const AGENT_CAPABILITIES: Record<AgentType, AgentCapability> = {
       'Web automation and scraping',
       'File management and operations'
     ]
+  },
+  [AgentType.CODEACT]: {
+    type: AgentType.CODEACT,
+    name: 'CodeAct Agent',
+    description: 'Specialized agent for secure code execution in sandboxed environments with multi-language support',
+    tools: Object.keys(codeActTools),
+    specializations: ['code_execution', 'programming', 'debugging', 'automation', 'scripting'],
+    useCases: [
+      'Execute JavaScript/Node.js code with npm dependencies',
+      'Run Python scripts with pip package management',
+      'Execute shell scripts in secure environment',
+      'Persistent memory for code execution sessions',
+      'Multi-language programming assistance'
+    ]
+  },
+  [AgentType.DEEP_RESEARCH]: {
+    type: AgentType.DEEP_RESEARCH,
+    name: 'DeepResearch Agent',
+    description: 'Advanced research agent with plan-and-execute methodology for comprehensive information gathering',
+    tools: Object.keys(deepResearchTools),
+    specializations: ['research', 'analysis', 'information_gathering', 'report_generation', 'web_scraping'],
+    useCases: [
+      'Comprehensive topic research with structured planning',
+      'Multi-source information gathering and synthesis',
+      'Generate detailed research reports with citations',
+      'Enhanced web search with domain filtering',
+      'Deep content analysis and insight extraction'
+    ]
   }
 };
 
-// Agent selection logic (simplified to always return multi-agent)
+// Agent selection logic
 function selectOptimalAgent(task: string, requirements: string[]): AgentType {
-  // Always return multi-agent since it's the only option
+  const lowerTask = task.toLowerCase();
+  
+  // Check for code execution keywords
+  const codeKeywords = ['code', 'execute', 'run', 'script', 'program', 'debug', 'javascript', 'python', 'node', 'npm', 'pip'];
+  if (codeKeywords.some(keyword => lowerTask.includes(keyword))) {
+    return AgentType.CODEACT;
+  }
+  
+  // Check for research keywords
+  const researchKeywords = ['research', 'study', 'analyze', 'investigate', 'report', 'information', 'analysis', 'comprehensive'];
+  if (researchKeywords.some(keyword => lowerTask.includes(keyword))) {
+    return AgentType.DEEP_RESEARCH;
+  }
+  
+  // Default to multi-agent for general tasks
   return AgentType.MULTI_AGENT;
 }
 
-// Get all tools (simplified to single agent)
+// Get tools for specific agent type
 async function getToolsForAgent(agentType: AgentType): Promise<Record<string, any>> {
-  // Get all tools including MCP tools
-  return await getAllTools();
+  const allTools = await getAllTools();
+  
+  switch (agentType) {
+    case AgentType.CODEACT:
+      return {
+        ...codeActTools,
+        // Include basic tools that CodeAct might need
+        web_search: allTools.web_search,
+        file_read: allTools.file_read,
+      };
+      
+    case AgentType.DEEP_RESEARCH:
+      return {
+        ...deepResearchTools,
+        // Include basic tools that DeepResearch might need
+        web_search: allTools.web_search,
+        browser_action: allTools.browser_action,
+        browser_get_markdown: allTools.browser_get_markdown,
+      };
+      
+    case AgentType.MULTI_AGENT:
+    default:
+      return {
+        ...allTools,
+        ...codeActTools,
+        ...deepResearchTools
+      };
+  }
 }
 
 // Agent selection tool

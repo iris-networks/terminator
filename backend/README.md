@@ -101,11 +101,27 @@ The backend includes an extensible tool system that allows the AI to perform act
 
 - **web_search**: Real web search using DuckDuckGo API with fallback to web scraping
 - **file_read**: Secure file reading with workspace sandboxing and size limits
-- **file_write**: Safe file writing with automatic backups and directory creation
 - **list_files**: Directory listing with recursive options and file metadata
 - **create_directory**: Directory creation with recursive parent creation
 - **execute_command**: Secure command execution with timeout, shell selection, and dangerous command blocking
 - **browser_action**: Full browser automation with Puppeteer for navigation, interaction, content extraction, and screenshots
+
+### Specialized Agents
+
+#### CodeAct Agent
+Secure code execution environment with multi-language support:
+- **node_codeact**: Execute JavaScript/Node.js code with npm dependency management
+- **python_codeact**: Execute Python code with pip package management
+- **shell_codeact**: Execute shell scripts in sandboxed environment
+- **codeact_memory**: Persistent memory for code execution sessions
+
+#### DeepResearch Agent  
+Advanced research agent with plan-and-execute methodology:
+- **enhanced_search**: Advanced web search with domain filtering and query optimization
+- **enhanced_visit_link**: Detailed content extraction from web pages with multiple modes
+- **deep_dive**: Comprehensive topic research combining search and content analysis
+- **research_plan**: Create and manage structured research plans with progress tracking
+- **report_generator**: Generate comprehensive research reports with citations
 
 ### Adding Custom Tools
 

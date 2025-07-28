@@ -5,7 +5,6 @@
 import { webSearchTool } from './categories/web-search.js';
 import { 
   fileReadTool, 
-  fileWriteTool, 
   listFilesTool, 
   createDirectoryTool 
 } from './categories/file-system.js';
@@ -40,7 +39,6 @@ export {
   
   // File system
   fileReadTool,
-  fileWriteTool,
   listFilesTool,
   createDirectoryTool,
   
@@ -69,7 +67,6 @@ export { initializeMCP, getMCPStatus };
 export const tools = {
   web_search: webSearchTool,
   file_read: fileReadTool,
-  file_write: fileWriteTool,
   list_files: listFilesTool,
   create_directory: createDirectoryTool,
   execute_command: executeCommandTool,
@@ -122,7 +119,6 @@ export default {
   // Individual tools
   webSearchTool,
   fileReadTool,
-  fileWriteTool,
   listFilesTool,
   createDirectoryTool,
   executeCommandTool,
