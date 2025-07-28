@@ -1,6 +1,6 @@
 import { tool } from 'ai';
 import { z } from 'zod';
-import { tools as basicTools } from '../services/ToolRegistry.js';
+import { tools as basicTools, getAllTools } from '../services/ToolRegistry.js';
 import { codeActTools } from './CodeActAgent.js';
 import { deepResearchTools } from './DeepResearchAgent.js';
 import { guiAgentTools } from './GUIAgent.js';
@@ -133,20 +133,23 @@ function selectOptimalAgent(task: string, requirements: string[]): AgentType {
 }
 
 // Get tools for agent type
-function getToolsForAgent(agentType: AgentType): Record<string, any> {
+async function getToolsForAgent(agentType: AgentType): Promise<Record<string, any>> {
+  // Get all tools including MCP tools
+  const allTools = await getAllTools();
+  
   switch (agentType) {
     case AgentType.BASIC:
-      return basicTools;
+      return allTools;
     case AgentType.CODEACT:
-      return { ...codeActTools, ...basicTools };
+      return { ...codeActTools, ...allTools };
     case AgentType.DEEP_RESEARCH:
-      return { ...deepResearchTools, web_search: basicTools.web_search };
+      return { ...deepResearchTools, ...allTools };
     case AgentType.GUI:
-      return guiAgentTools;
+      return { ...guiAgentTools, ...allTools };
     case AgentType.MULTI_AGENT:
-      return { ...basicTools, ...codeActTools, ...deepResearchTools, ...guiAgentTools };
+      return { ...allTools, ...codeActTools, ...deepResearchTools, ...guiAgentTools };
     default:
-      return basicTools;
+      return allTools;
   }
 }
 
@@ -163,7 +166,7 @@ export const selectAgentTool = tool({
     
     const selectedType = preferredAgent || selectOptimalAgent(task, requirements);
     const capability = AGENT_CAPABILITIES[selectedType as AgentType];
-    const availableTools = getToolsForAgent(selectedType as AgentType);
+    const availableTools = await getToolsForAgent(selectedType as AgentType);
     
     return {
       selectedAgent: selectedType,
@@ -212,7 +215,7 @@ export const switchAgentTool = tool({
     console.log(`🔄 Switching to agent: ${newAgentType}`);
     
     const newCapability = AGENT_CAPABILITIES[newAgentType as AgentType];
-    const newTools = getToolsForAgent(newAgentType as AgentType);
+    const newTools = await getToolsForAgent(newAgentType as AgentType);
     
     return {
       previousAgent: 'current', // Would be tracked in actual implementation
@@ -331,6 +334,6 @@ export const defaultAgentTools = {
 };
 
 // Get tools for specific agent type
-export function getAgentTools(agentType: AgentType) {
-  return getToolsForAgent(agentType);
+export async function getAgentTools(agentType: AgentType) {
+  return await getToolsForAgent(agentType);
 }

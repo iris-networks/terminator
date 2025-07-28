@@ -217,7 +217,7 @@ export const visualClickTool = tool({
         
         // Highlight element if requested
         if (highlightElement) {
-          await session.page.$eval(selector, (el) => {
+          await session.page.$eval(selector, (el: any) => {
             el.style.outline = '3px solid red';
             el.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
           });
