@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { FiExternalLink, FiGlobe, FiCopy, FiCheck } from 'react-icons/fi';
 import { BrowserShell } from './BrowserShell';
 import { ToolResultContentPart } from './EnhancedToolResultRenderer';
+import { CodeEditor } from './CodeEditor';
 
 interface BrowserResultRendererProps {
   part: ToolResultContentPart;
@@ -67,6 +68,8 @@ export const BrowserResultRenderer: React.FC<BrowserResultRendererProps> = ({ pa
   const extractedUrl = extractUrlFromContent();
   const extractedContent = extractContentFromText();
 
+  const shouldUseMarkdownEditor = part.toolName === 'browser_get_markdown';
+
   return (
     <div className="space-y-4">
       <div className="mb-4">
@@ -116,9 +119,23 @@ export const BrowserResultRenderer: React.FC<BrowserResultRendererProps> = ({ pa
             )}
 
             {(typeof extractedContent === 'string') && extractedContent ? (
-              <div className="prose dark:prose-invert prose-sm max-w-none py-4">
-                <div className="whitespace-pre-wrap">{extractedContent}</div>
-              </div>
+              shouldUseMarkdownEditor ? (
+                <div className="py-4">
+                  <CodeEditor
+                    code={extractedContent}
+                    language="markdown"
+                    fileName="content.md"
+                    showLineNumbers={true}
+                    maxHeight="500px"
+                    readOnly={true}
+                    fontSize={13}
+                  />
+                </div>
+              ) : (
+                <div className="prose dark:prose-invert prose-sm max-w-none py-4">
+                  <div className="whitespace-pre-wrap">{extractedContent}</div>
+                </div>
+              )
             ) : (
               !screenshot && (
                 <pre className="text-sm whitespace-pre-wrap font-mono bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-100/30 dark:border-gray-700/20 overflow-x-auto">

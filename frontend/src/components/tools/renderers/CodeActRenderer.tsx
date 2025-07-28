@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { FiCode, FiCopy, FiCheck, FiTerminal, FiClock, FiPackage, FiSave, FiPlay, FiCheckCircle, FiXCircle, FiCpu } from 'react-icons/fi';
 import { ToolResultContentPart } from './EnhancedToolResultRenderer';
+import { CodeEditor } from './CodeEditor';
 
 interface CodeActRendererProps {
   part: ToolResultContentPart;
@@ -88,180 +89,37 @@ export const CodeActRenderer: React.FC<CodeActRendererProps> = ({ part }) => {
   };
 
   return (
-    <div className="codeact-result">
-      {/* Code execution header */}
-      <div className={`rounded-lg overflow-hidden border shadow-sm ${
-        success 
-          ? 'border-green-200 dark:border-green-800' 
-          : 'border-red-200 dark:border-red-800'
-      }`}>
-        {/* Header with execution info */}
-        <div className={`px-4 py-3 border-b border-gray-200 dark:border-gray-700 ${langInfo.bgColor}`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-2">
-                <span className="text-lg">{langInfo.icon}</span>
-                <div className="flex items-center space-x-2">
-                  <FiCode className={langInfo.color} size={16} />
-                  <span className={`text-sm font-medium ${langInfo.color}`}>
-                    {langInfo.label} Execution
-                  </span>
-                  {success ? (
-                    <FiCheckCircle className="text-green-500" size={14} />
-                  ) : (
-                    <FiXCircle className="text-red-500" size={14} />
-                  )}
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              {duration > 0 && (
-                <div className="flex items-center space-x-1 text-xs text-gray-500 dark:text-gray-400">
-                  <FiClock size={12} />
-                  <span>{formatDuration(duration)}</span>
-                </div>
-              )}
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                {new Date(part.timestamp || Date.now()).toLocaleTimeString()}
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="codeact-result space-y-4">
+      {/* Code content */}
+      <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+        <CodeEditor
+          code={code}
+          language={langInfo.language}
+          fileName={filename}
+          showLineNumbers={true}
+          maxHeight="300px"
+          readOnly={true}
+          fontSize={13}
+        />
+      </div>
 
-        {/* Code section */}
-        <div className="bg-white dark:bg-gray-800">
-          {/* Code header */}
-          <div className="bg-gray-50 dark:bg-gray-900 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <FiTerminal size={14} className="text-gray-500" />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Source Code
-                </span>
-                {filename && (
-                  <span className="text-xs text-gray-500 dark:text-gray-400 font-mono">
-                    {filename}
-                  </span>
-                )}
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                {memoryKey && (
-                  <div className="flex items-center space-x-1 text-xs text-purple-600 dark:text-purple-400">
-                    <FiSave size={12} />
-                    <span>{memoryKey}</span>
-                  </div>
-                )}
-                <button
-                  onClick={copyCode}
-                  className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-                  title="Copy code"
-                >
-                  {copied ? <FiCheck size={12} className="text-green-500" /> : <FiCopy size={12} />}
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Code content */}
-          <div className="bg-gray-900 p-4">
-            <pre className="text-sm font-mono text-gray-100 whitespace-pre-wrap leading-relaxed overflow-x-auto">
-              {code}
-            </pre>
-          </div>
-        </div>
-
-        {/* Output section */}
-        {(output || error) && (
-          <div className="border-t border-gray-200 dark:border-gray-700">
-            {/* Output header */}
-            <div className="bg-gray-50 dark:bg-gray-900 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <FiPlay size={14} className="text-gray-500" />
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Execution Result
-                  </span>
-                  {exitCode !== undefined && (
-                    <span className={`px-2 py-0.5 rounded-sm text-xs font-medium ${
-                      exitCode === 0 
-                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
-                        : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
-                    }`}>
-                      exit {exitCode}
-                    </span>
-                  )}
-                </div>
-                
-                <button
-                  onClick={() => setShowOutput(!showOutput)}
-                  className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-                >
-                  {showOutput ? 'Hide' : 'Show'} Output
-                </button>
-              </div>
-            </div>
-
-            {/* Output content */}
-            {showOutput && (
-              <div className="bg-black overflow-auto max-h-[60vh]">
-                {/* Standard output */}
-                {output && (
-                  <div className="p-4">
-                    <div className="text-xs text-green-400 mb-2 font-medium">STDOUT:</div>
-                    <pre className="text-sm font-mono text-gray-100 whitespace-pre-wrap leading-relaxed">
-                      {output}
-                    </pre>
-                  </div>
-                )}
-                
-                {/* Error output */}
-                {error && (
-                  <div className="p-4 border-t border-gray-800">
-                    <div className="text-xs text-red-400 mb-2 font-medium">STDERR:</div>
-                    <pre className="text-sm font-mono text-red-300 whitespace-pre-wrap leading-relaxed">
-                      {error}
-                    </pre>
-                  </div>
-                )}
-              </div>
+      {/* Output section */}
+      {(output || error) && (
+        <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+          <div className="bg-black p-4">
+            {output && (
+              <pre className="text-sm font-mono text-green-400 whitespace-pre-wrap leading-relaxed">
+                {output}
+              </pre>
+            )}
+            {error && (
+              <pre className="text-sm font-mono text-red-400 whitespace-pre-wrap leading-relaxed">
+                {error}
+              </pre>
             )}
           </div>
-        )}
-
-        {/* Footer with metadata */}
-        <div className="bg-gray-100 dark:bg-gray-800 px-4 py-2 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-1">
-                <FiCpu size={12} />
-                <span>{langInfo.label}</span>
-              </div>
-              {workspace && (
-                <div className="flex items-center space-x-1">
-                  <FiPackage size={12} />
-                  <span className="font-mono truncate max-w-32">{workspace.split('/').pop()}</span>
-                </div>
-              )}
-              <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${
-                success 
-                  ? 'bg-green-900/30 text-green-400' 
-                  : 'bg-red-900/30 text-red-400'
-              }`}>
-                {success ? 'SUCCESS' : 'FAILED'}
-              </span>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              {code && (
-                <span>{code.split('\\n').length} lines</span>
-              )}
-              <span>{langInfo.language.toUpperCase()}</span>
-            </div>
-          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
