@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { FiLock, FiGlobe } from 'react-icons/fi';
+import { motion } from 'framer-motion';
+import { FiLock, FiGlobe, FiRefreshCw } from 'react-icons/fi';
 
 interface BrowserShellProps {
   children: React.ReactNode;
@@ -47,19 +48,28 @@ export const BrowserShell: React.FC<BrowserShellProps> = ({
     <div
       className={`bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200/70 dark:border-gray-700/40 shadow-sm ${className}`}
     >
-      {/* Browser toolbar with improved design */}
-      <div className="bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-800/90 dark:to-gray-800 border-b border-gray-200/80 dark:border-gray-700/40 shadow-sm">
+      {/* Browser toolbar with UI-TARS styling */}
+      <div className="bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-700 dark:to-gray-800 border-b border-gray-200/60 dark:border-gray-700/40">
         {/* Address bar with controls */}
-        <div className="flex items-center p-3">
-          {/* Control buttons with enhanced styling */}
-          <div className="flex space-x-1.5 mr-3">
-            <div className="w-3 h-3 rounded-full bg-red-400 dark:bg-red-500 border border-red-500/20 dark:border-red-400/20 shadow-sm" />
-            <div className="w-3 h-3 rounded-full bg-yellow-400 dark:bg-yellow-500 border border-yellow-500/20 dark:border-yellow-400/20 shadow-sm" />
-            <div className="w-3 h-3 rounded-full bg-green-400 dark:bg-green-500 border border-green-500/20 dark:border-green-400/20 shadow-sm" />
+        <div className="flex items-center px-4 py-3">
+          {/* macOS-style Traffic Light Controls */}
+          <div className="flex space-x-1.5 mr-4">
+            <motion.div 
+              whileHover={{ scale: 1.1 }}
+              className="w-3 h-3 rounded-full bg-red-400 dark:bg-red-500 border border-red-500/20 dark:border-red-400/20 shadow-sm cursor-pointer" 
+            />
+            <motion.div 
+              whileHover={{ scale: 1.1 }}
+              className="w-3 h-3 rounded-full bg-yellow-400 dark:bg-yellow-500 border border-yellow-500/20 dark:border-yellow-400/20 shadow-sm cursor-pointer" 
+            />
+            <motion.div 
+              whileHover={{ scale: 1.1 }}
+              className="w-3 h-3 rounded-full bg-green-400 dark:bg-green-500 border border-green-500/20 dark:border-green-400/20 shadow-sm cursor-pointer" 
+            />
           </div>
 
-          {/* URL bar with secure indicator */}
-          <div className="flex-1 bg-white dark:bg-gray-700 rounded-md flex items-center px-3 py-1.5 text-xs text-gray-700 dark:text-gray-200 border border-gray-300/30 dark:border-gray-600/40 group hover:border-gray-400/30 dark:hover:border-gray-500/30 transition-colors shadow-inner">
+          {/* URL bar with secure indicator and refresh button */}
+          <div className="flex-1 bg-white dark:bg-gray-700 rounded-lg flex items-center px-3 py-2 text-xs text-gray-700 dark:text-gray-200 border border-gray-200/60 dark:border-gray-600/40 group hover:border-gray-300/60 dark:hover:border-gray-500/40 transition-all duration-200 shadow-sm">
             <div className="flex items-center w-full">
               <div className="flex items-center mr-2">
                 {isSecure ? (
@@ -69,6 +79,16 @@ export const BrowserShell: React.FC<BrowserShellProps> = ({
                 )}
               </div>
               <span className="truncate font-mono flex-1">{displayUrl}</span>
+              
+              {/* Refresh Button */}
+              <motion.button
+                whileHover={{ rotate: 180 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="ml-2 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition-all duration-200"
+                title="Refresh"
+              >
+                <FiRefreshCw size={12} />
+              </motion.button>
             </div>
           </div>
         </div>
