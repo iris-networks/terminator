@@ -223,6 +223,44 @@ export const useChat = () => {
       setIsLoading(false);
     };
 
+    const handleEnhancedToolResult = (data: {
+      messageId: string;
+      content: any[];
+    }) => {
+      // Process enhanced tool result data
+      if (data.content && data.content.length > 0) {
+        data.content.forEach((contentPart: any) => {
+          // Convert to ToolCall format for inline display in messages
+          const toolCall: ToolCall = {
+            id: `${data.messageId}_${contentPart.toolName}`,
+            name: contentPart.toolName || contentPart.name || 'unknown',
+            arguments: contentPart.toolInput || {},
+            result: contentPart.toolResult || {},
+            timestamp: new Date(contentPart.timestamp || new Date().toISOString()),
+            status: contentPart.status || 'success',
+            error: contentPart.status === 'error' ? String(contentPart.toolResult) : undefined,
+          };
+
+          // Add tool call to the most recent assistant message
+          setMessages(prev => {
+            // Find the most recent assistant message that's not thinking
+            for (let i = prev.length - 1; i >= 0; i--) {
+              const msg = prev[i];
+              if (msg.role === 'assistant' && !msg.thinking) {
+                const updated = [...prev];
+                updated[i] = {
+                  ...msg,
+                  toolCalls: [...(msg.toolCalls || []), toolCall],
+                };
+                return updated;
+              }
+            }
+            return prev;
+          });
+        });
+      }
+    };
+
     const handleError = (error: { message: string; details?: string }) => {
       console.error('Chat error:', error);
       setIsThinking(false);
@@ -246,6 +284,7 @@ export const useChat = () => {
     socket.on('assistant_thinking', handleAssistantThinking);
     socket.on('message_chunk', handleMessageChunk);
     socket.on('tool_result', handleToolResult);
+    socket.on('enhanced_tool_result', handleEnhancedToolResult);
     socket.on('message_complete', handleMessageComplete);
     socket.on('error', handleError);
 
@@ -258,6 +297,7 @@ export const useChat = () => {
       socket.off('assistant_thinking', handleAssistantThinking);
       socket.off('message_chunk', handleMessageChunk);
       socket.off('tool_result', handleToolResult);
+      socket.off('enhanced_tool_result', handleEnhancedToolResult);
       socket.off('message_complete', handleMessageComplete);
       socket.off('error', handleError);
     };

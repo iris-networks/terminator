@@ -80,8 +80,10 @@ export class AIService {
           // Emit tool results if callback provided
           if (onToolResult && toolResults && toolResults.length > 0) {
             toolResults.forEach((result: any) => {
-              onToolResult({
-                messageId: `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+              // Determine the content type and structure data appropriately
+              let contentPart: any = {
+                type: 'generic',
+                name: result.toolName,
                 toolName: result.toolName || 'unknown',
                 toolInput: result.args || {},
                 toolResult: result.result || {},
@@ -93,6 +95,37 @@ export class AIService {
                   result: result.result,
                   timestamp: new Date().toISOString()
                 }, null, 2)
+              };
+
+              // Enhanced content type detection and structuring
+              if (result.toolName) {
+                // Command execution tools
+                if (['execute_command', 'shell_execute', 'bash'].includes(result.toolName)) {
+                  contentPart.type = 'command_result';
+                  contentPart.command = result.args?.command || '';
+                  contentPart.stdout = result.result?.stdout || result.result?.output || '';
+                  contentPart.stderr = result.result?.stderr || result.result?.error || '';
+                  contentPart.exitCode = result.result?.exitCode ?? result.result?.exit_code;
+                }
+                // Script execution tools
+                else if (['python_execute', 'node_execute', 'script_execute'].includes(result.toolName)) {
+                  contentPart.type = 'script_result';
+                  contentPart.script = result.args?.script || result.args?.code || '';
+                  contentPart.interpreter = result.args?.interpreter || 'python';
+                  contentPart.stdout = result.result?.stdout || result.result?.output || '';
+                  contentPart.stderr = result.result?.stderr || result.result?.error || '';
+                  contentPart.exitCode = result.result?.exitCode ?? result.result?.exit_code;
+                  contentPart.cwd = result.args?.cwd || '';
+                }
+                // JSON/data tools
+                else if (result.toolName.includes('json') || typeof result.result === 'object') {
+                  contentPart.type = 'json';
+                }
+              }
+
+              onToolResult({
+                messageId: `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+                content: [contentPart]
               });
             });
           }
