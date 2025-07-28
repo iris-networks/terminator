@@ -73,7 +73,7 @@ export const ChatInterface: React.FC = () => {
                 transition={{ delay: 0.1 }}
                 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-200"
               >
-                Welcome to Agent TARS
+                Welcome to Iris
               </motion.h2>
               <motion.p
                 initial={{ y: 20, opacity: 0 }}
@@ -82,8 +82,8 @@ export const ChatInterface: React.FC = () => {
                 className="text-gray-600 dark:text-gray-400 mb-5 text-sm leading-relaxed"
               >
                 {currentSessionId 
-                  ? 'Start a conversation with your AI assistant. TARS can help with web research, file operations, and complex tasks.'
-                  : 'Create a new session from the sidebar to begin chatting with Agent TARS.'
+                  ? 'Start a conversation with your AI assistant. Iris can help with web research, file operations, and complex tasks.'
+                  : 'Create a new session from the sidebar to begin chatting with Iris.'
                 }
               </motion.p>
               <motion.div
@@ -94,7 +94,7 @@ export const ChatInterface: React.FC = () => {
               >
                 <FiInfo className="mr-3 text-gray-400 flex-shrink-0" />
                 <span>
-                  This interface replicates the Agent TARS experience with modern AI capabilities.
+                  This interface provides Iris with modern AI capabilities and tool integrations.
                 </span>
               </motion.div>
             </div>

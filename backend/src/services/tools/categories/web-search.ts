@@ -66,7 +66,7 @@ export const webSearchTool = tool({
           if (!browserManager.isLaunchingComplete()) {
             await browserManager.launchBrowser({
               cdpEndpoint: cdpEndpoint || undefined,
-              headless: true,
+              headless: false, // Make browser visible for web search
             });
           } else {
             await browserManager.ensureBrowserReady();

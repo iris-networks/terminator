@@ -67,7 +67,7 @@ app.use('*', (req, res) => {
 
 // Start server
 httpServer.listen(PORT, () => {
-  console.log(`🚀 Agent TARS Backend running on port ${PORT}`);
+  console.log(`🚀 Iris Backend running on port ${PORT}`);
   console.log(`📡 Socket.IO server ready`);
   console.log(`🌐 CORS enabled for: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
 });

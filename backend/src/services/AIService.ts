@@ -1,4 +1,4 @@
-import { generateText, streamText, CoreMessage } from 'ai';
+import { generateText, streamText, CoreMessage, LanguageModelV1 } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { anthropic } from '@ai-sdk/anthropic';
 import { AgentConfig, AgentResponse, ChatMessage, ToolCall } from '../types/index.js';
@@ -35,7 +35,7 @@ export class AIService {
     
     try {
       const result = await generateText({
-        model: this.getModel(),
+        model: this.getModel() as LanguageModelV1,
         messages: messages,
         tools: await this.getToolsForCurrentAgent(),
         temperature: this.config.temperature || 0.7,
@@ -64,18 +64,39 @@ export class AIService {
     }
   }
 
-  async *streamResponse(messages: ChatMessage[]): AsyncGenerator<{
+  async *streamResponse(messages: ChatMessage[], onToolResult?: (toolResult: any) => void): AsyncGenerator<{
     type: 'content' | 'tool_call' | 'done';
     data: any;
   }> {
     try {
-      const stream = await streamText({
-        model: this.getModel(),
+      const stream = streamText({
+        model: this.getModel() as LanguageModelV1,
         messages: messages,
         tools: await this.getToolsForCurrentAgent(),
         temperature: this.config.temperature || 0.7,
         maxTokens: this.config.maxTokens || 4000,
-        maxSteps: 5
+        maxSteps: 5,
+        onStepFinish: (({toolResults}) => {
+          // Emit tool results if callback provided
+          if (onToolResult && toolResults && toolResults.length > 0) {
+            toolResults.forEach((result: any) => {
+              onToolResult({
+                messageId: `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+                toolName: result.toolName || 'unknown',
+                toolInput: result.args || {},
+                toolResult: result.result || {},
+                status: result.result ? 'success' : 'error',
+                timestamp: new Date().toISOString(),
+                fullJson: JSON.stringify({
+                  toolName: result.toolName,
+                  args: result.args,
+                  result: result.result,
+                  timestamp: new Date().toISOString()
+                }, null, 2)
+              });
+            });
+          }
+        })
       });
 
       for await (const chunk of stream.textStream) {
@@ -84,7 +105,6 @@ export class AIService {
           data: chunk,
         };
       }
-
       // Get usage info from the stream result
       const usage = await stream.usage;
       
