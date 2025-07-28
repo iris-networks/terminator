@@ -6,6 +6,8 @@ import { ScriptResultRenderer } from './ScriptResultRenderer';
 import { JsonResultRenderer } from './JsonResultRenderer';
 import { GenericResultRenderer } from './GenericResultRenderer';
 import { WebSearchResultRenderer } from './WebSearchResultRenderer';
+import { BrowserResultRenderer } from './BrowserResultRenderer';
+import { BrowserControlRenderer } from './BrowserControlRenderer';
 
 export interface ToolResultContentPart {
   type: string;
@@ -46,6 +48,12 @@ const CONTENT_RENDERERS: Record<
   python: ScriptResultRenderer,
   json: JsonResultRenderer,
   web_search: WebSearchResultRenderer,
+  browser_navigate: BrowserResultRenderer,
+  browser_result: BrowserResultRenderer,
+  browser_vision_control: BrowserControlRenderer,
+  browser_control: BrowserControlRenderer,
+  browser_click: BrowserControlRenderer,
+  browser_screenshot: BrowserResultRenderer,
   generic: GenericResultRenderer,
 };
 
@@ -98,7 +106,14 @@ export const EnhancedToolResultRenderer: React.FC<EnhancedToolResultRendererProp
             'node_execute': 'script_result',
             'script_execute': 'script_result',
             'web_search': 'web_search',
-            'browser_action': 'json',
+            'browser_navigate': 'browser_navigate',
+            'browser_vision_control': 'browser_vision_control',
+            'browser_control': 'browser_control',
+            'browser_click': 'browser_click',
+            'browser_screenshot': 'browser_screenshot',
+            'browser_evaluate': 'browser_result',
+            'browser_get_markdown': 'browser_result',
+            'browser_action': 'browser_result',
           };
           
           rendererKey = toolNameMap[part.toolName] || part.type;

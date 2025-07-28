@@ -75,7 +75,7 @@ export class AIService {
         tools: await this.getToolsForCurrentAgent(),
         temperature: this.config.temperature || 0.7,
         maxTokens: this.config.maxTokens || 4000,
-        maxSteps: 5,
+        maxSteps: 20,
         onStepFinish: (({toolResults}) => {
           // Emit tool results if callback provided
           if (onToolResult && toolResults && toolResults.length > 0) {

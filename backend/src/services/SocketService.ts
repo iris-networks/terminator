@@ -82,9 +82,9 @@ export class SocketService {
           const assistantMessageId = `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
           try {
-            // Create callback for enhanced tool results
+            // Create callback for tool results
             const onToolResult = (toolResult: any) => {
-              socket.emit('enhanced_tool_result', toolResult);
+              socket.emit('tool_result', toolResult);
             };
 
             for await (const chunk of aiService.streamResponse(allMessages, onToolResult)) {
@@ -106,11 +106,6 @@ export class SocketService {
                     status: chunk.data.error ? 'error' : 'success',
                   };
                   toolCalls.push(toolCall);
-                  
-                  socket.emit('tool_result', {
-                    messageId: assistantMessageId,
-                    toolCall: toolCall,
-                  });
                   break;
 
                 case 'done':

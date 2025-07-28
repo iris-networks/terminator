@@ -1,6 +1,6 @@
-# Agent TARS Backend
+# Iris Backend
 
-Modern backend implementation for Agent TARS using Vercel AI SDK, built with Express.js and TypeScript.
+Modern backend implementation for Iris using Vercel AI SDK, built with Express.js and TypeScript.
 
 ## Features
 
@@ -184,7 +184,7 @@ src/
 
 ## Contributing
 
-This implementation focuses on recreating the Agent TARS experience with modern technologies. The architecture is designed to be extensible and maintainable.
+This implementation focuses on recreating the Iris experience with modern technologies. The architecture is designed to be extensible and maintainable.
 
 ## License
 
