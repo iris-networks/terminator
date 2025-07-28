@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiCode, FiCopy, FiCheck, FiX, FiCheckCircle, FiXCircle } from 'react-icons/fi';
+import { EnhancedToolResultRenderer } from './renderers/EnhancedToolResultRenderer';
 
 interface ToolResultData {
   messageId: string;
@@ -12,6 +13,7 @@ interface ToolResultData {
   status: 'success' | 'error';
   timestamp: string;
   fullJson: string;
+  enhancedContent?: any[]; // For enhanced tool results
 }
 
 interface ToolResultViewerProps {
@@ -27,26 +29,44 @@ export const ToolResultViewer: React.FC<ToolResultViewerProps> = ({ socket, onHa
   useEffect(() => {
     if (!socket) {
       console.log('ToolResultViewer: No socket available');
-      return;
+      return; 
     }
 
-    console.log('ToolResultViewer: Setting up socket listener for tool_result_json');
+    console.log('ToolResultViewer: Setting up socket listeners');
 
-    const handleToolResultJson = (data: ToolResultData) => {
-      console.log('🔧 ToolResultViewer: Received tool result JSON:', data);
-      setToolResults(prev => {
-        const newResults = [...prev, data];
-        console.log('🔧 ToolResultViewer: Updated tool results count:', newResults.length);
-        onHasResults?.(newResults.length > 0);
-        return newResults;
-      });
+    const handleEnhancedToolResult = (data: { messageId: string; content: any[] }) => {
+      console.log('🔧 ToolResultViewer: Received enhanced tool result:', data);
+      
+      // Convert enhanced format to ToolResultData format
+      if (data.content && data.content.length > 0) {
+        data.content.forEach((contentPart: any) => {
+          const toolResultData: ToolResultData = {
+            messageId: data.messageId,
+            toolName: contentPart.toolName || contentPart.name || 'unknown',
+            toolInput: contentPart.toolInput || {},
+            toolResult: contentPart.toolResult || {},
+            status: contentPart.status || 'success',
+            timestamp: contentPart.timestamp || new Date().toISOString(),
+            fullJson: contentPart.fullJson || JSON.stringify(contentPart, null, 2),
+            enhancedContent: data.content
+          };
+
+          setToolResults(prev => {
+            const newResults = [...prev, toolResultData];
+            console.log('🔧 ToolResultViewer: Updated tool results count:', newResults.length);
+            onHasResults?.(newResults.length > 0);
+            return newResults;
+          });
+        });
+      }
     };
 
-    socket.on('tool_result_json', handleToolResultJson);
+    // Listen only to enhanced tool results
+    socket.on('enhanced_tool_result', handleEnhancedToolResult);
 
     return () => {
-      console.log('ToolResultViewer: Cleaning up socket listener');
-      socket.off('tool_result_json', handleToolResultJson);
+      console.log('ToolResultViewer: Cleaning up socket listeners');
+      socket.off('enhanced_tool_result', handleEnhancedToolResult);
     };
   }, [socket, onHasResults]);
 
@@ -159,11 +179,18 @@ export const ToolResultViewer: React.FC<ToolResultViewerProps> = ({ socket, onHa
                 </div>
               </div>
 
-              {/* JSON Content */}
+              {/* Enhanced Content */}
               <div className="p-3">
-                <pre className="text-xs font-mono bg-gray-100 dark:bg-gray-900 p-3 rounded-md overflow-x-auto text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
-                  {result.fullJson}
-                </pre>
+                {result.enhancedContent ? (
+                  <EnhancedToolResultRenderer 
+                    content={result.enhancedContent}
+                    className="enhanced-tool-result"
+                  />
+                ) : (
+                  <pre className="text-xs font-mono bg-gray-100 dark:bg-gray-900 p-3 rounded-md overflow-x-auto text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
+                    {result.fullJson}
+                  </pre>
+                )}
               </div>
             </motion.div>
           ))}
