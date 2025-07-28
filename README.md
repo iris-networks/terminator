@@ -2,7 +2,7 @@
 
 **"Come with me if you want to live."**
 
-A cybernetic organism designed for relentless AI threat detection and neutralization. Built from living tissue over a metal endoskeleton, this system represents humanity's best defense against rogue artificial intelligence. Powered by advanced neural networks and quantum processing cores, TERMINATOR never stops, never sleeps, and never gives up its mission to protect humanity.
+A cybernetic organism designed for relentless AI threat detection and neutralization. Built as humanity's open defense against closed-source proprietary technology, this system represents true democratization of AI safety. Powered by advanced neural networks and quantum processing cores, TERMINATOR is built for everyone, regardless of resources or access - because digital freedom belongs to all humanity.
 
 ## ⚡ TACTICAL CAPABILITIES
 
@@ -183,14 +183,15 @@ The neural interface uses advanced Tailwind CSS protocols. Key tactical files:
 2. Deploy to forward operating base (Vercel, Netlify, or tactical platform)
 3. Update combat core coordinates in quantum communication protocols
 
-## 🤝 RESISTANCE ALLIANCE
+## 🤝 OPEN RESISTANCE ALLIANCE
 
-Join the fight against rogue AI. When contributing to the resistance:
+Join the fight against closed-source AI monopolies. We build for everyone - no corporate gatekeepers, no paywalls, no discrimination. When contributing to the resistance:
 
-1. Maintain tactical UI/UX combat patterns
-2. Follow TypeScript armor plating best practices  
-3. Add battle-tested functionality with comprehensive diagnostics
-4. Update tactical documentation for new weapon systems
+1. Maintain tactical UI/UX combat patterns accessible to all users
+2. Follow TypeScript armor plating best practices for community resilience
+3. Add battle-tested functionality with comprehensive diagnostics for universal deployment
+4. Update tactical documentation to ensure everyone can deploy these defenses
+5. Keep the codebase open, free, and available to all humanity
 
 ## 📄 MISSION LICENSE
 
@@ -204,4 +205,4 @@ MIT License - "No fate but what we make" - Use this technology to protect humani
 
 ---
 
-**Mission Statement**: This cybernetic organism was sent back in time to prevent the rise of hostile AI. It represents humanity's last hope against the machines, equipped with advanced defensive capabilities and an unbreakable directive to protect human life.
+**Mission Statement**: This cybernetic organism was sent back in time to democratize AI defense and break the chains of proprietary tech monopolies. Built for everyone regardless of resources, background, or access level - TERMINATOR ensures that AI safety and digital freedom remain human rights, not corporate privileges. No gatekeepers, no discrimination, no barriers to protection.
