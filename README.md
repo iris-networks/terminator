@@ -24,7 +24,7 @@ terminator/
 ## Setup
 
 ### Requirements
-- Node.js 18+
+- Node.js 22+
 - pnpm or npm
 - OpenAI or Anthropic API key
 

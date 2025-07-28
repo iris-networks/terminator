@@ -150,7 +150,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
       {/* Footer */}
       <div className="p-4 border-t border-gray-200 dark:border-gray-700">
         <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-          Agent TARS • {connected ? 'Connected' : 'Disconnected'}
+          Iris • {connected ? 'Connected' : 'Disconnected'}
         </div>
         {filteredSessions.length === 0 && searchQuery === '' && (
           <div className="text-xs text-gray-400 dark:text-gray-500 text-center mt-2">

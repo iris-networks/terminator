@@ -32,7 +32,7 @@ export const browserActionTool = tool({
       if (!browserManager.isLaunchingComplete()) {
         await browserManager.launchBrowser({
           cdpEndpoint: cdpEndpoint || undefined,
-          headless: true,
+          headless: false, // Make browser visible for automation
         });
       } else {
         await browserManager.ensureBrowserReady();

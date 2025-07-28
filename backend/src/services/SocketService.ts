@@ -79,10 +79,15 @@ export class SocketService {
           // Generate AI response using streaming
           let assistantContent = '';
           const toolCalls: any[] = [];
-          const assistantMessageId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+          const assistantMessageId = `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
           try {
-            for await (const chunk of aiService.streamResponse(allMessages)) {
+            // Create callback for tool results
+            const onToolResult = (toolResult: any) => {
+              socket.emit('tool_result_json', toolResult);
+            };
+
+            for await (const chunk of aiService.streamResponse(allMessages, onToolResult)) {
               switch (chunk.type) {
                 case 'content':
                   assistantContent += chunk.data;
