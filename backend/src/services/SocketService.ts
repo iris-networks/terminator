@@ -2,12 +2,51 @@ import { Server, Socket } from 'socket.io';
 import { AIService } from './AIService.js';
 import { sessionService } from './SessionService.js';
 import { ChatMessage } from '../types/index.js';
+import { ReplayEvent, SessionReplayData } from '../types/replay.js';
 
 export class SocketService {
   private io: Server;
+  private sessionEvents: Map<string, ReplayEvent[]> = new Map();
 
   constructor(io: Server) {
     this.io = io;
+  }
+
+  private addReplayEvent(sessionId: string, event: Omit<ReplayEvent, 'id' | 'timestamp' | 'sessionId'>): void {
+    const replayEvent: ReplayEvent = {
+      id: `event_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
+      timestamp: Date.now(),
+      sessionId,
+      ...event
+    };
+
+    if (!this.sessionEvents.has(sessionId)) {
+      this.sessionEvents.set(sessionId, []);
+    }
+    
+    this.sessionEvents.get(sessionId)!.push(replayEvent);
+  }
+
+  getSessionReplayData(sessionId: string): SessionReplayData | null {
+    const events = this.sessionEvents.get(sessionId);
+    if (!events || events.length === 0) return null;
+
+    const startTime = events[0]?.timestamp || Date.now();
+    const endTime = events[events.length - 1]?.timestamp;
+    
+    const toolCalls = events.filter(e => e.type === 'tool_call').length;
+    const messages = events.filter(e => e.type === 'user_message' || e.type === 'assistant_message').length;
+
+    return {
+      sessionId,
+      startTime,
+      endTime,
+      events,
+      metadata: {
+        totalMessages: messages,
+        totalToolCalls: toolCalls,
+      }
+    };
   }
 
   initialize() {
@@ -58,10 +97,20 @@ export class SocketService {
             return;
           }
 
+          // Record user message event
+          this.addReplayEvent(sessionId, {
+            type: 'user_message',
+            data: userMessage
+          });
+
           // Broadcast user message to all clients in the session
           this.io.to(sessionId).emit('new_message', userMessage);
 
           // Send thinking indicator
+          this.addReplayEvent(sessionId, {
+            type: 'assistant_thinking',
+            data: { thinking: true }
+          });
           socket.emit('assistant_thinking', true);
 
           // Create AI service with agent type if specified
@@ -84,6 +133,21 @@ export class SocketService {
           try {
             // Create callback for tool results
             const onToolResult = (toolResult: any) => {
+              // Record tool call and result events
+              this.addReplayEvent(sessionId, {
+                type: 'tool_call',
+                data: { 
+                  toolName: toolResult.toolName, 
+                  args: toolResult.args,
+                  timestamp: toolResult.timestamp 
+                }
+              });
+              
+              this.addReplayEvent(sessionId, {
+                type: 'tool_result',
+                data: toolResult
+              });
+              
               socket.emit('tool_result', toolResult);
             };
 
@@ -91,6 +155,17 @@ export class SocketService {
               switch (chunk.type) {
                 case 'content':
                   assistantContent += chunk.data;
+                  
+                  // Record message chunk event
+                  this.addReplayEvent(sessionId, {
+                    type: 'message_chunk',
+                    data: {
+                      messageId: assistantMessageId,
+                      content: chunk.data,
+                      type: 'content'
+                    }
+                  });
+                  
                   // Stream content to client
                   socket.emit('message_chunk', {
                     messageId: assistantMessageId,
@@ -121,6 +196,12 @@ export class SocketService {
                   });
 
                   if (assistantMessage) {
+                    // Record assistant message event
+                    this.addReplayEvent(sessionId, {
+                      type: 'assistant_message',
+                      data: assistantMessage
+                    });
+                    
                     this.io.to(sessionId).emit('message_complete', {
                       messageId: assistantMessageId,
                       message: assistantMessage,

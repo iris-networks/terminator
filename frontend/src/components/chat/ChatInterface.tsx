@@ -4,7 +4,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
-import { FiMessageSquare, FiInfo, FiWifiOff } from 'react-icons/fi';
+import { FiMessageSquare, FiInfo, FiWifiOff, FiDownload } from 'react-icons/fi';
 import { useChat } from '@/hooks/useChat';
 
 export const ChatInterface: React.FC = () => {
@@ -34,10 +34,62 @@ export const ChatInterface: React.FC = () => {
     sendMessage(content, { agentType: selectedAgent });
   };
 
+  const handleExportSession = async () => {
+    if (!currentSessionId) {
+      alert('No session to export');
+      return;
+    }
+    
+    console.log('Exporting session:', currentSessionId);
+    
+    try {
+      const baseUrl = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3001';
+      const exportUrl = `${baseUrl}/api/replay/sessions/${currentSessionId}/export`;
+      console.log('Export URL:', exportUrl);
+      
+      const response = await fetch(exportUrl);
+      console.log('Response:', response.status, response.statusText);
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `iris-session-${currentSessionId}-${Date.now()}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        console.log('Export successful');
+      } else {
+        const errorText = await response.text();
+        console.error('Failed to export session:', response.status, errorText);
+        alert(`Failed to export session: ${response.status} - ${errorText}`);
+      }
+    } catch (error) {
+      console.error('Error exporting session:', error);
+      alert(`Error exporting session: ${error}`);
+    }
+  };
+
   const isEmpty = messages.length === 0;
 
   return (
     <div className="flex flex-col h-full">
+      {/* Chat Header with Export Button */}
+      {!isEmpty && currentSessionId && (
+        <div className="flex justify-end items-center p-4 border-b border-gray-200 dark:border-gray-700">
+          <button
+            onClick={handleExportSession}
+            className="flex items-center space-x-2 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            title="Export session replay"
+          >
+            <FiDownload size={16} />
+            <span>Export Replay</span>
+          </button>
+        </div>
+      )}
+
       {/* Messages Container */}
       <div className="flex-1 overflow-y-auto chat-scrollbar">
         {/* Connection Status */}
