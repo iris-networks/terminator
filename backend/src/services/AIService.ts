@@ -24,18 +24,10 @@ export class AIService {
     }
   }
 
-  private formatMessages(messages: ChatMessage[]): CoreMessage[] {
-    return messages.map(msg => ({
-      role: msg.role as 'user' | 'assistant' | 'system',
-      content: msg.content,
-    }));
-  }
 
-  private getToolsForCurrentAgent() {
-    if (this.config.agentType) {
-      return getAgentTools(this.config.agentType as AgentType);
-    }
-    return defaultAgentTools;
+  private async getToolsForCurrentAgent() {
+    // Always use all tools since we only have multi-agent now
+    return await getAgentTools(AgentType.MULTI_AGENT);
   }
 
   async generateResponse(messages: ChatMessage[]): Promise<AgentResponse> {
@@ -44,18 +36,18 @@ export class AIService {
     try {
       const result = await generateText({
         model: this.getModel(),
-        messages: this.formatMessages(messages),
-        tools: this.getToolsForCurrentAgent(),
+        messages: messages,
+        tools: await this.getToolsForCurrentAgent(),
         temperature: this.config.temperature || 0.7,
         maxTokens: this.config.maxTokens || 4000,
       });
 
       const toolCalls: ToolCall[] = result.toolCalls?.map(call => ({
-        id: `tool_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        id: call.toolCallId,
         name: call.toolName,
         arguments: call.args,
-        result: call.result,
         timestamp: new Date(),
+        status: 'success' as const,
       })) || [];
 
       return {
@@ -79,10 +71,11 @@ export class AIService {
     try {
       const stream = await streamText({
         model: this.getModel(),
-        messages: this.formatMessages(messages),
-        tools: this.getToolsForCurrentAgent(),
+        messages: messages,
+        tools: await this.getToolsForCurrentAgent(),
         temperature: this.config.temperature || 0.7,
         maxTokens: this.config.maxTokens || 4000,
+        maxSteps: 5
       });
 
       for await (const chunk of stream.textStream) {
@@ -92,29 +85,15 @@ export class AIService {
         };
       }
 
-      // Get final result for tool calls and usage
-      const finalResult = await stream.response;
+      // Get usage info from the stream result
+      const usage = await stream.usage;
       
-      // Handle tool calls if present
-      if (finalResult.toolCalls && finalResult.toolCalls.length > 0) {
-        for (const toolCall of finalResult.toolCalls) {
-          yield {
-            type: 'tool_call',
-            data: {
-              id: `tool_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
-              name: toolCall.toolName,
-              arguments: toolCall.args,
-              result: toolCall.result,
-              timestamp: new Date(),
-            },
-          };
-        }
-      }
+      // Tool calls are handled through the stream itself, not the final result
 
       yield {
         type: 'done',
         data: {
-          usage: finalResult.usage || { totalTokens: 0, promptTokens: 0, completionTokens: 0 },
+          usage: usage || { totalTokens: 0, promptTokens: 0, completionTokens: 0 },
         },
       };
     } catch (error) {

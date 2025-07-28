@@ -1,10 +1,11 @@
 import { ChatSession, ChatMessage } from '../types/index.js';
 import { v4 as uuidv4 } from 'uuid';
+import { databaseService } from './DatabaseService.js';
 
 export class SessionService {
   private sessions = new Map<string, ChatSession>();
 
-  createSession(title?: string): ChatSession {
+  async createSession(title?: string): Promise<ChatSession> {
     const session: ChatSession = {
       id: uuidv4(),
       title: title || 'New Conversation',
@@ -17,40 +18,88 @@ export class SessionService {
       },
     };
 
+    // Save to database
+    await databaseService.createSession(session);
+    
+    // Keep in memory cache for faster access
     this.sessions.set(session.id, session);
     return session;
   }
 
-  getSession(sessionId: string): ChatSession | undefined {
-    return this.sessions.get(sessionId);
+  async getSession(sessionId: string): Promise<ChatSession | undefined> {
+    // Try memory cache first
+    let session = this.sessions.get(sessionId);
+    if (session) {
+      return session;
+    }
+
+    // Load from database if not in cache
+    session = await databaseService.getSession(sessionId);
+    if (session) {
+      this.sessions.set(sessionId, session);
+      return session;
+    }
+    
+    return undefined;
   }
 
-  getAllSessions(): ChatSession[] {
-    return Array.from(this.sessions.values())
-      .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+  async getAllSessions(): Promise<ChatSession[]> {
+    // Load all sessions from database to ensure we have the latest data
+    const sessions = await databaseService.getAllSessions();
+    
+    // Update memory cache
+    this.sessions.clear();
+    for (const session of sessions) {
+      this.sessions.set(session.id, session);
+    }
+    
+    return sessions;
   }
 
-  updateSession(sessionId: string, updates: Partial<ChatSession>): ChatSession | undefined {
-    const session = this.sessions.get(sessionId);
-    if (!session) return undefined;
+  async updateSession(sessionId: string, updates: Partial<ChatSession>): Promise<ChatSession | undefined> {
+    let session = this.sessions.get(sessionId);
+    if (!session) {
+      // Try loading from database
+      const dbSession = await databaseService.getSession(sessionId);
+      if (!dbSession) return undefined;
+      this.sessions.set(sessionId, dbSession);
+      session = dbSession;
+    }
 
+    const currentSession = session;
     const updatedSession = {
-      ...session,
+      ...currentSession,
       ...updates,
       updatedAt: new Date(),
     };
 
+    // Update database
+    await databaseService.updateSession(sessionId, updates);
+    
+    // Update memory cache
     this.sessions.set(sessionId, updatedSession);
     return updatedSession;
   }
 
-  deleteSession(sessionId: string): boolean {
-    return this.sessions.delete(sessionId);
+  async deleteSession(sessionId: string): Promise<boolean> {
+    // Delete from database
+    const deleted = await databaseService.deleteSession(sessionId);
+    
+    // Remove from memory cache
+    this.sessions.delete(sessionId);
+    
+    return deleted;
   }
 
-  addMessage(sessionId: string, message: Omit<ChatMessage, 'id' | 'sessionId' | 'timestamp'>): ChatMessage | undefined {
-    const session = this.sessions.get(sessionId);
-    if (!session) return undefined;
+  async addMessage(sessionId: string, message: Omit<ChatMessage, 'id' | 'sessionId' | 'timestamp'>): Promise<ChatMessage | undefined> {
+    let session = this.sessions.get(sessionId);
+    if (!session) {
+      // Try loading from database
+      const dbSession = await databaseService.getSession(sessionId);
+      if (!dbSession) return undefined;
+      this.sessions.set(sessionId, dbSession);
+      session = dbSession;
+    }
 
     const newMessage: ChatMessage = {
       ...message,
@@ -59,28 +108,50 @@ export class SessionService {
       timestamp: new Date(),
     };
 
+    // Add to database first
+    await databaseService.addMessage(newMessage);
+
+    // Update memory cache
     session.messages.push(newMessage);
     session.updatedAt = new Date();
     
     // Update metadata
-    session.metadata = {
+    const newMetadata = {
       ...session.metadata,
       messageCount: session.messages.length,
       totalTokens: (session.metadata?.totalTokens || 0) + (message.metadata?.tokens || 0),
     };
+    session.metadata = newMetadata;
 
     // Auto-generate title from first user message
     if (session.messages.length === 1 && message.role === 'user' && session.title === 'New Conversation') {
-      session.title = this.generateTitle(message.content);
+      const generatedTitle = this.generateTitle(message.content);
+      session.title = generatedTitle;
+      
+      // Update title in database
+      await databaseService.updateSession(sessionId, { 
+        title: generatedTitle,
+        metadata: newMetadata 
+      });
+    } else {
+      // Update metadata in database
+      await databaseService.updateSession(sessionId, { metadata: newMetadata });
     }
 
     this.sessions.set(sessionId, session);
     return newMessage;
   }
 
-  getMessages(sessionId: string): ChatMessage[] {
-    const session = this.sessions.get(sessionId);
-    return session?.messages || [];
+  async getMessages(sessionId: string): Promise<ChatMessage[]> {
+    let session = this.sessions.get(sessionId);
+    if (!session) {
+      // Try loading from database
+      const dbSession = await databaseService.getSession(sessionId);
+      if (!dbSession) return [];
+      this.sessions.set(sessionId, dbSession);
+      session = dbSession;
+    }
+    return session.messages || [];
   }
 
   private generateTitle(content: string): string {
@@ -104,9 +175,15 @@ export class SessionService {
   }
 
   // Get session statistics
-  getSessionStats(sessionId: string) {
-    const session = this.sessions.get(sessionId);
-    if (!session) return null;
+  async getSessionStats(sessionId: string) {
+    let session = this.sessions.get(sessionId);
+    if (!session) {
+      // Try loading from database
+      const dbSession = await databaseService.getSession(sessionId);
+      if (!dbSession) return null;
+      this.sessions.set(sessionId, dbSession);
+      session = dbSession;
+    }
 
     const userMessages = session.messages.filter(m => m.role === 'user').length;
     const assistantMessages = session.messages.filter(m => m.role === 'assistant').length;
@@ -123,7 +200,8 @@ export class SessionService {
   }
 
   // Clear all sessions (useful for development)
-  clearAllSessions(): void {
+  async clearAllSessions(): Promise<void> {
+    await databaseService.clearAllSessions();
     this.sessions.clear();
   }
 }

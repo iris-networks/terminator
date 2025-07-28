@@ -21,7 +21,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
     deleteSession,
   } = useChat();
 
-  const filteredSessions = sessions.filter(session =>
+  const filteredSessions = (sessions || []).filter(session =>
     session.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
