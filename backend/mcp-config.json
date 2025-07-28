@@ -1,0 +1,7 @@
+{
+  "enabled": true,
+  "defaultTimeout": 10000,
+  "maxConcurrentConnections": 5,
+  "retryAttempts": 3,
+  "servers": []
+}

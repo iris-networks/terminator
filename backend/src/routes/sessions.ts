@@ -5,38 +5,46 @@ import { ApiError } from '../types/index.js';
 const router = Router();
 
 // GET /api/sessions - Get all sessions
-router.get('/', (req, res) => {
-  const sessions = sessionService.getAllSessions();
-  
-  res.json({
-    success: true,
-    data: sessions.map(session => ({
-      id: session.id,
-      title: session.title,
-      createdAt: session.createdAt,
-      updatedAt: session.updatedAt,
-      messageCount: session.messages.length,
-      metadata: session.metadata,
-    })),
-  });
+router.get('/', async (req, res, next) => {
+  try {
+    const sessions = await sessionService.getAllSessions();
+    
+    res.json({
+      success: true,
+      data: sessions.map(session => ({
+        id: session.id,
+        title: session.title,
+        createdAt: session.createdAt,
+        updatedAt: session.updatedAt,
+        messageCount: session.messages.length,
+        metadata: session.metadata,
+      })),
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 // POST /api/sessions - Create a new session
-router.post('/', (req, res) => {
-  const { title } = req.body;
-  const session = sessionService.createSession(title);
-  
-  res.status(201).json({
-    success: true,
-    data: session,
-  });
+router.post('/', async (req, res, next) => {
+  try {
+    const { title } = req.body;
+    const session = await sessionService.createSession(title);
+    
+    res.status(201).json({
+      success: true,
+      data: session,
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 // GET /api/sessions/:sessionId - Get a specific session
-router.get('/:sessionId', (req, res, next) => {
+router.get('/:sessionId', async (req, res, next) => {
   try {
     const { sessionId } = req.params;
-    const session = sessionService.getSession(sessionId);
+    const session = await sessionService.getSession(sessionId);
     
     if (!session) {
       const error: ApiError = new Error('Session not found');
@@ -55,12 +63,12 @@ router.get('/:sessionId', (req, res, next) => {
 });
 
 // PUT /api/sessions/:sessionId - Update a session
-router.put('/:sessionId', (req, res, next) => {
+router.put('/:sessionId', async (req, res, next) => {
   try {
     const { sessionId } = req.params;
     const { title } = req.body;
     
-    const updatedSession = sessionService.updateSession(sessionId, { title });
+    const updatedSession = await sessionService.updateSession(sessionId, { title });
     
     if (!updatedSession) {
       const error: ApiError = new Error('Session not found');
@@ -79,10 +87,10 @@ router.put('/:sessionId', (req, res, next) => {
 });
 
 // DELETE /api/sessions/:sessionId - Delete a session
-router.delete('/:sessionId', (req, res, next) => {
+router.delete('/:sessionId', async (req, res, next) => {
   try {
     const { sessionId } = req.params;
-    const deleted = sessionService.deleteSession(sessionId);
+    const deleted = await sessionService.deleteSession(sessionId);
     
     if (!deleted) {
       const error: ApiError = new Error('Session not found');
@@ -101,10 +109,10 @@ router.delete('/:sessionId', (req, res, next) => {
 });
 
 // GET /api/sessions/:sessionId/stats - Get session statistics
-router.get('/:sessionId/stats', (req, res, next) => {
+router.get('/:sessionId/stats', async (req, res, next) => {
   try {
     const { sessionId } = req.params;
-    const stats = sessionService.getSessionStats(sessionId);
+    const stats = await sessionService.getSessionStats(sessionId);
     
     if (!stats) {
       const error: ApiError = new Error('Session not found');
@@ -123,20 +131,24 @@ router.get('/:sessionId/stats', (req, res, next) => {
 });
 
 // POST /api/sessions/clear-all - Clear all sessions (development only)
-router.post('/clear-all', (req, res) => {
-  if (process.env.NODE_ENV === 'production') {
-    return res.status(403).json({
-      success: false,
-      message: 'This endpoint is not available in production',
+router.post('/clear-all', async (req, res, next) => {
+  try {
+    if (process.env.NODE_ENV === 'production') {
+      return res.status(403).json({
+        success: false,
+        message: 'This endpoint is not available in production',
+      });
+    }
+    
+    await sessionService.clearAllSessions();
+    
+    res.json({
+      success: true,
+      message: 'All sessions cleared successfully',
     });
+  } catch (error) {
+    next(error);
   }
-  
-  sessionService.clearAllSessions();
-  
-  res.json({
-    success: true,
-    message: 'All sessions cleared successfully',
-  });
 });
 
 export { router as sessionRouter };

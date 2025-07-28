@@ -4,7 +4,6 @@ import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
-import { AgentSelector } from './AgentSelector';
 import { FiMessageSquare, FiInfo, FiWifiOff } from 'react-icons/fi';
 import { useChat } from '@/hooks/useChat';
 
@@ -18,7 +17,8 @@ export const ChatInterface: React.FC = () => {
     sendMessage,
   } = useChat();
   
-  const [selectedAgent, setSelectedAgent] = useState<'basic' | 'codeact' | 'deep_research' | 'gui' | 'multi_agent'>('basic');
+  // Removed agent selection - always use multi_agent
+  const selectedAgent = 'multi_agent';
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -121,14 +121,7 @@ export const ChatInterface: React.FC = () => {
 
       {/* Input Area */}
       <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6">
-        {currentSessionId && (
-          <div className="mb-4">
-            <AgentSelector
-              selectedAgent={selectedAgent}
-              onAgentChange={setSelectedAgent}
-            />
-          </div>
-        )}
+        {/* Agent selector removed - using single multi-agent */}
         <ChatInput 
           onSendMessage={handleSendMessage} 
           isLoading={isLoading || isThinking}

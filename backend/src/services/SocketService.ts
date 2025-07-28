@@ -20,8 +20,9 @@ export class SocketService {
         console.log(`👥 Client ${socket.id} joined session: ${sessionId}`);
         
         // Send existing messages
-        const messages = sessionService.getMessages(sessionId);
-        socket.emit('session_messages', messages);
+        sessionService.getMessages(sessionId).then(messages => {
+          socket.emit('session_messages', messages);
+        });
       });
 
       // Leave session room
@@ -40,13 +41,13 @@ export class SocketService {
           const { sessionId, content, metadata } = data;
           
           // Create session if it doesn't exist
-          let session = sessionService.getSession(sessionId);
+          let session = await sessionService.getSession(sessionId);
           if (!session) {
-            session = sessionService.createSession();
+            session = await sessionService.createSession();
           }
 
           // Add user message with metadata
-          const userMessage = sessionService.addMessage(sessionId, {
+          const userMessage = await sessionService.addMessage(sessionId, {
             role: 'user',
             content,
             metadata,
@@ -73,7 +74,7 @@ export class SocketService {
           });
 
           // Get all messages for context
-          const allMessages = sessionService.getMessages(sessionId);
+          const allMessages = await sessionService.getMessages(sessionId);
 
           // Generate AI response using streaming
           let assistantContent = '';
@@ -109,7 +110,7 @@ export class SocketService {
 
                 case 'done':
                   // Finalize message with tool calls
-                  const assistantMessage = sessionService.addMessage(sessionId, {
+                  const assistantMessage = await sessionService.addMessage(sessionId, {
                     role: 'assistant',
                     content: assistantContent,
                     toolCalls: toolCalls,
@@ -148,18 +149,18 @@ export class SocketService {
       });
 
       // Handle session management
-      socket.on('create_session', () => {
-        const session = sessionService.createSession();
+      socket.on('create_session', async () => {
+        const session = await sessionService.createSession();
         socket.emit('session_created', session);
       });
 
-      socket.on('get_sessions', () => {
-        const sessions = sessionService.getAllSessions();
+      socket.on('get_sessions', async () => {
+        const sessions = await sessionService.getAllSessions();
         socket.emit('sessions_list', sessions);
       });
 
-      socket.on('delete_session', (sessionId: string) => {
-        const deleted = sessionService.deleteSession(sessionId);
+      socket.on('delete_session', async (sessionId: string) => {
+        const deleted = await sessionService.deleteSession(sessionId);
         if (deleted) {
           this.io.emit('session_deleted', sessionId);
         }

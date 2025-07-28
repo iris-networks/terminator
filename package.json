@@ -20,10 +20,10 @@
     "test": "pnpm --recursive test"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
-    "typescript": "^5.3.3",
+    "@types/node": "^20.19.9",
+    "chokidar-cli": "^3.0.0",
     "concurrently": "^8.2.2",
-    "chokidar-cli": "^3.0.0"
+    "typescript": "^5.8.3"
   },
   "engines": {
     "node": ">=18.0.0",

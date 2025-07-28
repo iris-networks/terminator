@@ -6,6 +6,7 @@ import path from 'path';
 import os from 'os';
 import axios from 'axios';
 import { BrowserManager } from './BrowserManager.js';
+import { PaginatedContentExtractor } from './ContentExtractor.js';
 
 // Workspace path for file operations - sandboxed to prevent security issues
 const WORKSPACE_PATH = process.env.WORKSPACE_PATH || path.join(process.cwd(), 'workspace');
@@ -775,7 +776,424 @@ export const createDirectoryTool = tool({
   },
 });
 
-// Export all tools as a tools object for AI SDK
+// Browser get markdown tool with Readability support
+export const browserGetMarkdownTool = tool({
+  description: 'Get the content of the current page as markdown with pagination support using Mozilla Readability algorithm',
+  parameters: z.object({
+    page: z.number().optional().default(1).describe('Page number to extract (default: 1), in most cases, you do not need to pass this parameter.'),
+  }),
+  execute: async ({ page = 1 }) => {
+    console.log(`🌐 Getting markdown content (page ${page})`);
+    
+    try {
+      const browserManager = BrowserManager.getInstance();
+      
+      // Try to discover existing browser first
+      const cdpEndpoint = await BrowserManager.discoverBrowser();
+      if (cdpEndpoint) {
+        await browserManager.launchBrowser({ cdpEndpoint });
+      } else {
+        await browserManager.launchBrowser();
+      }
+      
+      // Get or create a page using the BrowserManager helper method
+      const browserPage = await browserManager.getOrCreatePage();
+      
+      // Create content extractor instance
+      const contentExtractor = new PaginatedContentExtractor();
+      
+      // Extract content using the paginated extractor
+      const result = await contentExtractor.extractContent(browserPage, page);
+      
+      console.log(`✅ Extracted markdown content: ${result.content.length} characters, page ${result.currentPage}/${result.totalPages}`);
+      
+      return {
+        content: result.content,
+        pagination: {
+          currentPage: result.currentPage,
+          totalPages: result.totalPages,
+          hasMorePages: result.hasMorePages,
+        },
+        title: result.title,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('❌ Browser get markdown error:', error);
+      return {
+        status: 'error',
+        message: `Failed to extract content: ${error instanceof Error ? error.message : String(error)}`,
+        timestamp: new Date().toISOString()
+      };
+    }
+  },
+});
+
+// Individual browser interaction tools (ported from UI-TARS)
+export const browserClickTool = tool({
+  description: 'Click on an element in the browser using CSS selector',
+  parameters: z.object({
+    selector: z.string().describe('CSS selector for the element to click'),
+  }),
+  execute: async ({ selector }) => {
+    console.log(`🖱️ Clicking element: ${selector}`);
+    
+    try {
+      const browserManager = BrowserManager.getInstance();
+      await browserManager.ensureBrowserReady();
+      const page = await browserManager.getOrCreatePage();
+      
+      await page.click(selector);
+      
+      console.log(`✅ Successfully clicked: ${selector}`);
+      return {
+        status: 'success',
+        message: `Clicked element: ${selector}`,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('❌ Browser click error:', error);
+      return {
+        status: 'error',
+        message: `Failed to click element: ${error instanceof Error ? error.message : String(error)}`,
+        timestamp: new Date().toISOString()
+      };
+    }
+  },
+});
+
+export const browserHoverTool = tool({
+  description: 'Hover over an element in the browser using CSS selector',
+  parameters: z.object({
+    selector: z.string().describe('CSS selector for the element to hover over'),
+  }),
+  execute: async ({ selector }) => {
+    console.log(`👆 Hovering over element: ${selector}`);
+    
+    try {
+      const browserManager = BrowserManager.getInstance();
+      await browserManager.ensureBrowserReady();
+      const page = await browserManager.getOrCreatePage();
+      
+      await page.hover(selector);
+      
+      console.log(`✅ Successfully hovered: ${selector}`);
+      return {
+        status: 'success',
+        message: `Hovered over element: ${selector}`,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('❌ Browser hover error:', error);
+      return {
+        status: 'error',
+        message: `Failed to hover over element: ${error instanceof Error ? error.message : String(error)}`,
+        timestamp: new Date().toISOString()
+      };
+    }
+  },
+});
+
+export const browserPressKeyTool = tool({
+  description: 'Press a key or key combination in the browser',
+  parameters: z.object({
+    key: z.string().describe('Key to press (e.g., "Enter", "Escape", "Tab", "ctrl+a", "cmd+s")'),
+  }),
+  execute: async ({ key }) => {
+    console.log(`⌨️ Pressing key: ${key}`);
+    
+    try {
+      const browserManager = BrowserManager.getInstance();
+      await browserManager.ensureBrowserReady();
+      const page = await browserManager.getOrCreatePage();
+      
+      // Handle key combinations
+      if (key.includes('+')) {
+        const keys = key.split('+');
+        const modifiers = keys.slice(0, -1);
+        const mainKey = keys[keys.length - 1];
+        
+        // Press modifier keys
+        for (const modifier of modifiers) {
+          await page.keyboard.down(modifier);
+        }
+        
+        // Press main key
+        await page.keyboard.press(mainKey);
+        
+        // Release modifier keys
+        for (const modifier of modifiers.reverse()) {
+          await page.keyboard.up(modifier);
+        }
+      } else {
+        await page.keyboard.press(key);
+      }
+      
+      console.log(`✅ Successfully pressed key: ${key}`);
+      return {
+        status: 'success',
+        message: `Pressed key: ${key}`,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('❌ Browser key press error:', error);
+      return {
+        status: 'error',
+        message: `Failed to press key: ${error instanceof Error ? error.message : String(error)}`,
+        timestamp: new Date().toISOString()
+      };
+    }
+  },
+});
+
+export const browserFormInputFillTool = tool({
+  description: 'Fill a form input field with text',
+  parameters: z.object({
+    selector: z.string().describe('CSS selector for the input field'),
+    text: z.string().describe('Text to fill into the input field'),
+    clear: z.boolean().optional().default(true).describe('Whether to clear the field first'),
+  }),
+  execute: async ({ selector, text, clear = true }) => {
+    console.log(`📝 Filling input field: ${selector} with "${text}"`);
+    
+    try {
+      const browserManager = BrowserManager.getInstance();
+      await browserManager.ensureBrowserReady();
+      const page = await browserManager.getOrCreatePage();
+      
+      if (clear) {
+        await page.click(selector, { clickCount: 3 }); // Select all text
+      }
+      
+      await page.type(selector, text);
+      
+      console.log(`✅ Successfully filled input: ${selector}`);
+      return {
+        status: 'success',
+        message: `Filled input field: ${selector} with "${text}"`,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('❌ Browser form fill error:', error);
+      return {
+        status: 'error',
+        message: `Failed to fill input field: ${error instanceof Error ? error.message : String(error)}`,
+        timestamp: new Date().toISOString()
+      };
+    }
+  },
+});
+
+// Tab management tools (ported from UI-TARS)
+export const browserTabListTool = tool({
+  description: 'List all open browser tabs',
+  parameters: z.object({}),
+  execute: async () => {
+    console.log('📑 Listing browser tabs');
+    
+    try {
+      const browserManager = BrowserManager.getInstance();
+      await browserManager.ensureBrowserReady();
+      const browser = browserManager.getBrowser();
+      const puppeteerBrowser = browser.getBrowser();
+      
+      const pages = await puppeteerBrowser.pages();
+      const tabs = await Promise.all(
+        pages.map(async (page, index) => ({
+          id: index,
+          url: page.url(),
+          title: await page.title().catch(() => 'Unknown'),
+          active: !page.isClosed()
+        }))
+      );
+      
+      console.log(`✅ Found ${tabs.length} tabs`);
+      return {
+        status: 'success',
+        tabs,
+        count: tabs.length,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('❌ Browser tab list error:', error);
+      return {
+        status: 'error',
+        message: `Failed to list tabs: ${error instanceof Error ? error.message : String(error)}`,
+        timestamp: new Date().toISOString()
+      };
+    }
+  },
+});
+
+export const browserNewTabTool = tool({
+  description: 'Create a new browser tab',
+  parameters: z.object({
+    url: z.string().optional().describe('URL to navigate to in the new tab (optional)'),
+  }),
+  execute: async ({ url }) => {
+    console.log(`🆕 Creating new tab${url ? ` and navigating to: ${url}` : ''}`);
+    
+    try {
+      const browserManager = BrowserManager.getInstance();
+      await browserManager.ensureBrowserReady();
+      const browser = browserManager.getBrowser();
+      
+      const page = await browser.createPage();
+      await page.setViewport({ width: 1920, height: 1080 });
+      await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+      
+      if (url) {
+        await page.goto(url);
+      }
+      
+      console.log(`✅ Created new tab${url ? ` at: ${url}` : ''}`);
+      return {
+        status: 'success',
+        message: `Created new tab${url ? ` and navigated to: ${url}` : ''}`,
+        url: url || 'about:blank',
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('❌ Browser new tab error:', error);
+      return {
+        status: 'error',
+        message: `Failed to create new tab: ${error instanceof Error ? error.message : String(error)}`,
+        timestamp: new Date().toISOString()
+      };
+    }
+  },
+});
+
+export const browserCloseTabTool = tool({
+  description: 'Close a specific browser tab by index',
+  parameters: z.object({
+    tabIndex: z.number().describe('Index of the tab to close (0-based)'),
+  }),
+  execute: async ({ tabIndex }) => {
+    console.log(`❌ Closing tab at index: ${tabIndex}`);
+    
+    try {
+      const browserManager = BrowserManager.getInstance();
+      await browserManager.ensureBrowserReady();
+      const browser = browserManager.getBrowser();
+      const puppeteerBrowser = browser.getBrowser();
+      
+      const pages = await puppeteerBrowser.pages();
+      
+      if (tabIndex < 0 || tabIndex >= pages.length) {
+        throw new Error(`Tab index ${tabIndex} out of range. Available tabs: 0-${pages.length - 1}`);
+      }
+      
+      const pageToClose = pages[tabIndex];
+      const url = pageToClose.url();
+      
+      if (!pageToClose.isClosed()) {
+        await pageToClose.close();
+      }
+      
+      console.log(`✅ Closed tab at index ${tabIndex}: ${url}`);
+      return {
+        status: 'success',
+        message: `Closed tab at index ${tabIndex}: ${url}`,
+        closedUrl: url,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('❌ Browser close tab error:', error);
+      return {
+        status: 'error',
+        message: `Failed to close tab: ${error instanceof Error ? error.message : String(error)}`,
+        timestamp: new Date().toISOString()
+      };
+    }
+  },
+});
+
+export const browserSwitchTabTool = tool({
+  description: 'Switch to a specific browser tab by index',
+  parameters: z.object({
+    tabIndex: z.number().describe('Index of the tab to switch to (0-based)'),
+  }),
+  execute: async ({ tabIndex }) => {
+    console.log(`🔄 Switching to tab at index: ${tabIndex}`);
+    
+    try {
+      const browserManager = BrowserManager.getInstance();
+      await browserManager.ensureBrowserReady();
+      const browser = browserManager.getBrowser();
+      const puppeteerBrowser = browser.getBrowser();
+      
+      const pages = await puppeteerBrowser.pages();
+      
+      if (tabIndex < 0 || tabIndex >= pages.length) {
+        throw new Error(`Tab index ${tabIndex} out of range. Available tabs: 0-${pages.length - 1}`);
+      }
+      
+      const targetPage = pages[tabIndex];
+      const url = targetPage.url();
+      
+      // Bring the target page to front
+      await targetPage.bringToFront();
+      
+      console.log(`✅ Switched to tab at index ${tabIndex}: ${url}`);
+      return {
+        status: 'success',
+        message: `Switched to tab at index ${tabIndex}: ${url}`,
+        activeUrl: url,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('❌ Browser switch tab error:', error);
+      return {
+        status: 'error',
+        message: `Failed to switch tab: ${error instanceof Error ? error.message : String(error)}`,
+        timestamp: new Date().toISOString()
+      };
+    }
+  },
+});
+
+import { mcpTools, MCPToolRegistry } from './MCPToolRegistry.js';
+
+// Initialize MCP Registry
+const mcpRegistry = MCPToolRegistry.getInstance();
+
+// Function to get all tools including MCP tools
+export async function getAllTools(): Promise<Record<string, any>> {
+  // Initialize MCP registry if not already done
+  await mcpRegistry.initialize();
+  
+  // Get MCP tools
+  const mcpToolsAvailable = mcpRegistry.getMCPTools();
+  
+  // Combine base tools with MCP tools and MCP management tools
+  return {
+    // Base tools
+    web_search: webSearchTool,
+    file_read: fileReadTool,
+    file_write: fileWriteTool,
+    list_files: listFilesTool,
+    create_directory: createDirectoryTool,
+    execute_command: executeCommandTool,
+    browser_action: browserActionTool,
+    browser_get_markdown: browserGetMarkdownTool,
+    browser_click: browserClickTool,
+    browser_hover: browserHoverTool,
+    browser_press_key: browserPressKeyTool,
+    browser_form_input_fill: browserFormInputFillTool,
+    browser_tab_list: browserTabListTool,
+    browser_new_tab: browserNewTabTool,
+    browser_close_tab: browserCloseTabTool,
+    browser_switch_tab: browserSwitchTabTool,
+    
+    // MCP management tools
+    ...mcpTools,
+    
+    // Dynamic MCP tools from connected servers
+    ...mcpToolsAvailable
+  };
+}
+
+// Export base tools as a tools object for AI SDK (backwards compatibility)
 export const tools = {
   web_search: webSearchTool,
   file_read: fileReadTool,
@@ -784,4 +1202,14 @@ export const tools = {
   create_directory: createDirectoryTool,
   execute_command: executeCommandTool,
   browser_action: browserActionTool,
+  browser_get_markdown: browserGetMarkdownTool,
+  browser_click: browserClickTool,
+  browser_hover: browserHoverTool,
+  browser_press_key: browserPressKeyTool,
+  browser_form_input_fill: browserFormInputFillTool,
+  browser_tab_list: browserTabListTool,
+  browser_new_tab: browserNewTabTool,
+  browser_close_tab: browserCloseTabTool,
+  browser_switch_tab: browserSwitchTabTool,
+  ...mcpTools
 };
