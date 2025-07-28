@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { FiCode, FiCopy, FiCheck, FiTerminal, FiClock, FiPackage, FiSave, FiPlay, FiCheckCircle, FiXCircle, FiCpu } from 'react-icons/fi';
 import { ToolResultContentPart } from './EnhancedToolResultRenderer';
+import { CodeEditor } from './CodeEditor';
 
 interface CodeActRendererProps {
   part: ToolResultContentPart;
@@ -164,11 +165,17 @@ export const CodeActRenderer: React.FC<CodeActRendererProps> = ({ part }) => {
             </div>
           </div>
 
-          {/* Code content */}
-          <div className="bg-gray-900 p-4">
-            <pre className="text-sm font-mono text-gray-100 whitespace-pre-wrap leading-relaxed overflow-x-auto">
-              {code}
-            </pre>
+          {/* Code content with Monaco Editor */}
+          <div className="bg-white dark:bg-gray-900">
+            <CodeEditor
+              code={code}
+              language={langInfo.language}
+              fileName={filename}
+              showLineNumbers={true}
+              maxHeight="400px"
+              readOnly={true}
+              fontSize={13}
+            />
           </div>
         </div>
 

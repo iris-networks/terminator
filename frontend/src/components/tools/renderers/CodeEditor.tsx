@@ -1,11 +1,9 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import hljs from 'highlight.js';
+import React, { useState } from 'react';
+import Editor from '@monaco-editor/react';
+import { useTheme } from 'next-themes';
 import { FiCopy, FiCheck, FiFile } from 'react-icons/fi';
-
-// Import highlight.js styles
-import 'highlight.js/styles/github-dark.css';
 
 interface CodeEditorProps {
   code: string;
@@ -14,11 +12,13 @@ interface CodeEditorProps {
   showLineNumbers?: boolean;
   maxHeight?: string;
   className?: string;
+  readOnly?: boolean;
+  fontSize?: number;
 }
 
 /**
- * Professional code editor component with syntax highlighting
- * Based on UI-TARS CodeEditor using highlight.js
+ * Professional Monaco Editor component with VS Code-like experience
+ * Based on UI-TARS CodeEditor with Monaco Editor integration
  */
 export const CodeEditor: React.FC<CodeEditorProps> = ({
   code,
@@ -27,22 +27,12 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   showLineNumbers = true,
   maxHeight = '60vh',
   className = '',
+  readOnly = true,
+  fontSize = 14,
 }) => {
-  const codeRef = useRef<HTMLElement>(null);
+  const { theme } = useTheme();
   const [copied, setCopied] = useState(false);
-  const [lineCount, setLineCount] = useState(0);
-
-  useEffect(() => {
-    if (codeRef.current && code) {
-      // Apply syntax highlighting
-      const highlightedCode = hljs.highlight(code, { language: language }).value;
-      codeRef.current.innerHTML = highlightedCode;
-      
-      // Count lines
-      const lines = code.split('\n').length;
-      setLineCount(lines);
-    }
-  }, [code, language]);
+  const lineCount = code.split('\n').length;
 
   const copyToClipboard = async () => {
     try {
@@ -52,6 +42,21 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     } catch (err) {
       console.error('Failed to copy code:', err);
     }
+  };
+
+  // Map common language aliases to Monaco supported languages
+  const getMonacoLanguage = (lang: string): string => {
+    const languageMap: Record<string, string> = {
+      'js': 'javascript',
+      'ts': 'typescript',
+      'py': 'python',
+      'sh': 'shell',
+      'bash': 'shell',
+      'zsh': 'shell',
+      'yml': 'yaml',
+      'md': 'markdown',
+    };
+    return languageMap[lang.toLowerCase()] || lang.toLowerCase();
   };
 
   const getLanguageBadge = () => {
@@ -113,34 +118,45 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         </div>
       </div>
 
-      {/* Code content */}
+      {/* Monaco Editor */}
       <div 
-        className="relative overflow-auto"
-        style={{ maxHeight }}
+        className="relative overflow-hidden"
+        style={{ height: maxHeight }}
       >
-        <div className="flex">
-          {/* Line numbers */}
-          {showLineNumbers && (
-            <div className="bg-gray-50 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 px-3 py-4 text-xs font-mono text-gray-500 dark:text-gray-400 select-none min-w-[3rem] text-right">
-              {code.split('\n').map((_, index) => (
-                <div key={index} className="leading-6">
-                  {index + 1}
-                </div>
-              ))}
+        <Editor
+          height={maxHeight}
+          language={getMonacoLanguage(language)}
+          value={code}
+          theme={theme === 'dark' ? 'vs-dark' : 'vs'}
+          options={{
+            readOnly,
+            fontSize,
+            lineNumbers: showLineNumbers ? 'on' : 'off',
+            minimap: { enabled: false },
+            scrollBeyondLastLine: false,
+            wordWrap: 'on',
+            automaticLayout: true,
+            contextmenu: false,
+            selectOnLineNumbers: true,
+            roundedSelection: false,
+            cursorStyle: 'line',
+            scrollbar: {
+              vertical: 'visible',
+              horizontal: 'visible',
+              useShadows: false,
+              verticalHasArrows: false,
+              horizontalHasArrows: false,
+            },
+            overviewRulerLanes: 0,
+            hideCursorInOverviewRuler: true,
+            overviewRulerBorder: false,
+          }}
+          loading={
+            <div className="flex items-center justify-center h-full bg-gray-50 dark:bg-gray-900">
+              <div className="text-gray-500 dark:text-gray-400">Loading editor...</div>
             </div>
-          )}
-
-          {/* Code area */}
-          <div className="flex-1 bg-gray-900 text-gray-100">
-            <pre className="p-4 overflow-x-auto">
-              <code
-                ref={codeRef}
-                className={`hljs language-${language} text-sm leading-6`}
-                style={{ background: 'transparent' }}
-              />
-            </pre>
-          </div>
-        </div>
+          }
+        />
       </div>
 
       {/* Status bar */}
