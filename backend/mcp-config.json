@@ -3,5 +3,21 @@
   "defaultTimeout": 10000,
   "maxConcurrentConnections": 5,
   "retryAttempts": 3,
-  "servers": []
+  "servers": [
+    {
+      "name": "browser",
+      "description": "Browser automation tools from @agent-infra/mcp-server-browser",
+      "enabled": true,
+      "priority": 100,
+      "timeout": 30000,
+      "transport": {
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "@agent-infra/mcp-server-browser@latest"
+        ],
+        "env": {}
+      }
+    }
+  ]
 }
