@@ -219,7 +219,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
                           TODAY ({groupedSessions.today.length})
                         </span>
                         <motion.div
-                          animate={{ rotate: collapsedGroups.has('today') ? -90 : 0 }}
+                          animate={{ rotate: collapsedGroups.has('today') ? 0 : -90 }}
                           transition={{ duration: 0.2 }}
                         >
                           <FiChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500" />
@@ -278,7 +278,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
                           YESTERDAY ({groupedSessions.yesterday.length})
                         </span>
                         <motion.div
-                          animate={{ rotate: collapsedGroups.has('yesterday') ? -90 : 0 }}
+                          animate={{ rotate: collapsedGroups.has('yesterday') ? 0 : -90 }}
                           transition={{ duration: 0.2 }}
                         >
                           <FiChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500" />
@@ -337,7 +337,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
                           THIS WEEK ({groupedSessions.thisWeek.length})
                         </span>
                         <motion.div
-                          animate={{ rotate: collapsedGroups.has('thisWeek') ? -90 : 0 }}
+                          animate={{ rotate: collapsedGroups.has('thisWeek') ? 0 : -90 }}
                           transition={{ duration: 0.2 }}
                         >
                           <FiChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500" />

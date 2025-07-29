@@ -24,8 +24,7 @@ interface WebSearchResultRendererProps {
 }
 
 export const WebSearchResultRenderer: React.FC<WebSearchResultRendererProps> = ({ part }) => {
-  // The part.toolResult contains the entire tool result structure
-  // It should have: toolName, args, result, timestamp
+  // The part.toolResult contains the search result data
   let toolResult = part.toolResult || part;
   
   // Handle case where toolResult is a string (JSON)
@@ -37,8 +36,11 @@ export const WebSearchResultRenderer: React.FC<WebSearchResultRendererProps> = (
     }
   }
 
+  // The data structure can be:
+  // 1. Direct search data: { query, results, totalResults, ... }
+  // 2. Nested: { result: { query, results, totalResults, ... }, args: {...} }
   const searchData: WebSearchData = toolResult.result || toolResult || {};
-  const args = toolResult.args || {};
+  const args = part.toolInput || toolResult.args || {};
   
   // Safety checks
   if (!searchData.results || !Array.isArray(searchData.results)) {
