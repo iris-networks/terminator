@@ -1,6 +1,12 @@
 # Iris - Advanced AI Agent Platform
 
-Sophisticated multi-agent system with specialized agents for code execution and comprehensive research, featuring secure sandboxed environments and intelligent task routing.
+Sophisticated multi-agent system with specialized agents for code execution, comprehensive research, and browser automation, featuring secure sandboxed environments and intelligent task routing.
+
+## 🎬 Demo
+
+![Iris Demo](./demo.gif)
+
+*Watch Iris in action: Multi-agent code execution, research workflows, and browser automation in a modern AI interface*
 
 ## 🚀 Key Features
 
@@ -27,6 +33,13 @@ Sophisticated multi-agent system with specialized agents for code execution and 
 - ⚡ **Real-time Streaming**: Live updates for tool execution and research progress
 - 🔄 **Session Management**: Persistent conversations with agent context
 - 📱 **Responsive Design**: Modern Next.js interface with dark mode support
+
+### **Browser Automation & Web Tools**
+- 🌐 **Advanced Browser Control**: Full page automation with Puppeteer integration
+- 🔄 **Session Replay**: Record and playback user interactions for debugging
+- 📊 **Data Extraction**: Intelligent content extraction from web pages
+- 🎯 **Element Interactions**: Click, drag, hover, form filling with visual feedback
+- 🔍 **Enhanced Web Search**: Multi-engine search with domain filtering
 
 ### **Enterprise Features**
 - 🔗 **MCP Integration**: Dynamic tool discovery through Model Context Protocol
@@ -75,21 +88,49 @@ General-purpose assistant with access to all capabilities:
 - Intelligent routing to specialized agents when needed
 - Perfect for mixed workflows and general assistance
 
+### **Browser Automation Tools** 🌐
+Advanced web automation capabilities with visual renderers:
+
+**Browser Actions:**
+- **Navigation** - URL navigation with wait conditions and error handling
+- **Element Interactions** - Click, drag, hover, scroll with coordinate precision
+- **Form Automation** - Input filling, selection, and submission
+- **Data Extraction** - Structured content extraction with multiple modes
+- **Tab Management** - Multi-tab workflows with session persistence
+
+**Key Features:**
+- Visual feedback with coordinate highlighting
+- Session replay for debugging automation workflows
+- Content extraction with intelligent parsing
+- Recovery mechanisms for failed operations
+- Real-time streaming of browser actions
+
 ## 🏗️ Architecture
 
 ```
 iris/
 ├── frontend/                    # Next.js web interface
 │   ├── src/components/tools/    # Specialized renderers
-│   │   └── renderers/          # CodeAct & DeepResearch UI
-│   └── ...
+│   │   └── renderers/          # CodeAct, DeepResearch & Browser UI
+│   │       ├── browser/        # Browser action renderers
+│   │       ├── CodeActRenderer.tsx
+│   │       ├── DeepResearchRenderer.tsx
+│   │       └── BrowserControlRenderer.tsx
+│   └── src/components/workspace/ # Session replay & playback
 ├── backend/                     # Express.js API server
 │   ├── src/agents/             # Multi-agent system
 │   │   ├── AgentTARS.ts        # Agent orchestration
 │   │   ├── CodeActAgent.ts     # Code execution
 │   │   └── DeepResearchAgent.ts # Research planning
-│   └── src/services/           # Core services
-├── package.json                # Workspace configuration
+│   ├── src/services/           # Core services
+│   │   ├── BrowserManager.ts   # Browser automation
+│   │   ├── SessionService.ts   # Session replay
+│   │   └── tools/             # Tool registry
+│   │       ├── browser/       # Browser automation tools
+│   │       ├── categories/    # Organized tool categories
+│   │       └── mcp/          # MCP integration
+│   └── workspace/             # Sandboxed execution environment
+├── package.json               # Workspace configuration
 └── pnpm-workspace.yaml
 ```
 
@@ -172,16 +213,26 @@ iris/
 # User: "Execute Python code to calculate fibonacci sequence"
 # → Automatically selects CodeAct Agent
 # → Runs in sandboxed Python environment  
-# → Displays results with syntax highlighting
+# → Displays results with syntax highlighting and execution metrics
+# → Persists session state for continued development
 ```
 
 ### **Research with DeepResearch**
 ```bash
 # User: "Research comprehensive information about quantum computing"
 # → Automatically selects DeepResearch Agent
-# → Creates structured research plan
-# → Gathers information from multiple sources
-# → Generates comprehensive report with citations
+# → Creates structured 5-step research plan
+# → Gathers information from multiple sources with progress tracking
+# → Generates comprehensive report with citations and relevance scoring
+```
+
+### **Browser Automation**
+```bash
+# User: "Navigate to example.com and extract the main heading"
+# → Launches browser automation
+# → Visual feedback with coordinate highlighting
+# → Extracts structured data with intelligent parsing
+# → Session replay capability for debugging
 ```
 
 ### **Agent Selection**
@@ -189,6 +240,7 @@ iris/
 # Automatic selection based on keywords:
 "run python script" → CodeAct Agent 🔧
 "research topic" → DeepResearch Agent 🔍  
+"automate browser" → Browser Tools 🌐
 "general question" → Multi-Agent 🎯
 
 # Manual selection via UI or API
@@ -255,7 +307,7 @@ export const YourRenderer: React.FC<RendererProps> = ({ part }) => {
 - 🚀 **Scalable**: Modular architecture for easy expansion
 
 ### **Based on UI-TARS Architecture:**
-This implementation provides the same sophisticated agent capabilities as the ByteDance UI-TARS system, adapted for modern deployment with enhanced security and user experience.
+This implementation provides the same sophisticated agent capabilities as the ByteDance UI-TARS system, adapted for modern deployment with enhanced security, browser automation, and session replay capabilities.
 
 ## 📚 Documentation
 
