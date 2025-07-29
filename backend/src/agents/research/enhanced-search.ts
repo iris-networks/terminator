@@ -4,8 +4,8 @@ import axios from 'axios';
 import { BrowserManager } from '../../services/BrowserManager.js';
 import { researchSessions } from './types.js';
 
-// Enhanced Search Tool
-export const enhancedSearchTool = tool({
+// Search Tool
+export const searchTool = tool({
   description: 'Perform enhanced web search with domain filtering and query optimization for research',
   parameters: z.object({
     query: z.string().describe('The search query'),
@@ -15,8 +15,8 @@ export const enhancedSearchTool = tool({
     searchEngine: z.enum(['duckduckgo', 'google', 'bing']).optional().default('duckduckgo').describe('Search engine to use'),
     sessionId: z.string().optional().describe('Research session ID for tracking')
   }),
-  execute: async ({ query, maxResults, domains, excludeDomains, searchEngine, sessionId }) => {
-    console.log(`🔍 Enhanced Search: "${query}" using ${searchEngine}`);
+  execute: async ({ query, maxResults, domains, excludeDomains, searchEngine, sessionId }, { abortSignal }) => {
+    console.log(`🔍 Search: "${query}" using ${searchEngine}`);
     
     try {
       // Optimize query for better results
@@ -39,7 +39,8 @@ export const enhancedSearchTool = tool({
         timeout: 15000,
         headers: {
           'User-Agent': 'DeepResearch-Agent/1.0'
-        }
+        },
+        signal: abortSignal
       });
       
       const data = response.data;

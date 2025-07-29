@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { BrowserManager } from '../../services/BrowserManager.js';
 import { researchSessions } from './types.js';
 
-export const enhancedVisitLinkTool = tool({
+export const visitLinkTool = tool({
   description: 'Visit and extract detailed content from web pages with enhanced analysis',
   parameters: z.object({
     url: z.string().describe('URL to visit and extract content from'),
@@ -12,27 +12,29 @@ export const enhancedVisitLinkTool = tool({
     focusAreas: z.array(z.string()).optional().describe('Specific topics or areas to focus on'),
     sessionId: z.string().optional().describe('Research session ID for tracking')
   }),
-  execute: async ({ url, extractionMode, extractImages, focusAreas, sessionId }) => {
-    console.log(`🌐 Enhanced Visit: ${url} (mode: ${extractionMode})`);
+  execute: async ({ url, extractionMode, extractImages, focusAreas, sessionId }, { abortSignal }) => {
+    console.log(`🌐 Visit: ${url} (mode: ${extractionMode})`);
     
     try {
       const browserManager = BrowserManager.getInstance();
-      const cdpEndpoint = await BrowserManager.discoverBrowser();
-      
-      if (!browserManager.isLaunchingComplete()) {
-        await browserManager.launchBrowser({
-          cdpEndpoint: cdpEndpoint || undefined,
-          headless: true,
-        });
-      }
-      
+      await browserManager.ensureBrowserReady();
       const page = await browserManager.getOrCreatePage();
+      
+      // Check if aborted before navigation
+      if (abortSignal?.aborted) {
+        throw new Error('Operation aborted');
+      }
       
       // Navigate to the URL
       await page.goto(url, {
         waitUntil: 'networkidle2',
         timeout: 30000
       });
+      
+      // Check if aborted after navigation
+      if (abortSignal?.aborted) {
+        throw new Error('Operation aborted');
+      }
       
       // Extract page metadata
       const metadata = await page.evaluate(() => ({

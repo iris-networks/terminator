@@ -1,7 +1,7 @@
 import { tool } from 'ai';
 import { z } from 'zod';
-import { enhancedSearchTool } from './enhanced-search.js';
-import { enhancedVisitLinkTool } from './enhanced-visit.js';
+import { searchTool } from './enhanced-search.js';
+import { visitLinkTool } from './enhanced-visit.js';
 import { researchSessions } from './types.js';
 
 export const deepDiveTool = tool({
@@ -13,7 +13,7 @@ export const deepDiveTool = tool({
     includeImages: z.boolean().optional().default(false).describe('Include relevant images in the research'),
     sessionId: z.string().describe('Research session ID')
   }),
-  execute: async ({ topic, focusAreas, maxSources, includeImages, sessionId }) => {
+  execute: async ({ topic, focusAreas, maxSources, includeImages, sessionId }, { abortSignal }) => {
     console.log(`🔬 Deep Dive: Researching "${topic}"`);
     
     try {
@@ -25,11 +25,16 @@ export const deepDiveTool = tool({
       console.log('📊 Step 1: Searching for sources...');
       const searchQuery = `${topic} ${focusAreas.join(' ')}`;
       
-      // Use the enhanced search tool
-      const searchResults = await enhancedSearchTool.execute({
+      // Use the search tool
+      const searchResults = await searchTool.execute({
         query: searchQuery,
         maxResults: maxSources * 2, // Get more results to filter from
-        sessionId
+        sessionId,
+        searchEngine: "duckduckgo"
+      }, {
+        messages: [],
+        toolCallId: `search_${Date.now()}`,
+        abortSignal
       });
       
       if (searchResults.results.length === 0) {
@@ -54,15 +59,19 @@ export const deepDiveTool = tool({
       
       for (const url of topUrls) {
         try {
-          const visitResult = await enhancedVisitLinkTool.execute({
+          const visitResult = await visitLinkTool.execute({
             url,
             extractionMode: 'summary',
             extractImages: includeImages,
             focusAreas,
             sessionId
+          }, {
+            messages: [],
+            toolCallId: `visit_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            abortSignal
           });
           
-          if (visitResult.content && visitResult.relevanceScore > 0.3) {
+          if (visitResult.content && (visitResult.relevanceScore || 0) > 0.3) {
             sources.push({
               url: visitResult.url,
               title: visitResult.metadata?.title || 'Unknown Title',
