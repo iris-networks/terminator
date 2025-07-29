@@ -1,329 +1,166 @@
-# Iris - Advanced AI Agent Platform
+# Terminator
 
-Sophisticated multi-agent system with specialized agents for code execution, comprehensive research, and browser automation, featuring secure sandboxed environments and intelligent task routing.
+Multi-agent AI platform for code execution, research, and browser automation.
 
-## 🎬 Demo
+![Demo](./demo.gif)
 
-![Iris Demo](./demo.gif)
+## Features
 
-*Watch Iris in action: Multi-agent code execution, research workflows, and browser automation in a modern AI interface*
+**Code Execution**
+- Sandboxed Node.js, Python, and Shell environments
+- Real-time output streaming
+- Automatic dependency management
 
-## 🚀 Key Features
+**Research**
+- Structured multi-step research workflows
+- Web search with source attribution
+- Comprehensive report generation
 
-### **Multi-Agent Architecture**
-- 🤖 **Intelligent Agent Selection**: Automatic routing based on task requirements
-- 🔧 **CodeAct Agent**: Secure code execution in sandboxed environments (Node.js, Python, Shell)
-- 🔍 **DeepResearch Agent**: Plan-and-execute research methodology with comprehensive reports
-- 🎯 **Multi-Agent**: General-purpose assistant with access to all capabilities
+**Browser Automation**
+- Full page automation with Puppeteer
+- Session recording and replay
+- Visual element interaction
 
-### **Advanced Code Execution**
-- 💻 **Multi-Language Support**: JavaScript/Node.js, Python, Shell with dependency management
-- 🔒 **Sandboxed Security**: Isolated workspaces with path validation and timeout protection
-- 🧠 **Persistent Memory**: Session state management across code executions
-- 📦 **Dependency Management**: Automatic npm/pip package installation with validation
-
-### **Comprehensive Research**
-- 📊 **Structured Planning**: 5-step research workflow with progress tracking
-- 🔍 **Enhanced Search**: Advanced web search with domain filtering and query optimization
-- 📄 **Report Generation**: Comprehensive reports with citations and source attribution
-- 🎨 **Rich Visualizations**: Multi-tab interface with relevance scoring and insights
-
-### **Enhanced User Experience**
-- 🎨 **Specialized Renderers**: Beautiful UI for code execution and research results
-- ⚡ **Real-time Streaming**: Live updates for tool execution and research progress
-- 🔄 **Session Management**: Persistent conversations with agent context
-- 📱 **Responsive Design**: Modern Next.js interface with dark mode support
-
-### **Browser Automation & Web Tools**
-- 🌐 **Advanced Browser Control**: Full page automation with Puppeteer integration
-- 🔄 **Session Replay**: Record and playback user interactions for debugging
-- 📊 **Data Extraction**: Intelligent content extraction from web pages
-- 🎯 **Element Interactions**: Click, drag, hover, form filling with visual feedback
-- 🔍 **Enhanced Web Search**: Multi-engine search with domain filtering
-
-### **Enterprise Features**
-- 🔗 **MCP Integration**: Dynamic tool discovery through Model Context Protocol
-- 🗄️ **Session Persistence**: SQLite database for conversation and tool state management
-- 🌐 **Browser Automation**: Advanced browser control with recovery mechanisms
-- 🔌 **Multi-AI Support**: Compatible with OpenAI and Anthropic models
-- 🛠️ **Extensible Architecture**: Easy to add new agents, tools, and capabilities
-
-## 🧠 Agent Capabilities
-
-### **CodeAct Agent** 🔧
-Specialized for secure code execution with enterprise-grade security:
-
-**Languages Supported:**
-- **Node.js/JavaScript** 🟨 - npm dependency management, ESM/CommonJS support
-- **Python** 🐍 - pip package installation, isolated site-packages
-- **Shell/Bash** 🔧 - secure script execution with command filtering
-
-**Key Features:**
-- Sandboxed workspace (`~/.codeact/`) with isolated environments
-- Real-time output streaming with syntax highlighting
-- Persistent memory system for session state
-- Automatic dependency installation with security validation
-- 30-second execution timeout with graceful termination
-
-### **DeepResearch Agent** 🔍
-Advanced research capabilities with structured methodology:
-
-**Research Workflow:**
-1. **Topic Analysis** - Extract main topics, subtopics, and keywords
-2. **Plan Generation** - Create 3-6 strategic research steps
-3. **Information Gathering** - Multi-source content collection
-4. **Analysis & Synthesis** - Organize findings by relevance
-5. **Report Generation** - Comprehensive reports with citations
-
-**Key Features:**
-- Enhanced web search with domain filtering
-- Content extraction with multiple modes (full, summary, structured)
-- Progress tracking with session management
-- Multi-format report generation (Markdown, HTML, Text)
-- Source attribution and relevance scoring
-
-### **Multi-Agent** 🎯
-General-purpose assistant with access to all capabilities:
-- Combines all specialized tools in one interface
-- Intelligent routing to specialized agents when needed
-- Perfect for mixed workflows and general assistance
-
-### **Browser Automation Tools** 🌐
-Advanced web automation capabilities with visual renderers:
-
-**Browser Actions:**
-- **Navigation** - URL navigation with wait conditions and error handling
-- **Element Interactions** - Click, drag, hover, scroll with coordinate precision
-- **Form Automation** - Input filling, selection, and submission
-- **Data Extraction** - Structured content extraction with multiple modes
-- **Tab Management** - Multi-tab workflows with session persistence
-
-**Key Features:**
-- Visual feedback with coordinate highlighting
-- Session replay for debugging automation workflows
-- Content extraction with intelligent parsing
-- Recovery mechanisms for failed operations
-- Real-time streaming of browser actions
-
-## 🏗️ Architecture
-
-```
-iris/
-├── frontend/                    # Next.js web interface
-│   ├── src/components/tools/    # Specialized renderers
-│   │   └── renderers/          # CodeAct, DeepResearch & Browser UI
-│   │       ├── browser/        # Browser action renderers
-│   │       ├── CodeActRenderer.tsx
-│   │       ├── DeepResearchRenderer.tsx
-│   │       └── BrowserControlRenderer.tsx
-│   └── src/components/workspace/ # Session replay & playback
-├── backend/                     # Express.js API server
-│   ├── src/agents/             # Multi-agent system
-│   │   ├── AgentTARS.ts        # Agent orchestration
-│   │   ├── CodeActAgent.ts     # Code execution
-│   │   └── DeepResearchAgent.ts # Research planning
-│   ├── src/services/           # Core services
-│   │   ├── BrowserManager.ts   # Browser automation
-│   │   ├── SessionService.ts   # Session replay
-│   │   └── tools/             # Tool registry
-│   │       ├── browser/       # Browser automation tools
-│   │       ├── categories/    # Organized tool categories
-│   │       └── mcp/          # MCP integration
-│   └── workspace/             # Sandboxed execution environment
-├── package.json               # Workspace configuration
-└── pnpm-workspace.yaml
-```
+**Architecture**
+- Multi-agent system with specialized capabilities
+- Persistent session management
+- Extensible tool registry
 
 ## Setup
 
-### Requirements
-- Node.js 22+
-- pnpm or npm
-- OpenAI or Anthropic API key
-
-### Installation
-
-1. **Clone repository:**
-   ```bash
-   git clone [repository-url]
-   cd terminator
-   pnpm install
-   ```
-
-2. **Configure environment:**
-   ```bash
-   cd backend
-   cp .env.example .env
-   ```
-   
-   Edit `backend/.env`:
-   ```env
-   # AI Provider Configuration
-   OPENAI_API_KEY=your_openai_key
-   ANTHROPIC_API_KEY=your_anthropic_key
-   
-   # Server Configuration
-   PORT=3001
-   FRONTEND_URL=http://localhost:3000
-   
-   # CodeAct Configuration (Optional)
-   CODEACT_WORKSPACE=/path/to/custom/workspace  # Default: ~/.codeact
-   
-   # AI Model Configuration (Optional)
-   AI_MODEL=gpt-4-turbo-preview
-   AI_PROVIDER=openai
-   AI_TEMPERATURE=0.7
-   AI_MAX_TOKENS=4000
-   ```
-
-3. **Start development:**
-   ```bash
-   pnpm dev
-   ```
-
-4. **Access interface:**
-   ```
-   http://localhost:3000
-   ```
-
-## Development Commands
-
-### Workspace
-- `pnpm dev` - Start both frontend and backend
-- `pnpm build` - Build all projects
-- `pnpm start` - Start production servers
-- `pnpm clean` - Clean build artifacts
-- `pnpm lint` - Lint all projects
-- `pnpm type-check` - TypeScript validation
-
-### Frontend (`cd frontend`)
-- `pnpm dev` - Development server
-- `pnpm build` - Production build
-- `pnpm start` - Start production server
-
-### Backend (`cd backend`)
-- `pnpm dev` - Development server with hot reload
-- `pnpm build` - Compile TypeScript
-- `pnpm start` - Start production server
-
-## 💡 Usage Examples
-
-### **Code Execution with CodeAct**
 ```bash
-# User: "Execute Python code to calculate fibonacci sequence"
-# → Automatically selects CodeAct Agent
-# → Runs in sandboxed Python environment  
-# → Displays results with syntax highlighting and execution metrics
-# → Persists session state for continued development
+git clone [repository-url]
+cd terminator
+pnpm install
+
+# Configure environment
+cd backend
+cp .env.example .env
+# Add your OpenAI/Anthropic API key
+
+# Start development
+pnpm dev
 ```
 
-### **Research with DeepResearch**
+Open http://localhost:3000
+
+## Development
+
 ```bash
-# User: "Research comprehensive information about quantum computing"
-# → Automatically selects DeepResearch Agent
-# → Creates structured 5-step research plan
-# → Gathers information from multiple sources with progress tracking
-# → Generates comprehensive report with citations and relevance scoring
+pnpm dev        # Start dev servers
+pnpm build      # Build for production
+pnpm lint       # Lint code
+pnpm type-check # TypeScript validation
 ```
 
-### **Browser Automation**
-```bash
-# User: "Navigate to example.com and extract the main heading"
-# → Launches browser automation
-# → Visual feedback with coordinate highlighting
-# → Extracts structured data with intelligent parsing
-# → Session replay capability for debugging
+## Architecture
+
+```
+terminator/
+├── frontend/           # Next.js interface
+├── backend/            # Express API
+│   ├── src/agents/     # Multi-agent system
+│   ├── src/services/   # Core services
+│   └── workspace/      # Sandboxed execution
+└── package.json        # Workspace config
 ```
 
-### **Agent Selection**
-```bash
-# Automatic selection based on keywords:
-"run python script" → CodeAct Agent 🔧
-"research topic" → DeepResearch Agent 🔍  
-"automate browser" → Browser Tools 🌐
-"general question" → Multi-Agent 🎯
+## Roadmap
 
-# Manual selection via UI or API
-```
+<details>
+<summary><strong>🔍 Enhanced Browser & Vision</strong> - Smart automation with visual understanding</summary>
 
-## 🔧 Extending the Platform
+- [ ] **Vision-enabled browser operator** - AI can see and understand web pages like humans
+- [ ] **Full computer automation** - Control desktop apps, not just browsers  
+- [ ] **LightPanda browser engine** - 10x faster than Chrome for automation
+- [ ] **Cross-platform desktop apps** - Native apps for Mac, Linux, Windows
 
-### **Adding New Agents**
+</details>
 
-1. Create agent in `backend/src/agents/YourAgent.ts`
-2. Add agent type to `AgentType` enum  
-3. Update `AGENT_CAPABILITIES` configuration
-4. Implement specialized tools
-5. Create UI renderer in `frontend/src/components/tools/renderers/`
-6. Update tool processing in `AIService.ts`
+<details>
+<summary><strong>⚡ Workflow Automation</strong> - Build once, run everywhere</summary>
 
-### **Adding Custom Tools**
+- [ ] **Workflow templates** - Save and reuse complex automation sequences
+- [ ] **Task scheduler** - Run workflows on schedules or triggers
+- [ ] **Cron job integration** - Standard Unix scheduling support
+- [ ] **CLI & headless mode** - Run without GUI for servers
 
-Register tools in the modular system:
+</details>
 
-```typescript
-// backend/src/services/tools/categories/your-category.ts
-export const yourCustomTool = tool({
-  description: 'Your custom tool description',
-  parameters: z.object({
-    input: z.string().describe('Tool input'),
-  }),
-  execute: async ({ input }) => {
-    // Tool implementation
-    return { result: 'Success', data: input };
-  },
-});
-```
+<details>
+<summary><strong>🏢 Enterprise & Teams</strong> - Scale to organizations</summary>
 
-### **Creating Custom Renderers**
+- [ ] **Cloud workflow storage** - Upload and share automation reports
+- [ ] **PostgreSQL backend** - Team collaboration and data persistence
+- [ ] **MCP protocol v2** - Next-gen tool discovery and integration
+- [ ] **Multi-tenant support** - Isolated workspaces for teams
 
-Add specialized UI for your tools:
+</details>
 
-```typescript
-// frontend/src/components/tools/renderers/YourRenderer.tsx
-export const YourRenderer: React.FC<RendererProps> = ({ part }) => {
-  return (
-    <div className="your-custom-renderer">
-      {/* Custom UI for your tool results */}
-    </div>
-  );
-};
-```
+<details>
+<summary><strong>🤖 AI & Model Support</strong> - Run any AI, anywhere</summary>
 
-## 🌟 Key Advantages
+- [ ] **Hundreds of local agents** - Swarm intelligence on consumer hardware
+- [ ] **Open-source model support** - Llama, Mistral, CodeLlama, etc.
+- [ ] **Qdrant vector database** - Unlimited tool and knowledge integration
+- [ ] **Smart context management** - Efficient memory and token usage
 
-### **Compared to Basic AI Assistants:**
-- ✅ **Specialized Agents** for domain-specific tasks vs generic responses
-- ✅ **Secure Code Execution** in sandboxed environments vs text-only responses
-- ✅ **Structured Research** with planning and citations vs simple search
-- ✅ **Persistent Memory** across sessions vs stateless interactions
-- ✅ **Beautiful UI Renderers** for rich visualizations vs plain text
+</details>
 
-### **Enterprise Ready:**
-- 🔒 **Security First**: Sandboxed execution with validation and timeouts
-- 📊 **Session Management**: SQLite persistence with conversation history
-- 🔌 **Extensible**: MCP integration for dynamic tool discovery
-- 🎨 **Professional UI**: Modern interface with specialized renderers
-- 🚀 **Scalable**: Modular architecture for easy expansion
+<details>
+<summary><strong>🛠️ Infrastructure</strong> - Production-ready deployment</summary>
 
-### **Based on UI-TARS Architecture:**
-This implementation provides the same sophisticated agent capabilities as the ByteDance UI-TARS system, adapted for modern deployment with enhanced security, browser automation, and session replay capabilities.
+- [ ] **Distributed agents** - Scale across multiple machines
+- [ ] **Advanced security** - Role-based access, audit logs
+- [ ] **Monitoring & metrics** - Performance tracking and analytics
+- [ ] **Container orchestration** - Docker/K8s deployment support
 
-## 📚 Documentation
+</details>
 
-- **Backend API**: Detailed documentation in `backend/README.md`
-- **Agent Architecture**: Multi-agent system with specialized capabilities
-- **Security Model**: Sandboxed execution and validation mechanisms
-- **Extension Guide**: How to add new agents, tools, and renderers
+> **Want to contribute?** Check our [Issues](../../issues) or start a [Discussion](../../discussions) to help shape these features.
 
-## 🤝 Contributing
+## Contributing
 
-We welcome contributions! This platform is designed to be:
-- **Extensible**: Easy to add new agents and capabilities
-- **Secure**: Enterprise-grade security for code execution
-- **User-Friendly**: Rich UI with specialized renderers
-- **Modern**: Built with latest TypeScript, React, and AI technologies
+We welcome contributions from the community! Here's how you can help:
 
-## 📄 License
+### Quick Start
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes and test thoroughly
+4. Submit a pull request with a clear description
 
-MIT - See LICENSE file for details
+### Areas We Need Help
+- **🐛 Bug Reports** - Found an issue? [Report it](../../issues/new?template=bug_report.md)
+- **💡 Feature Requests** - Have an idea? [Share it](../../issues/new?template=feature_request.md)
+- **📝 Documentation** - Help improve our docs and examples
+- **🧪 Testing** - Write tests, test on different platforms
+- **🎨 UI/UX** - Improve the interface and user experience
+
+### Development Guidelines
+- Follow existing code style and conventions
+- Add tests for new features
+- Update documentation as needed
+- Keep commits atomic and well-described
+
+### Community
+- **Discord**: [Join our community](https://discord.gg/your-link)
+- **Discussions**: [GitHub Discussions](../../discussions)
+- **Issues**: [Report bugs or request features](../../issues)
+
+## License
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+---
+
+**Built with ❤️ by the Terminator community**
