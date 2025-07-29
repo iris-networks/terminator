@@ -151,6 +151,84 @@ export class AIService {
                     contentPart.type = 'browser_control';
                   } else {
                     contentPart.type = 'browser_result';
+                    
+                    // Structure data for BrowserResultRenderer
+                    const toolResult = result.result || {};
+                    
+                    // Handle browser_navigate results
+                    if (result.toolName === 'browser_navigate') {
+                      contentPart.url = result.args?.url || toolResult.url || toolResult.finalUrl;
+                      contentPart.title = toolResult.title || toolResult.navigatedTo || 'Navigation Result';
+                      contentPart.content = toolResult.content || `Navigated to ${contentPart.url}`;
+                      contentPart.contentType = 'text';
+                      
+                      // Add screenshot if available
+                      if (toolResult.screenshot || toolResult.screenshotPath) {
+                        contentPart._extra = {
+                          currentScreenshot: toolResult.screenshot || toolResult.screenshotPath
+                        };
+                      }
+                    }
+                    
+                    // Handle browser_get_markdown results  
+                    else if (result.toolName === 'browser_get_markdown') {
+                      contentPart.url = toolResult.url || '';
+                      contentPart.title = toolResult.title || 'Page Content';
+                      contentPart.content = toolResult.content || toolResult.markdown || '';
+                      contentPart.contentType = 'markdown';
+                      
+                      // Add pagination info if available
+                      if (toolResult.pagination) {
+                        contentPart._extra = {
+                          pagination: toolResult.pagination
+                        };
+                      }
+                    }
+                    
+                    // Handle browser_evaluate results
+                    else if (result.toolName === 'browser_evaluate') {
+                      contentPart.url = toolResult.url || '';
+                      contentPart.title = `JavaScript Evaluation: ${result.args?.expression || 'Script'}`;
+                      contentPart.content = `**Expression:** \`${result.args?.expression || 'N/A'}\`\n\n**Result:** \`\`\`json\n${JSON.stringify(toolResult.result || toolResult, null, 2)}\n\`\`\``;
+                      contentPart.contentType = 'markdown';
+                    }
+                    
+                    // Handle browser_scroll results
+                    else if (result.toolName === 'browser_scroll') {
+                      contentPart.url = toolResult.url || '';
+                      contentPart.title = `Page Scrolled: ${result.args?.direction || 'Unknown Direction'}`;
+                      contentPart.content = `Scrolled ${result.args?.direction || 'unknown direction'}${result.args?.amount ? ` by ${result.args.amount}px` : ''}`;
+                      contentPart.contentType = 'text';
+                      
+                      // Add screenshot if available after scroll
+                      if (toolResult.screenshot) {
+                        contentPart._extra = {
+                          currentScreenshot: toolResult.screenshot
+                        };
+                      }
+                    }
+                    
+                    // Handle browser_screenshot results
+                    else if (result.toolName === 'browser_screenshot') {
+                      contentPart.url = toolResult.url || '';
+                      contentPart.title = 'Browser Screenshot';
+                      contentPart.content = 'Screenshot captured';
+                      contentPart.contentType = 'text';
+                      
+                      if (toolResult.screenshot || toolResult.screenshotPath) {
+                        contentPart._extra = {
+                          currentScreenshot: toolResult.screenshot || toolResult.screenshotPath
+                        };
+                      }
+                    }
+                    
+                    // Handle other browser tools with generic structure
+                    else {
+                      contentPart.url = toolResult.url || '';
+                      contentPart.title = result.toolName.replace('browser_', '').replace('_', ' ').toUpperCase();
+                      contentPart.content = typeof toolResult === 'string' ? toolResult : JSON.stringify(toolResult, null, 2);
+                      contentPart.contentType = typeof toolResult === 'string' ? 'text' : 'json';
+                    }
                   }
                 }
                 // JSON/data tools
