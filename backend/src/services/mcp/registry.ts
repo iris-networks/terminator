@@ -67,11 +67,10 @@ export class MCPToolRegistry {
   private getDefaultConfiguration(): MCPConfig {
     return {
       enabled: false,
-      servers: {},
-      globalConfig: {
-        timeout: 30000,
-        retries: 3
-      }
+      defaultTimeout: 30000,
+      maxConcurrentConnections: 5,
+      retryAttempts: 3,
+      servers: []
     };
   }
 
@@ -105,7 +104,22 @@ export class MCPToolRegistry {
       return {};
     }
     
-    return this.mcpManager.getAllTools();
+    const allTools = this.mcpManager.getAllTools();
+    const mappedTools: Record<string, any> = {};
+    
+    // Map tool names to remove double server prefixes
+    for (const [toolName, toolDef] of Object.entries(allTools)) {
+      let mappedName = toolName;
+      
+      // Fix double browser prefix: browser_browser_xxx -> browser_xxx
+      if (toolName.startsWith('browser_browser_')) {
+        mappedName = toolName.replace('browser_browser_', 'browser_');
+      }
+      
+      mappedTools[mappedName] = toolDef;
+    }
+    
+    return mappedTools;
   }
 
   async executeMCPTool(toolCall: MCPToolCall) {
@@ -114,7 +128,20 @@ export class MCPToolRegistry {
     }
     
     try {
-      const result = await this.mcpManager.executeTool(toolCall);
+      // Map tool name back to original format for execution
+      let actualToolName = toolCall.toolName;
+      
+      // Reverse the mapping: browser_xxx -> browser_browser_xxx for browser server
+      if (actualToolName.startsWith('browser_') && !actualToolName.startsWith('browser_browser_')) {
+        actualToolName = actualToolName.replace('browser_', 'browser_browser_');
+      }
+      
+      const actualToolCall = {
+        ...toolCall,
+        toolName: actualToolName
+      };
+      
+      const result = await this.mcpManager.executeTool(actualToolCall);
       return result;
     } catch (error) {
       console.error('❌ MCP tool execution failed:', error);
@@ -128,6 +155,14 @@ export class MCPToolRegistry {
 
   isReady(): boolean {
     return this.isInitialized && this.mcpManager !== null;
+  }
+
+  getStatus() {
+    return {
+      initialized: this.isInitialized,
+      managerReady: this.mcpManager !== null,
+      isReady: this.isReady()
+    };
   }
 
   async shutdown(): Promise<void> {

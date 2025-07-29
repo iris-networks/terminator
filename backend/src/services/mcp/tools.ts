@@ -131,7 +131,7 @@ export const mcpExecuteToolTool = tool({
       await registry.initialize();
       
       const result = await registry.executeMCPTool({
-        serverName,
+        serverId: serverName,
         toolName,
         parameters: parameters || {}
       });
