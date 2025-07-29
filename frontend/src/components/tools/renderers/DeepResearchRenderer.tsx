@@ -129,6 +129,135 @@ export const DeepResearchRenderer: React.FC<DeepResearchRendererProps> = ({ part
     );
   };
 
+  const renderVisitResults = () => {
+    const url = toolResult.url || toolInput.url || '';
+    const title = toolResult.title || '';
+    const content = toolResult.content || '';
+    const images = toolResult.images || [];
+    const links = toolResult.links || [];
+    const relevanceScore = toolResult.relevanceScore || 0;
+    const metadata = toolResult.metadata || {};
+
+    return (
+      <div className="enhanced-visit-results">
+        {/* Visit header */}
+        <div className="bg-emerald-50 dark:bg-emerald-900/20 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <FiGlobe className="text-emerald-600 dark:text-emerald-400" size={16} />
+              <div>
+                <div className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                  Enhanced Visit
+                </div>
+                <div className="text-xs text-gray-600 dark:text-gray-400 truncate max-w-md">
+                  {url}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <div className={`w-2 h-2 rounded-full ${
+                relevanceScore >= 0.8 ? 'bg-green-500' :
+                relevanceScore >= 0.6 ? 'bg-yellow-500' : 'bg-gray-400'
+              }`} />
+              <span className="text-xs text-gray-500">{Math.round(relevanceScore * 100)}%</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Page content */}
+        <div className="p-4">
+          {title && (
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3">
+              {title}
+            </h3>
+          )}
+          
+          {content && (
+            <div className="prose prose-sm dark:prose-invert max-w-none mb-4">
+              <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded-lg">
+                <pre className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {content.substring(0, 1000)}{content.length > 1000 ? '...' : ''}
+                </pre>
+              </div>
+            </div>
+          )}
+
+          {/* Images */}
+          {images.length > 0 && (
+            <div className="mb-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <FiImage className="text-gray-500" size={14} />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Images ({images.length})
+                </span>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {images.slice(0, 6).map((image: any, index: number) => (
+                  <div key={index} className="aspect-video bg-gray-100 dark:bg-gray-800 rounded overflow-hidden">
+                    <img 
+                      src={image.src || image} 
+                      alt={image.alt || `Image ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Links */}
+          {links.length > 0 && (
+            <div className="mb-4">
+              <div className="flex items-center space-x-2 mb-2">
+                <FiLink className="text-gray-500" size={14} />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Links ({links.length})
+                </span>
+              </div>
+              <div className="space-y-1">
+                {links.slice(0, 5).map((link: any, index: number) => (
+                  <div key={index} className="flex items-center space-x-2 text-xs">
+                    <FiExternalLink className="text-gray-400" size={10} />
+                    <a 
+                      href={link.href || link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 dark:text-blue-400 hover:underline truncate"
+                    >
+                      {link.text || link.href || link}
+                    </a>
+                  </div>
+                ))}
+                {links.length > 5 && (
+                  <div className="text-xs text-gray-500">
+                    ... and {links.length - 5} more links
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Metadata */}
+          {Object.keys(metadata).length > 0 && (
+            <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                {Object.entries(metadata).map(([key, value]) => (
+                  <div key={key} className="flex justify-between">
+                    <span className="text-gray-500 capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
+                    <span className="text-gray-700 dark:text-gray-300 truncate ml-2">
+                      {String(value)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const renderDeepDiveResults = () => {
     const topic = toolResult.topic || '';
     const focusAreas = toolResult.focusAreas || [];

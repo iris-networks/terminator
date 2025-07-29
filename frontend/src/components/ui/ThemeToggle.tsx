@@ -1,75 +1,73 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
+import { motion } from 'framer-motion';
 import { useTheme } from '@/contexts/ThemeContext';
 
 export const ThemeToggle: React.FC = () => {
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const [isOpen, setIsOpen] = useState(false);
 
-  const themes = [
-    { value: 'light', label: 'Light', icon: '☀️' },
-    { value: 'dark', label: 'Dark', icon: '🌙' },
-    { value: 'system', label: 'System', icon: '💻' },
-  ] as const;
-
-  const currentTheme = themes.find(t => t.value === theme) || themes[0];
+  const toggleTheme = () => {
+    if (theme === 'system') {
+      // If system theme, switch to opposite of current resolved theme
+      setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+    } else {
+      // Toggle between light and dark
+      setTheme(theme === 'dark' ? 'light' : 'dark');
+    }
+  };
 
   return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition-colors"
-        title={`Current theme: ${currentTheme.label}`}
-      >
-        {resolvedTheme === 'dark' ? (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-          </svg>
-        ) : (
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-          </svg>
-        )}
-      </button>
-
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setIsOpen(false)}
+    <motion.button
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={toggleTheme}
+      className="relative p-2.5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl border border-gray-200/60 dark:border-gray-700/40 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-white dark:hover:bg-gray-700 transition-all duration-200 shadow-sm hover:shadow-md z-50"
+      title={`Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} mode`}
+    >
+      <div className="relative w-5 h-5">
+        {/* Sun Icon */}
+        <motion.svg
+          initial={false}
+          animate={{
+            scale: resolvedTheme === 'dark' ? 0 : 1,
+            rotate: resolvedTheme === 'dark' ? 180 : 0,
+          }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          className="absolute inset-0 w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
           />
-          
-          {/* Dropdown */}
-          <div className="absolute right-0 mt-2 w-48 bg-background rounded-lg shadow-lg border border-border z-20">
-            <div className="py-1">
-              {themes.map((themeOption) => (
-                <button
-                  key={themeOption.value}
-                  onClick={() => {
-                    setTheme(themeOption.value);
-                    setIsOpen(false);
-                  }}
-                  className={`w-full px-4 py-2 text-left flex items-center space-x-3 hover:bg-muted transition-colors ${
-                    theme === themeOption.value
-                      ? 'bg-muted text-primary'
-                      : 'text-foreground'
-                  }`}
-                >
-                  <span className="text-lg">{themeOption.icon}</span>
-                  <span className="text-sm font-medium">{themeOption.label}</span>
-                  {themeOption.value === 'system' && (
-                    <span className="text-xs text-muted-foreground ml-auto">
-                      ({resolvedTheme})
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
-    </div>
+        </motion.svg>
+        
+        {/* Moon Icon */}
+        <motion.svg
+          initial={false}
+          animate={{
+            scale: resolvedTheme === 'dark' ? 1 : 0,
+            rotate: resolvedTheme === 'dark' ? 0 : -180,
+          }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          className="absolute inset-0 w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+          />
+        </motion.svg>
+      </div>
+    </motion.button>
   );
 };

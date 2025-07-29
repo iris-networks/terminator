@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FiSend, FiPaperclip, FiMic } from 'react-icons/fi';
+import { FiSend, FiMic } from 'react-icons/fi';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -16,6 +16,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   disabled = false 
 }) => {
   const [message, setMessage] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -40,75 +41,83 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
     }
   }, [message]);
 
   return (
-    <form onSubmit={handleSubmit} className="relative">
-      <div className="flex items-end space-x-3">
-        {/* Attachment button */}
-        <motion.button
-          type="button"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="flex-shrink-0 p-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
-          disabled={disabled}
-        >
-          <FiPaperclip className="w-5 h-5" />
-        </motion.button>
+    <div className="p-6 border-t border-gray-100/60 dark:border-gray-700/20 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+      <form onSubmit={handleSubmit} className="relative">
+        <div className={`relative overflow-hidden rounded-3xl border-2 transition-all duration-300 ${
+          isFocused 
+            ? 'border-transparent bg-gradient-to-r from-accent-500 via-purple-500 to-pink-500 p-[2px] animate-border-flow' 
+            : 'border-gray-200/80 dark:border-gray-700/40 bg-white dark:bg-gray-800'
+        }`}>
+          <div className="relative bg-white dark:bg-gray-800 rounded-3xl">
+            <div className="flex items-end">
+              {/* Voice Input Button */}
+              <motion.button
+                type="button"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex-shrink-0 p-3 text-gray-400 dark:text-gray-500 hover:text-accent-500 dark:hover:text-accent-400 transition-colors"
+                title="Voice input"
+              >
+                <FiMic className="w-5 h-5" />
+              </motion.button>
 
-        {/* Input area */}
-        <div className="flex-1 relative">
-          <textarea
-            ref={textareaRef}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={disabled ? 'Please wait...' : 'Type your message...'}
-            disabled={disabled}
-            className="w-full resize-none rounded-2xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-3 pr-12 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed max-h-32"
-            rows={1}
-          />
-          
-          {/* Character count */}
-          {message.length > 0 && (
-            <div className="absolute -bottom-6 right-0 text-xs text-gray-400">
-              {message.length}/2000
+              {/* Message Input */}
+              <textarea
+                ref={textareaRef}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                placeholder={disabled ? "Please wait..." : "Type your message..."}
+                disabled={disabled || isLoading}
+                className="flex-1 resize-none border-0 bg-transparent px-2 py-3 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-0"
+                style={{
+                  minHeight: '24px',
+                  maxHeight: '120px',
+                }}
+                rows={1}
+              />
+
+              {/* Send Button */}
+              <motion.button
+                type="submit"
+                disabled={!message.trim() || disabled || isLoading}
+                whileHover={{ scale: message.trim() && !disabled ? 1.05 : 1 }}
+                whileTap={{ scale: message.trim() && !disabled ? 0.95 : 1 }}
+                className={`flex-shrink-0 m-2 p-2.5 rounded-full transition-all duration-300 ${
+                  message.trim() && !disabled && !isLoading
+                    ? 'bg-gradient-to-r from-accent-500 to-accent-600 text-white shadow-lg hover:shadow-xl'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <FiSend className="w-5 h-5" />
+                )}
+              </motion.button>
             </div>
-          )}
+          </div>
         </div>
 
-        {/* Voice input button */}
-        <motion.button
-          type="button"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="flex-shrink-0 p-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
-          disabled={disabled}
-        >
-          <FiMic className="w-5 h-5" />
-        </motion.button>
-
-        {/* Send button */}
-        <motion.button
-          type="submit"
-          whileHover={{ scale: message.trim() ? 1.05 : 1 }}
-          whileTap={{ scale: message.trim() ? 0.95 : 1 }}
-          disabled={!message.trim() || disabled}
-          className={`flex-shrink-0 p-3 rounded-xl transition-all ${
-            message.trim() && !disabled
-              ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg'
-              : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-          }`}
-        >
-          {isLoading ? (
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <FiSend className="w-5 h-5" />
-          )}
-        </motion.button>
-      </div>
-    </form>
+        {/* Helper Text */}
+        {!disabled && (
+          <div className="flex items-center justify-between mt-3 px-4">
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              Press Enter to send, Shift + Enter for new line
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              {message.length > 0 && `${message.length} characters`}
+            </div>
+          </div>
+        )}
+      </form>
+    </div>
   );
 };

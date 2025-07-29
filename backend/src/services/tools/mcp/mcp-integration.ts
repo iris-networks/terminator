@@ -1,4 +1,11 @@
-import { mcpTools, MCPToolRegistry } from '../../MCPToolRegistry.js';
+import { MCPToolRegistry } from '../../mcp/registry.js';
+import {
+  mcpListServersTool,
+  mcpListToolsTool,
+  mcpExecuteToolTool,
+  mcpHealthCheckTool,
+  mcpConfigureTool
+} from '../../mcp/tools.js';
 
 // Initialize MCP Registry
 const mcpRegistry = MCPToolRegistry.getInstance();
@@ -15,6 +22,14 @@ export async function getMCPTools(): Promise<Record<string, any>> {
     // Get MCP tools from connected servers
     const mcpToolsAvailable = mcpRegistry.getMCPTools();
     
+    const mcpTools = {
+      mcp_list_servers: mcpListServersTool,
+      mcp_list_tools: mcpListToolsTool,
+      mcp_execute_tool: mcpExecuteToolTool,
+      mcp_health_check: mcpHealthCheckTool,
+      mcp_configure: mcpConfigureTool
+    };
+
     return {
       // MCP management tools (always available)
       ...mcpTools,
@@ -26,6 +41,14 @@ export async function getMCPTools(): Promise<Record<string, any>> {
     console.error('Failed to get MCP tools:', error);
     
     // Return only management tools if MCP integration fails
+    const mcpTools = {
+      mcp_list_servers: mcpListServersTool,
+      mcp_list_tools: mcpListToolsTool,
+      mcp_execute_tool: mcpExecuteToolTool,
+      mcp_health_check: mcpHealthCheckTool,
+      mcp_configure: mcpConfigureTool
+    };
+
     return {
       ...mcpTools
     };
@@ -57,4 +80,10 @@ export function getMCPStatus() {
 /**
  * Re-export MCP management tools for easier access
  */
-export { mcpTools } from '../../MCPToolRegistry.js';
+export const mcpTools = {
+  mcp_list_servers: mcpListServersTool,
+  mcp_list_tools: mcpListToolsTool,
+  mcp_execute_tool: mcpExecuteToolTool,
+  mcp_health_check: mcpHealthCheckTool,
+  mcp_configure: mcpConfigureTool
+};

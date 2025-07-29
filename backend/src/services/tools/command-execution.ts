@@ -1,0 +1,164 @@
+import { tool } from 'ai';
+import { z } from 'zod';
+import { spawn } from 'child_process';
+import os from 'os';
+import { ensureWorkspace, validatePath, WORKSPACE_PATH } from './utils/workspace.js';
+
+// Command execution tool with real-time output and security controls
+export const executeCommandTool = tool({
+  description: 'Execute a system command and return the output',
+  parameters: z.object({
+    command: z.string().describe('The command to execute'),
+    workingDirectory: z.string().optional().default('.').describe('The working directory for the command'),
+    timeout: z.number().optional().default(30000).describe('Timeout in milliseconds'),
+    shell: z.enum(['bash', 'sh', 'zsh', 'cmd', 'powershell']).optional().default('bash').describe('Shell to use for execution')
+  }),
+  execute: async ({ command, workingDirectory, timeout, shell }) => {
+    console.log(`⚡ Executing command: ${command}`);
+    
+    const startTime = Date.now();
+    
+    try {
+      await ensureWorkspace();
+      
+      // Validate and resolve working directory
+      const resolvedWorkingDir = workingDirectory === '.' 
+        ? WORKSPACE_PATH 
+        : validatePath(workingDirectory);
+
+      // Security: Block dangerous commands
+      const dangerousCommands = ['rm -rf /', 'dd if=', 'mkfs', 'fdisk', 'format', ':(){ :|:& };:'];
+      const lowerCommand = command.toLowerCase();
+      
+      for (const dangerous of dangerousCommands) {
+        if (lowerCommand.includes(dangerous)) {
+          throw new Error(`Command blocked for security: contains "${dangerous}"`);
+        }
+      }
+
+      // Determine shell executable based on platform and preference
+      let shellExecutable: string;
+      let shellArgs: string[];
+      
+      if (os.platform() === 'win32') {
+        if (shell === 'powershell') {
+          shellExecutable = 'powershell';
+          shellArgs = ['-Command', command];
+        } else {
+          shellExecutable = 'cmd';
+          shellArgs = ['/c', command];
+        }
+      } else {
+        // Unix-like systems
+        const availableShells = [shell, 'bash', 'sh', 'zsh'];
+        shellExecutable = availableShells.find(s => {
+          try {
+            require('child_process').execSync(`which ${s}`, { stdio: 'ignore' });
+            return true;
+          } catch {
+            return false;
+          }
+        }) || 'sh';
+        
+        shellArgs = ['-c', command];
+      }
+
+      return new Promise((resolve) => {
+        let stdout = '';
+        let stderr = '';
+        let timedOut = false;
+
+        const child = spawn(shellExecutable, shellArgs, {
+          cwd: resolvedWorkingDir,
+          env: { 
+            ...process.env, 
+            PATH: process.env.PATH,
+            HOME: os.homedir(),
+            USER: os.userInfo().username 
+          },
+          stdio: ['pipe', 'pipe', 'pipe'],
+        });
+
+        // Set up timeout
+        const timeoutHandle = setTimeout(() => {
+          timedOut = true;
+          child.kill('SIGTERM');
+          
+          // Force kill after 5 seconds if still running
+          setTimeout(() => {
+            if (!child.killed) {
+              child.kill('SIGKILL');
+            }
+          }, 5000);
+        }, timeout);
+
+        // Collect stdout
+        child.stdout?.on('data', (data) => {
+          stdout += data.toString();
+        });
+
+        // Collect stderr
+        child.stderr?.on('data', (data) => {
+          stderr += data.toString();
+        });
+
+        // Handle process completion
+        child.on('close', (code, signal) => {
+          clearTimeout(timeoutHandle);
+          
+          const duration = Date.now() - startTime;
+          const exitCode = timedOut ? -1 : (code || 0);
+          
+          resolve({
+            command,
+            workingDirectory: resolvedWorkingDir,
+            shell: shellExecutable,
+            output: stdout,
+            error: stderr || (timedOut ? 'Command timed out' : null),
+            exitCode,
+            signal: signal || null,
+            duration,
+            timestamp: new Date().toISOString(),
+            success: !timedOut && exitCode === 0,
+            timedOut
+          });
+        });
+
+        // Handle spawn errors
+        child.on('error', (error) => {
+          clearTimeout(timeoutHandle);
+          
+          resolve({
+            command,
+            workingDirectory: resolvedWorkingDir,
+            shell: shellExecutable,
+            output: '',
+            error: error.message,
+            exitCode: -1,
+            signal: null,
+            duration: Date.now() - startTime,
+            timestamp: new Date().toISOString(),
+            success: false,
+            timedOut: false
+          });
+        });
+      });
+
+    } catch (error) {
+      console.error('Command execution error:', error);
+      return {
+        command,
+        workingDirectory,
+        shell,
+        output: '',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        exitCode: -1,
+        signal: null,
+        duration: Date.now() - startTime,
+        timestamp: new Date().toISOString(),
+        success: false,
+        timedOut: false
+      };
+    }
+  },
+});
