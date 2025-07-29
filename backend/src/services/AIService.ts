@@ -129,7 +129,7 @@ export class AIService {
                   contentPart.success = result.result?.success;
                 }
                 // DeepResearch tools
-                else if (['enhanced_search', 'enhanced_visit_link', 'deep_dive', 'research_plan', 'report_generator'].includes(result.toolName)) {
+                else if (['search', 'visit_link', 'deep_dive', 'research_plan', 'report_generator'].includes(result.toolName)) {
                   contentPart.type = result.toolName; // Use specific type for DeepResearch renderer
                   // Keep all result data for specialized renderers
                   contentPart.query = result.args?.query;

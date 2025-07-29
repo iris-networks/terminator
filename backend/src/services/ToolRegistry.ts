@@ -1,4 +1,5 @@
-import { webSearchTool } from './tools/web-search.js';
+import { searchTool } from '../agents/research/enhanced-search.js';
+import { visitLinkTool } from '../agents/research/enhanced-visit.js';
 import { fileReadTool, listFilesTool, createDirectoryTool } from './tools/file-system.js';
 import { executeCommandTool } from './tools/command-execution.js';
 import { MCPToolRegistry } from './mcp/registry.js';
@@ -25,7 +26,8 @@ export async function getAllTools(): Promise<Record<string, any>> {
   };
   
   return {
-    web_search: webSearchTool,
+    web_search: searchTool,
+    visit_link: visitLinkTool,
     file_read: fileReadTool,
     list_files: listFilesTool,
     create_directory: createDirectoryTool,

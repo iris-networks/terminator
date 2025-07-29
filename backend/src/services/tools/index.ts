@@ -1,8 +1,9 @@
 // Main tool registry index - combines all modular tools
 // This file maintains backward compatibility with the original ToolRegistry.ts
 
-// Import all tools from category modules
-import { webSearchTool } from './categories/web-search.js';
+// Import all tools from category modules  
+import { searchTool } from '../../agents/research/enhanced-search.js';
+import { visitLinkTool } from '../../agents/research/enhanced-visit.js';
 import { 
   fileReadTool, 
   listFilesTool, 
@@ -20,8 +21,9 @@ export * from './core/types.js';
 
 // Export individual tools
 export {
-  // Web search
-  webSearchTool,
+  // Web search  
+  searchTool,
+  visitLinkTool,
   
   // File system
   fileReadTool,
@@ -37,7 +39,8 @@ export { initializeMCP, getMCPStatus };
 
 // Static tools object (for backward compatibility)
 export const tools = {
-  web_search: webSearchTool,
+  web_search: searchTool,
+  visit_link: visitLinkTool,
   file_read: fileReadTool,
   list_files: listFilesTool,
   create_directory: createDirectoryTool,
@@ -79,7 +82,8 @@ export default {
   validatePath,
   
   // Individual tools
-  webSearchTool,
+  searchTool,
+  visitLinkTool,
   fileReadTool,
   listFilesTool,
   createDirectoryTool,
