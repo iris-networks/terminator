@@ -13,7 +13,7 @@ interface CodeActRendererProps {
 /**
  * Specialized renderer for CodeAct tool results
  * Handles Node.js, Python, and Shell code execution results with enhanced UI
- * Based on UI-TARS CodeAct renderer patterns
+ * Modern CodeAct renderer patterns
  */
 export const CodeActRenderer: React.FC<CodeActRendererProps> = ({ part }) => {
   const [copied, setCopied] = useState(false);

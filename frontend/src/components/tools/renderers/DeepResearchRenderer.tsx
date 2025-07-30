@@ -12,7 +12,7 @@ interface DeepResearchRendererProps {
 /**
  * Specialized renderer for DeepResearch tool results
  * Handles research plans, search results, and comprehensive reports
- * Based on UI-TARS DeepResearch renderer patterns
+ * Modern DeepResearch renderer patterns
  */
 export const DeepResearchRenderer: React.FC<DeepResearchRendererProps> = ({ part }) => {
   const [copied, setCopied] = useState(false);
@@ -20,9 +20,28 @@ export const DeepResearchRenderer: React.FC<DeepResearchRendererProps> = ({ part
   const [activeTab, setActiveTab] = useState<'overview' | 'sources' | 'insights'>('overview');
 
   // Extract DeepResearch data from the tool result
-  const toolResult = part.toolResult || {};
+  const toolResult = part.toolResult || part || {};
   const toolInput = part.toolInput || {};
-  const type = toolResult.type || part.toolName || 'deep_research';
+  
+  // Determine type with fallbacks and special cases
+  let type = toolResult.type || part.toolName || part.type || 'deep_research';
+  
+  // If we have search results structure, assume it's search
+  if ((toolResult.results || toolResult.query || toolResult.originalQuery) && !type.includes('search')) {
+    type = 'search';
+  }
+  
+  // Debug logging to help identify the issue
+  console.log('DeepResearchRenderer Debug:', {
+    type,
+    toolResultType: toolResult.type,
+    partToolName: part.toolName,
+    partType: part.type,
+    hasResults: !!(toolResult.results),
+    resultsLength: toolResult.results?.length || 0,
+    hasQuery: !!(toolResult.query || toolResult.originalQuery),
+    rawPart: part
+  });
 
   const copyContent = async (content: string) => {
     try {
@@ -37,7 +56,7 @@ export const DeepResearchRenderer: React.FC<DeepResearchRendererProps> = ({ part
   // Render different components based on tool type
   const renderContent = () => {
     switch (type) {
-      case 'enhanced_search':
+      case 'search':
         return renderSearchResults();
       case 'enhanced_visit':
         return renderVisitResults();
@@ -53,9 +72,10 @@ export const DeepResearchRenderer: React.FC<DeepResearchRendererProps> = ({ part
   };
 
   const renderSearchResults = () => {
-    const results = toolResult.results || [];
-    const query = toolResult.query || toolInput.query || '';
-    const totalResults = toolResult.totalResults || 0;
+    // Handle different possible data structures
+    const results = toolResult.results || part.toolResult?.results || [];
+    const query = toolResult.query || toolResult.originalQuery || toolInput.query || part.toolInput?.query || '';
+    const totalResults = toolResult.totalResults || results.length || 0;
     const searchEngine = toolResult.searchEngine || 'duckduckgo';
 
     return (

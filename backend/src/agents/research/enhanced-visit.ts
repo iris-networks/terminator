@@ -1,7 +1,7 @@
 import { tool } from 'ai';
 import { z } from 'zod';
 import { BrowserManager } from '../../services/BrowserManager.js';
-import { researchSessions } from './types.js';
+import { researchSessions, saveSession, ContentCollection } from './types.js';
 
 export const visitLinkTool = tool({
   description: 'Visit and extract detailed content from web pages with enhanced analysis',
@@ -99,7 +99,7 @@ export const visitLinkTool = tool({
             
             const links = Array.from(document.querySelectorAll('a[href]')).map(a => ({
               text: a.textContent?.trim() || '',
-              href: a.href
+              href: (a as HTMLAnchorElement).href
             })).filter(link => link.text && link.href);
             
             return { headings, lists, tables, links };
@@ -138,6 +138,18 @@ export const visitLinkTool = tool({
         if (images.length > 0) {
           session.collectedImages.push(...images.map(img => ({ ...img, sourceUrl: url })));
         }
+        
+        // Store content collection
+        const contentCollection: ContentCollection = {
+          topic: metadata.title || 'Unknown',
+          urls: [url],
+          content: [content],
+          images: images.map(img => img.src),
+          relevanceScore
+        };
+        session.contentCollections.set(url, contentCollection);
+        
+        saveSession(sessionId, session);
       }
       
       return {

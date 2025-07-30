@@ -37,7 +37,7 @@ const highlightJson = (jsonString: string) => {
 
 /**
  * Renders JSON content with syntax highlighting and formatting
- * Based on UI-TARS JsonContent component
+ * Modern JsonContent component
  */
 export const JsonResultRenderer: React.FC<JsonResultRendererProps> = ({ part }) => {
   const [copied, setCopied] = useState(false);

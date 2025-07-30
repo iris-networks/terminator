@@ -19,7 +19,7 @@ interface CodeEditorProps {
 
 /**
  * Professional Monaco Editor component with VS Code-like experience
- * Based on UI-TARS CodeEditor with Monaco Editor integration
+ * Modern CodeEditor with Monaco Editor integration
  */
 export const CodeEditor: React.FC<CodeEditorProps> = ({
   code,

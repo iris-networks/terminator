@@ -1,6 +1,6 @@
 import { tool } from 'ai';
 import { z } from 'zod';
-import { ResearchTopic, ResearchPlan, PlanStep, researchSessions } from './types.js';
+import { ResearchTopic, ResearchPlan, PlanStep, researchSessions, saveSession, ContentCollection } from './types.js';
 
 export const researchPlanTool = tool({
   description: 'Create and manage research plans for deep research tasks',
@@ -70,13 +70,15 @@ export const researchPlanTool = tool({
           };
           
           // Create session
-          researchSessions.set(sessionId, {
+          const newSession = {
             plan,
             topic,
-            contentCollections: new Map(),
-            visitedUrls: new Set(),
+            contentCollections: new Map<string, ContentCollection>(),
+            visitedUrls: new Set<string>(),
             collectedImages: []
-          });
+          };
+          researchSessions.set(sessionId, newSession);
+          saveSession(sessionId, newSession);
           
           return {
             action: 'create',
@@ -128,6 +130,9 @@ export const researchPlanTool = tool({
           } else {
             currentSession.plan.status = 'in_progress';
           }
+          
+          // Save updated session
+          saveSession(sessionId, currentSession);
           
           return {
             action: 'complete_step',

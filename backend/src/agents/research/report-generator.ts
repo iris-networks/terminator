@@ -1,6 +1,6 @@
 import { tool } from 'ai';
 import { z } from 'zod';
-import { researchSessions } from './types.js';
+import { researchSessions, ResearchTopic, ResearchPlan, ContentCollection } from './types.js';
 
 export const reportGeneratorTool = tool({
   description: 'Generate comprehensive research reports from collected data',
@@ -14,9 +14,45 @@ export const reportGeneratorTool = tool({
     console.log(`📄 Generating report for session ${sessionId} in ${format} format`);
     
     try {
-      const session = researchSessions.get(sessionId);
+      let session = researchSessions.get(sessionId);
+      
+      // Auto-create session if it doesn't exist
       if (!session) {
-        throw new Error(`Session ${sessionId} not found`);
+        console.log(`📋 Session ${sessionId} not found, auto-creating new research session`);
+        
+        // Extract research topic from sessionId
+        const topicFromId = sessionId
+          .replace(/_/g, ' ')
+          .replace(/research|2024|2025|2023/gi, '')
+          .trim()
+          .replace(/\s+/g, ' ');
+        
+        // Create minimal session for report generation
+        session = {
+          plan: {
+            id: sessionId,
+            title: `Research: ${topicFromId}`,
+            steps: [],
+            totalSteps: 0,
+            completedSteps: 0,
+            status: 'completed',
+            timestamp: new Date().toISOString()
+          },
+          topic: {
+            mainTopic: topicFromId,
+            subtopics: topicFromId.split(' ').filter(word => word.length > 3),
+            keywords: topicFromId.toLowerCase().split(' ').filter(word => word.length > 2),
+            language: /[\u4e00-\u9fff]/.test(topicFromId) ? 'zh' : 'en'
+          },
+          contentCollections: new Map(),
+          visitedUrls: new Set(),
+          collectedImages: []
+        };
+        
+        // Save the auto-created session
+        researchSessions.set(sessionId, session);
+        
+        console.log(`✅ Auto-created research session: ${sessionId} for topic: ${topicFromId}`);
       }
       
       const { plan, topic, contentCollections, collectedImages, visitedUrls } = session;
@@ -85,14 +121,18 @@ function generateMarkdownReport(metadata: any, plan: any, contentCollections: Ma
   
   report += `## Research Overview\n\n`;
   report += `**Main Topic:** ${metadata.topic}\n`;
-  report += `**Subtopics:** ${metadata.subtopics.join(', ')}\n\n`;
+  if (metadata.subtopics && metadata.subtopics.length > 0) {
+    report += `**Subtopics:** ${metadata.subtopics.join(', ')}\n\n`;
+  }
   
   // Add plan progress
-  report += `## Research Progress\n\n`;
-  for (const step of plan.steps) {
-    report += `- [${step.status === 'completed' ? 'x' : ' '}] ${step.title}: ${step.description}\n`;
+  if (plan.steps && plan.steps.length > 0) {
+    report += `## Research Progress\n\n`;
+    for (const step of plan.steps) {
+      report += `- [${step.status === 'completed' ? 'x' : ' '}] ${step.title}: ${step.description}\n`;
+    }
+    report += '\n';
   }
-  report += '\n';
   
   // Add content collections
   if (contentCollections.size > 0) {
@@ -103,6 +143,15 @@ function generateMarkdownReport(metadata: any, plan: any, contentCollections: Ma
         report += `${content.substring(0, 200)}...\n\n`;
       });
     }
+  } else {
+    // No data available - provide placeholder content
+    report += `## Research Status\n\n`;
+    report += `This research session was auto-created for report generation. No research data has been collected yet.\n\n`;
+    report += `To gather research data, use the following tools:\n`;
+    report += `- **enhanced_search**: Search for information about ${metadata.topic}\n`;
+    report += `- **enhanced_visit**: Visit and analyze specific web pages\n`;
+    report += `- **deep_dive**: Perform comprehensive research on specific aspects\n\n`;
+    report += `After collecting data, generate the report again to see detailed findings.\n\n`;
   }
   
   // Add images if requested

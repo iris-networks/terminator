@@ -67,7 +67,7 @@ const highlightCommand = (command: string) => {
 
 /**
  * Renders script execution results with professional code editor and terminal output
- * Based on UI-TARS ScriptResultRenderer
+ * Modern ScriptResultRenderer
  */
 export const ScriptResultRenderer: React.FC<ScriptResultRendererProps> = ({ part }) => {
   const [displayMode, setDisplayMode] = useState<'both' | 'script' | 'execution'>('both');

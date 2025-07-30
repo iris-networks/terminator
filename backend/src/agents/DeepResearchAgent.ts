@@ -5,12 +5,14 @@ export { visitLinkTool } from './research/enhanced-visit.js';
 export { deepDiveTool } from './research/deep-dive.js';
 export { researchPlanTool } from './research/research-plan.js';  
 export { reportGeneratorTool } from './research/report-generator.js';
+export { sessionManagerTool } from './research/session-manager.js';
 
 import { searchTool } from './research/enhanced-search.js';
 import { visitLinkTool } from './research/enhanced-visit.js';
 import { deepDiveTool } from './research/deep-dive.js';
 import { researchPlanTool } from './research/research-plan.js';
 import { reportGeneratorTool } from './research/report-generator.js';
+import { sessionManagerTool } from './research/session-manager.js';
 
 // Export tools collection
 export const deepResearchTools = {
@@ -19,4 +21,5 @@ export const deepResearchTools = {
   deep_dive: deepDiveTool,
   research_plan: researchPlanTool,
   report_generator: reportGeneratorTool,
+  session_manager: sessionManagerTool,
 };

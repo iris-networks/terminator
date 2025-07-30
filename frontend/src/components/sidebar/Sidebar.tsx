@@ -38,8 +38,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
     session.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Group sessions by time periods like UI-TARS
-  const groupSessionsByTime = (sessions: any[]) => {
+  // Group sessions by time periods   const groupSessionsByTime = (sessions: any[]) => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
