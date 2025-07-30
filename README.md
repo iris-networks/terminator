@@ -163,4 +163,4 @@ limitations under the License.
 
 ---
 
-**Built with ❤️ by the Terminator community**
+**Built with ❤️ by Hivelogic - Iris v2**
