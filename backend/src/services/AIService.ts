@@ -3,6 +3,9 @@ import { openai } from '@ai-sdk/openai';
 import { anthropic } from '@ai-sdk/anthropic';
 import { AgentConfig, AgentResponse, ChatMessage, ToolCall } from '../types/index.js';
 import { defaultAgentTools, getAgentTools, AgentType } from '../agents/AgentTARS.js';
+import { readFile, writeFile } from 'fs/promises';
+import mime from 'mime-types';
+import { join } from 'path';
 
 export class AIService {
   private config: AgentConfig;
@@ -69,9 +72,55 @@ export class AIService {
     data: any;
   }> {
     try {
+      const coreMessages: CoreMessage[] = await Promise.all(
+        messages.map(async (message): Promise<CoreMessage> => {
+          const content: any[] = [{ type: 'text', text: message.content as string }];
+          if (message.attachments && message.attachments.length > 0) {
+            for (const attachment of message.attachments) {
+              try {
+                // The `attachment` variable already holds the absolute path.
+                const fullPath = attachment;
+                const mimeType = mime.lookup(fullPath);
+                
+                if (mimeType) {
+                  const data = await readFile(fullPath);
+                  if (mimeType.startsWith('image/')) {
+                    content.push({ type: 'image', image: data });
+                  } else {
+                    content.push({ type: 'file', data: data, mimeType });
+                  }
+                }
+              } catch (error) {
+                console.error(`Failed to process attachment: ${attachment}`, error);
+                content.push({ type: 'text', text: `\n[Error: Could not load attachment: ${attachment.split('/').pop()}]` });
+              }
+            }
+          }
+          
+          // Ensure role is one of the allowed values for CoreMessage
+          const validRoles: CoreMessage['role'][] = ['user', 'assistant', 'system', 'tool'];
+          const role = validRoles.includes(message.role as any) ? message.role as CoreMessage['role'] : 'user';
+
+          if (message.role === 'assistant' && message.toolCalls && message.toolCalls.length > 0) {
+            return {
+              role: 'assistant',
+              content: message.content as string
+            };
+          }
+
+
+          return {
+            role: role,
+            content: content.length === 1 && content[0].type === 'text' 
+              ? content[0].text 
+              : content,
+          };
+        })
+      );
+      
       const stream = streamText({
         model: this.getModel() as LanguageModelV1,
-        messages: messages,
+        messages: coreMessages,
         tools: await this.getToolsForCurrentAgent(),
         temperature: this.config.temperature || 0.7,
         maxTokens: this.config.maxTokens || 4000,

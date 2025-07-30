@@ -74,10 +74,11 @@ export class SocketService {
       socket.on('send_message', async (data: {
         sessionId: string;
         content: string;
+        attachments?: string[];
         metadata?: { agentType?: string };
       }) => {
         try {
-          const { sessionId, content, metadata } = data;
+          const { sessionId, content, attachments, metadata } = data;
           
           // Create session if it doesn't exist
           let session = await sessionService.getSession(sessionId);
@@ -89,6 +90,7 @@ export class SocketService {
           const userMessage = await sessionService.addMessage(sessionId, {
             role: 'user',
             content,
+            attachments,
             metadata,
           });
 

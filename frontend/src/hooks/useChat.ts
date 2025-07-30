@@ -66,13 +66,48 @@ export const useChat = () => {
   }, [socket, currentSessionId]);
 
   // Send a message
-  const sendMessage = useCallback((content: string, metadata?: { agentType?: string }) => {
+  const sendMessage = useCallback(async (
+    content: string, 
+    attachments: File[],
+    metadata?: { agentType?: string }
+  ) => {
     if (!socket || !currentSessionId || isLoading) return;
     
     setIsLoading(true);
+
+    let attachmentUrls: string[] = [];
+
+    if (attachments.length > 0) {
+      const formData = new FormData();
+      attachments.forEach(file => {
+        formData.append('files', file);
+      });
+
+      try {
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('File upload failed');
+        }
+
+        const data = await response.json();
+        attachmentUrls = data.files;
+
+      } catch (error) {
+        console.error('Error uploading files:', error);
+        setIsLoading(false);
+        // Optionally, show an error message to the user
+        return;
+      }
+    }
+    
     socket.emit('send_message', {
       sessionId: currentSessionId,
       content,
+      attachments: attachmentUrls,
       metadata,
     });
   }, [socket, currentSessionId, isLoading]);
