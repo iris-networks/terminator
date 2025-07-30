@@ -172,8 +172,7 @@ export const ChatInterface: React.FC = () => {
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6">
-        {/* Agent selector removed - using single multi-agent */}
+      <div className="pb-6">
         <ChatInput 
           onSendMessage={handleSendMessage} 
           isLoading={isLoading || isThinking}
