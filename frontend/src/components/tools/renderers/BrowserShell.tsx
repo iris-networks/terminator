@@ -48,7 +48,7 @@ export const BrowserShell: React.FC<BrowserShellProps> = ({
     <div
       className={`bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200/70 dark:border-gray-700/40 shadow-sm ${className}`}
     >
-      {/* Browser toolbar with UI-TARS styling */}
+      {/* Browser toolbar with modern styling */}
       <div className="bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-700 dark:to-gray-800 border-b border-gray-200/60 dark:border-gray-700/40">
         {/* Address bar with controls */}
         <div className="flex items-center px-4 py-3">

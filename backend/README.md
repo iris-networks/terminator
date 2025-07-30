@@ -123,8 +123,8 @@ Secure code execution environment with multi-language support:
 
 #### DeepResearch Agent  
 Advanced research agent with plan-and-execute methodology:
-- **enhanced_search**: Advanced web search with domain filtering and query optimization
-- **enhanced_visit_link**: Detailed content extraction from web pages with multiple modes
+- **search**: Advanced web search with domain filtering and query optimization
+- **visit_link**: Detailed content extraction from web pages with multiple modes
 - **deep_dive**: Comprehensive topic research combining search and content analysis
 - **research_plan**: Create and manage structured research plans with progress tracking
 - **report_generator**: Generate comprehensive research reports with citations
@@ -227,7 +227,7 @@ if (['node_codeact', 'python_codeact', 'shell_codeact'].includes(result.toolName
 }
 
 // DeepResearch tools  
-else if (['enhanced_search', 'deep_dive', 'research_plan'].includes(result.toolName)) {
+else if (['search', 'deep_dive', 'research_plan'].includes(result.toolName)) {
   contentPart.type = result.toolName;
   // Extract query, sources, insights, plan, report, etc.
 }
@@ -422,7 +422,7 @@ const deepDive = await deepDiveTool.execute({
 
 ## Contributing
 
-This implementation provides a comprehensive multi-agent system based on the UI-TARS architecture, adapted for the Iris platform. The system is designed to be:
+This implementation provides a comprehensive multi-agent system with modern architecture, designed for the Iris platform. The system is designed to be:
 
 - **Extensible**: Easy to add new agents and tools
 - **Secure**: Sandboxed execution environments with proper validation

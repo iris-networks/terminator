@@ -1,7 +1,7 @@
 {
-  "name": "agent-tars-reborn",
+  "name": "iris",
   "version": "1.0.0",
-  "description": "Agent TARS rebuilt with Vercel AI SDK - Modern agentic chat interface",
+  "description": "Modern AI-powered research and automation platform with advanced web capabilities",
   "private": true,
   "type": "module",
   "workspaces": [

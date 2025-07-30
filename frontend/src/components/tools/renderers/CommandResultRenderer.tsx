@@ -11,7 +11,7 @@ interface CommandResultRendererProps {
 
 /**
  * Custom command highlighting function
- * Based on UI-TARS approach with regex patterns for different command elements
+ * Modern approach with regex patterns for different command elements
  */
 const highlightCommand = (command: string) => {
   const tokenize = (cmd: string) => {
@@ -90,7 +90,7 @@ const highlightCommand = (command: string) => {
 
 /**
  * Renders a terminal-like command and output result
- * Based on UI-TARS CommandResultRenderer with macOS-style terminal
+ * Modern CommandResultRenderer with macOS-style terminal
  */
 export const CommandResultRenderer: React.FC<CommandResultRendererProps> = ({ part }) => {
   const [copied, setCopied] = useState(false);

@@ -102,7 +102,7 @@ const CONTENT_RENDERERS: Record<
   python_codeact: CodeActRenderer,
   shell_codeact: CodeActRenderer,
   codeact_memory: CodeActRenderer,
-  enhanced_search: DeepResearchRenderer,
+  search: DeepResearchRenderer,
   enhanced_visit: DeepResearchRenderer,
   deep_dive: DeepResearchRenderer,
   research_plan: DeepResearchRenderer,
@@ -128,7 +128,7 @@ interface EnhancedToolResultRendererProps {
 }
 
 /**
- * Enhanced tool result renderer that uses specialized renderers based on UI-TARS approach
+ * Enhanced tool result renderer that uses specialized renderers with modern design approach
  */
 export const EnhancedToolResultRenderer: React.FC<EnhancedToolResultRendererProps> = ({
   content,
@@ -199,8 +199,8 @@ export const EnhancedToolResultRenderer: React.FC<EnhancedToolResultRendererProp
             'python_codeact': 'python_codeact', 
             'shell_codeact': 'shell_codeact',
             'codeact_memory': 'codeact_memory',
-            'enhanced_search': 'enhanced_search',
-            'enhanced_visit_link': 'enhanced_visit',
+            'search': 'search',
+            'visit_link': 'enhanced_visit',
             'deep_dive': 'deep_dive',
             'research_plan': 'research_plan',
             'report_generator': 'research_report',

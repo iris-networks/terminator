@@ -24,7 +24,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onClose }) => {
     'Film Strip Tool Results Interface',
     'Monaco Editor with Syntax Highlighting',
     'Real-time Socket Communication',
-    'UI-TARS Inspired Design System',
+    'Modern Design System',
     'Dark Mode Support',
     'Glass Morphism Effects',
   ];
@@ -192,15 +192,15 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onClose }) => {
                 </h3>
                 <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
                   <p>
-                    UI design inspired by{' '}
+                    Modern, intuitive UI design with{' '}
                     <motion.a
                       whileHover={{ scale: 1.05 }}
-                      href="https://github.com/UI-TARS"
+                      href="https://github.com/iris-ai"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-accent-600 dark:text-accent-400 hover:text-accent-700 font-medium inline-flex items-center"
                     >
-                      UI-TARS <FiExternalLink className="w-3 h-3 ml-1" />
+                      open source components <FiExternalLink className="w-3 h-3 ml-1" />
                     </motion.a>
                   </p>
                   <p>Built with modern web technologies and a focus on user experience.</p>

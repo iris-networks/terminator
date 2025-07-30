@@ -2,7 +2,7 @@ import { tool } from 'ai';
 import { z } from 'zod';
 import axios from 'axios';
 import { BrowserManager } from '../../services/BrowserManager.js';
-import { researchSessions } from './types.js';
+import { researchSessions, saveSession } from './types.js';
 
 // Search Tool
 export const searchTool = tool({
@@ -114,7 +114,7 @@ export const searchTool = tool({
               const snippetElement = element.querySelector('.result__snippet');
               
               if (titleElement && snippetElement) {
-                const url = titleElement.href || '';
+                const url = (titleElement as HTMLAnchorElement).href || '';
                 const domain = url ? new URL(url).hostname : '';
                 
                 results.push({
@@ -133,7 +133,7 @@ export const searchTool = tool({
           });
           
           // Apply domain filters to browser results
-          const filteredResults = searchResults.filter(result => {
+          const filteredResults = searchResults.filter((result: any) => {
             if (domains && domains.length > 0 && !domains.some(d => result.domain.includes(d))) {
               return false;
             }
@@ -157,6 +157,7 @@ export const searchTool = tool({
             session.visitedUrls.add(result.url);
           }
         });
+        saveSession(sessionId, session);
       }
       
       return {
@@ -169,7 +170,7 @@ export const searchTool = tool({
         excludeDomains: excludeDomains || [],
         timestamp: new Date().toISOString(),
         sessionId,
-        type: 'enhanced_search'
+        type: 'search'
       };
       
     } catch (error) {
@@ -180,7 +181,7 @@ export const searchTool = tool({
         totalResults: 0,
         error: error instanceof Error ? error.message : 'Unknown error',
         timestamp: new Date().toISOString(),
-        type: 'enhanced_search'
+        type: 'search'
       };
     }
   }

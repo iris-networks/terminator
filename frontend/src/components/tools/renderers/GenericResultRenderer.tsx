@@ -11,7 +11,7 @@ interface GenericResultRendererProps {
 
 /**
  * Generic result renderer for handling various content types
- * Based on UI-TARS GenericResultRenderer
+ * Modern GenericResultRenderer
  */
 export const GenericResultRenderer: React.FC<GenericResultRendererProps> = ({ part }) => {
   const [copied, setCopied] = useState(false);
