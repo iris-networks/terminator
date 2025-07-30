@@ -29,9 +29,9 @@ export const ChatInterface: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = (content: string) => {
+  const handleSendMessage = (content: string, attachments: File[]) => {
     // Include agent type in message metadata
-    sendMessage(content, { agentType: selectedAgent });
+    sendMessage(content, attachments, { agentType: selectedAgent });
   };
 
   const handleExportSession = async () => {

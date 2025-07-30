@@ -2,6 +2,7 @@ export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant' | 'system';
   content: string;
+  attachments?: string[];
   timestamp: Date;
   sessionId: string;
   toolCalls?: ToolCall[];
