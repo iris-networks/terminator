@@ -33,7 +33,7 @@ async function testMCPSimple() {
 
   } catch (error) {
     console.error('❌ MCP Integration test failed:', error);
-    console.error('Stack trace:', error.stack);
+    console.error('Stack trace:', error instanceof Error ? error.stack : 'No stack trace available');
     process.exit(1);
   }
 }

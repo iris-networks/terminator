@@ -14,7 +14,6 @@ interface Message {
   content: string;
   timestamp: Date;
   thinking?: boolean;
-  toolCalls?: ToolResult[];
   metadata?: {
     tokens?: number;
     agentType?: string;

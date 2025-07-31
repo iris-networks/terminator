@@ -19,7 +19,9 @@ router.post('/message', async (req, res, next) => {
     const { sessionId, message, stream = false } = req.body;
 
     if (!sessionId || !message) {
-      const error: ApiError = new Error('Session ID and message are required');
+      const error = new Error('Session ID and message are required') as ApiError;
+      error.status = 400;
+      error.code = 'INVALID_INPUT';
       error.status = 400;
       error.code = 'INVALID_INPUT';
       throw error;
@@ -38,7 +40,9 @@ router.post('/message', async (req, res, next) => {
     });
 
     if (!userMessage) {
-      const error: ApiError = new Error('Failed to add message to session');
+      const error = new Error('Failed to add message to session') as ApiError;
+      error.status = 500;
+      error.code = 'DATABASE_ERROR';
       error.status = 500;
       error.code = 'SESSION_ERROR';
       throw error;
@@ -149,7 +153,9 @@ router.post('/sessions/:sessionId/clear', async (req, res, next) => {
     
     const session = await sessionService.getSession(sessionId);
     if (!session) {
-      const error: ApiError = new Error('Session not found');
+      const error = new Error('Session not found') as ApiError;
+      error.status = 404;
+      error.code = 'SESSION_NOT_FOUND';
       error.status = 404;
       error.code = 'SESSION_NOT_FOUND';
       throw error;

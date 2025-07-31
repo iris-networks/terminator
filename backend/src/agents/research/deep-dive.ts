@@ -71,13 +71,19 @@ export const deepDiveTool = tool({
             abortSignal
           });
           
-          if (visitResult.content && (visitResult.relevanceScore || 0) > 0.3) {
+          // Enhanced visit tool is deprecated - use MCP browser tools instead
+          if (visitResult.error) {
+            console.warn('Enhanced visit tool deprecated:', visitResult.error);
+            continue;
+          }
+          
+          if (visitResult.content) {
             sources.push({
               url: visitResult.url,
-              title: visitResult.metadata?.title || 'Unknown Title',
+              title: 'Unknown Title', // metadata no longer available
               content: visitResult.content,
-              relevanceScore: visitResult.relevanceScore,
-              images: visitResult.images || [],
+              relevanceScore: 1.0, // default since relevanceScore no longer available
+              images: [], // images no longer available
               extractedAt: visitResult.timestamp
             });
             
