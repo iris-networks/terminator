@@ -34,7 +34,7 @@ export class SessionService {
     }
 
     // Load from database if not in cache
-    session = await databaseService.getSession(sessionId);
+    session = (await databaseService.getSession(sessionId)) || undefined;
     if (session) {
       this.sessions.set(sessionId, session);
       return session;

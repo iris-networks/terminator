@@ -47,7 +47,9 @@ router.get('/:sessionId', async (req, res, next) => {
     const session = await sessionService.getSession(sessionId);
     
     if (!session) {
-      const error: ApiError = new Error('Session not found');
+      const error = new Error('Session not found') as ApiError;
+      error.status = 404;
+      error.code = 'SESSION_NOT_FOUND';
       error.status = 404;
       error.code = 'SESSION_NOT_FOUND';
       throw error;
@@ -71,7 +73,9 @@ router.put('/:sessionId', async (req, res, next) => {
     const updatedSession = await sessionService.updateSession(sessionId, { title });
     
     if (!updatedSession) {
-      const error: ApiError = new Error('Session not found');
+      const error = new Error('Session not found') as ApiError;
+      error.status = 404;
+      error.code = 'SESSION_NOT_FOUND';
       error.status = 404;
       error.code = 'SESSION_NOT_FOUND';
       throw error;
@@ -93,7 +97,9 @@ router.delete('/:sessionId', async (req, res, next) => {
     const deleted = await sessionService.deleteSession(sessionId);
     
     if (!deleted) {
-      const error: ApiError = new Error('Session not found');
+      const error = new Error('Session not found') as ApiError;
+      error.status = 404;
+      error.code = 'SESSION_NOT_FOUND';
       error.status = 404;
       error.code = 'SESSION_NOT_FOUND';
       throw error;
@@ -115,7 +121,9 @@ router.get('/:sessionId/stats', async (req, res, next) => {
     const stats = await sessionService.getSessionStats(sessionId);
     
     if (!stats) {
-      const error: ApiError = new Error('Session not found');
+      const error = new Error('Session not found') as ApiError;
+      error.status = 404;
+      error.code = 'SESSION_NOT_FOUND';
       error.status = 404;
       error.code = 'SESSION_NOT_FOUND';
       throw error;

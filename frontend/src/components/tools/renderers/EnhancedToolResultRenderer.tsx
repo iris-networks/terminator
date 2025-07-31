@@ -175,7 +175,6 @@ export const EnhancedToolResultRenderer: React.FC<EnhancedToolResultRendererProp
             'browser_wait': 'browser_wait',
             'browser_form_input_fill': 'browser_form_input_fill',
             'browser_hover': 'browser_hover',
-            'browser_click': 'browser_click',
             'browser_double_click': 'browser_double_click',
             'browser_right_click': 'browser_right_click',
             'browser_key_press': 'browser_key_press',

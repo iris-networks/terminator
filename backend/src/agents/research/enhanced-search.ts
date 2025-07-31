@@ -1,7 +1,6 @@
 import { tool } from 'ai';
 import { z } from 'zod';
 import axios from 'axios';
-import { BrowserManager } from '../../services/BrowserManager.js';
 import { researchSessions, saveSession } from './types.js';
 
 // Search Tool
@@ -86,68 +85,7 @@ export const searchTool = tool({
         }
       }
       
-      // Fallback to browser search if needed
-      if (results.length < 3) {
-        try {
-          const browserManager = BrowserManager.getInstance();
-          const cdpEndpoint = await BrowserManager.discoverBrowser();
-          
-          if (!browserManager.isLaunchingComplete()) {
-            await browserManager.launchBrowser({
-              cdpEndpoint: cdpEndpoint || undefined,
-              headless: true,
-            });
-          }
-          
-          const page = await browserManager.getOrCreatePage();
-          await page.goto(`https://html.duckduckgo.com/html/?q=${encodeURIComponent(optimizedQuery)}`, {
-            waitUntil: 'networkidle2',
-            timeout: 30000
-          });
-          
-          const searchResults = await page.evaluate(() => {
-            const results = [];
-            const resultElements = document.querySelectorAll('.result');
-            
-            for (const element of Array.from(resultElements).slice(0, 8)) {
-              const titleElement = element.querySelector('.result__title a');
-              const snippetElement = element.querySelector('.result__snippet');
-              
-              if (titleElement && snippetElement) {
-                const url = (titleElement as HTMLAnchorElement).href || '';
-                const domain = url ? new URL(url).hostname : '';
-                
-                results.push({
-                  title: titleElement.textContent?.trim() || '',
-                  url,
-                  snippet: snippetElement.textContent?.trim() || '',
-                  domain,
-                  publishedDate: new Date().toISOString(),
-                  relevanceScore: 0.7,
-                  type: 'web_result'
-                });
-              }
-            }
-            
-            return results;
-          });
-          
-          // Apply domain filters to browser results
-          const filteredResults = searchResults.filter((result: any) => {
-            if (domains && domains.length > 0 && !domains.some(d => result.domain.includes(d))) {
-              return false;
-            }
-            if (excludeDomains && excludeDomains.some(d => result.domain.includes(d))) {
-              return false;
-            }
-            return true;
-          });
-          
-          results.push(...filteredResults.slice(0, maxResults - results.length));
-        } catch (browserError) {
-          console.error('Browser search fallback failed:', browserError);
-        }
-      }
+      // Note: Browser fallback removed - now handled by MCP browser tools
       
       // Update session tracking if provided
       if (sessionId && researchSessions.has(sessionId)) {
