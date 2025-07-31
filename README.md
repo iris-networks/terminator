@@ -53,6 +53,18 @@ pnpm lint       # Lint code
 pnpm type-check # TypeScript validation
 ```
 
+## Deployment
+
+For production deployment with secure environment variables:
+
+```bash
+# Pass environment variables inline (recommended for servers)
+VAR1=value1 VAR2=value2 pnpm prod
+VAR1=value1 VAR2=value2 pnpm start
+
+# Variables are passed directly to the process without appearing in ps output
+```
+
 ## Architecture
 
 ```

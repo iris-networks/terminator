@@ -1,9 +1,9 @@
-import { Router } from 'express';
+import { Router, type Router as ExpressRouter } from 'express';
 import { AIService } from '../services/AIService.js';
 import { sessionService } from '../services/SessionService.js';
 import { ApiError } from '../types/index.js';
 
-const router = Router();
+const router: ExpressRouter = Router();
 
 // Initialize AI service
 const aiService = new AIService({

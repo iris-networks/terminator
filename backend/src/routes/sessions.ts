@@ -1,8 +1,8 @@
-import { Router } from 'express';
+import { Router, type Router as ExpressRouter } from 'express';
 import { sessionService } from '../services/SessionService.js';
 import { ApiError } from '../types/index.js';
 
-const router = Router();
+const router: ExpressRouter = Router();
 
 // GET /api/sessions - Get all sessions
 router.get('/', async (req, res, next) => {

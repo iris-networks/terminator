@@ -17,6 +17,7 @@
     "@modelcontextprotocol/sdk": "^1.17.0",
     "@mozilla/readability": "^0.6.0",
     "@types/sqlite3": "^3.1.11",
+    "@types/turndown": "^5.0.5",
     "ai": "^4.3.19",
     "axios": "^1.11.0",
     "cors": "^2.8.5",
@@ -28,6 +29,7 @@
     "puppeteer": "^21.11.0",
     "socket.io": "^4.8.1",
     "sqlite3": "^5.1.7",
+    "turndown": "^7.2.0",
     "uuid": "^9.0.1",
     "zod": "^3.25.76"
   },
