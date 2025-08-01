@@ -1,7 +1,7 @@
-import express from 'express';
+import express, { type Router } from 'express';
 import { SocketService } from '../services/SocketService.js';
 
-const createReplayRouter = (socketService: SocketService) => {
+const createReplayRouter = (socketService: SocketService): Router => {
   const router = express.Router();
 
 /**

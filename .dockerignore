@@ -1,0 +1,9 @@
+backend/.env*
+backend/node_modules
+frontend/node_modules
+node_modules
+*.log
+.git
+.gitignore
+README.md
+.DS_Store
