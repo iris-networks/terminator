@@ -124,7 +124,7 @@ export class AIService {
         tools: await this.getToolsForCurrentAgent(),
         temperature: this.config.temperature || 0.7,
         maxTokens: this.config.maxTokens || 4000,
-        maxSteps: 20,
+        maxSteps: 100,
         onStepFinish: (({toolResults}) => {
           // Emit tool results if callback provided
           if (onToolResult && toolResults && toolResults.length > 0) {
@@ -149,7 +149,7 @@ export class AIService {
               // Enhanced content type detection and structuring
               if (result.toolName) {
                 // Command execution tools
-                if (['execute_command', 'shell_execute', 'bash'].includes(result.toolName)) {
+                if (['execute_command', 'shell_execute', 'bash', 'shell_code'].includes(result.toolName)) {
                   contentPart.type = 'command_result';
                   contentPart.command = result.args?.command || '';
                   contentPart.stdout = result.result?.stdout || result.result?.output || '';

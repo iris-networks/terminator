@@ -1,5 +1,7 @@
 # Terminator
 
+**Important**: Sessions are not auto-created. Don't forget to click the blue plus icon to create a new session!
+
 Multi-agent AI platform for code execution, research, and browser automation.
 
 ![Demo](./demo.gif)
@@ -39,7 +41,7 @@ cp .env.example .env
 # Add your OpenAI/Anthropic API key
 
 # Start development
-pnpm dev
+pnpm run dev:watch
 ```
 
 Open http://localhost:3000
@@ -47,10 +49,13 @@ Open http://localhost:3000
 ## Development
 
 ```bash
-pnpm dev        # Start dev servers
-pnpm build      # Build for production
-pnpm lint       # Lint code
-pnpm type-check # TypeScript validation
+pnpm run dev:watch # Start dev servers
+pnpm build         # Build for production
+pnpm lint          # Lint code
+pnpm type-check    # TypeScript validation
+
+# Secure server startup (API key not visible in process list)
+API_KEY=your_key ./start-server.sh
 ```
 
 ## Deployment
