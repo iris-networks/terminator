@@ -95,6 +95,12 @@ AI_PROVIDER=anthropic
 ANTHROPIC_API_KEY=<your-anthropic-api-key>
 ```
 
+### Supported AI Providers
+
+Terminator supports multiple AI providers including Anthropic, OpenAI, Google Gemini, Ollama, and OpenRouter. 
+
+For detailed setup instructions for each provider, see the [AI Providers Documentation](./docs/AI_PROVIDERS.md).
+
 **3. Install dependencies and run the app:**
 
 This single command installs dependencies and starts both the backend and frontend in parallel.
