@@ -58,8 +58,8 @@
     <a href="https://www.anthropic.com/claude">
       <img src="https://img.shields.io/badge/Claude-D97A54?style=flat-square" alt="Claude">
     </a>
-    <a href="https://discord.com/">
-      <img src="https://img.shields.io/discord/YOUR_SERVER_ID.svg?logo=discord&colorB=5865F2" alt="Discord">
+    <a href="https://discord.gg/uuNbJQyw6g">
+      <img src="https://img.shields.io/discord/1262528773294067712?logo=discord&colorB=5865F2" alt="Discord">
     </a>
   </div>
 </div>
@@ -68,9 +68,11 @@
 
 Terminator is a modern AI-powered research and automation platform with advanced web capabilities. It's designed to be a multi-agent AI platform for code execution, research, and browser automation with standalone binary deployment.
 
+![Demo](demo.gif)
+
 ## Getting Started
 
-The easiest way to get started with Terminator is by using the provided Docker setup.
+The easiest way to get started with Terminator is by cloning the repository and running the watch command.
 
 **1. Clone the repository:**
 
@@ -87,13 +89,14 @@ Copy the example environment file and add your API keys.
 cp .env.example .env
 ```
 
-**3. Build and run with Docker:**
+**3. Install dependencies and run in watch mode:**
 
 ```bash
-docker-compose up --build
+bun install
+bun run dev:watch
 ```
 
-Once the containers are running, you can access the Terminator platform at [http://localhost:3000](http://localhost:3000).
+Once running, you can access the Terminator platform at [http://localhost:3000](http://localhost:3000).
 
 ## Features
 
@@ -106,6 +109,10 @@ Once the containers are running, you can access the Terminator platform at [http
 ## Documentation
 
 For more detailed information on how to use and configure Terminator, please refer to the [documentation](./docs/README.md).
+
+## Community
+
+Join our community on [Discord](https://discord.gg/uuNbJQyw6g) to ask questions, share your projects, and connect with other developers.
 
 ## Contributing
 
