@@ -11,7 +11,7 @@ This guide will help you get up and running with Iris.
     ```
 2.  **Install dependencies:**
     ```bash
-    pnpm install
+    bun install
     ```
 3.  **Set up your environment:**
     ```bash
@@ -22,5 +22,5 @@ This guide will help you get up and running with Iris.
 ## Running the application
 
 ```bash
-pnpm run dev
+bun run dev:watch
 ```
