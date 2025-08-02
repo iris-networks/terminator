@@ -14,7 +14,7 @@
     "watch:build": "chokidar \"frontend/src/**/*\" -c \"bun --cwd frontend run build && cp -r frontend/.next backend/public\"",
     "build": "cd frontend && bun run build && cd .. && cp -r frontend/.next backend/public/",
     "start": "bun --cwd backend run start",
-    "compile": "bun run build && mkdir -p ./dist && bun build backend/src/index.ts --compile --external puppeteer --outfile=./dist/iris-server",
+    "compile": "bun run build && mkdir -p ./dist && bun build backend/src/index.ts --compile --external puppeteer --outfile=./dist/iris-server && cp -r backend/public ./dist/",
     "compile:linux": "mkdir -p ./dist && bun build backend/src/index.ts --compile --target=bun-linux-x64 --outfile=./dist/iris-server-linux",
     "compile:windows": "mkdir -p ./dist && bun build backend/src/index.ts --compile --target=bun-windows-x64 --outfile=./dist/iris-server.exe",
     "clean": "bun run clean --workspaces",
