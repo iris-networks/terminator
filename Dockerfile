@@ -1,49 +1,71 @@
-FROM lscr.io/linuxserver/webtop:ubuntu-xfce
+# Multi-stage build - compile binary inside Linux container
+FROM oven/bun:1 AS builder
 
-# Switch to root user to install packages
-USER root
-
-# Install Node.js 18+, pnpm, and other dependencies
-RUN apt-get update && apt-get install -y \
-    curl \
-    git \
-    python3 \
-    python3-pip \
-    openjdk-11-jdk \
-    ca-certificates \
-    gnupg \
-    && mkdir -p /etc/apt/keyrings \
-    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
-    && apt-get update \
-    && apt-get install -y nodejs \
-    && npm install -g pnpm@8.15.1 \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Set working directory
 WORKDIR /app
 
 # Copy package files
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY package.json bun.lock* ./
 COPY frontend/package.json ./frontend/
 COPY backend/package.json ./backend/
 
-# Set puppeteer to skip downloading Chromium (use system Chrome from webtop)
+# Install dependencies (skip puppeteer download)
+ENV PUPPETEER_SKIP_DOWNLOAD=true
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome
+RUN bun install
 
-# Install dependencies
-RUN pnpm install
-
-# Copy source code (excluding .env files via .dockerignore)
+# Copy source code
 COPY . .
 
-# Build the application
-RUN pnpm build
+# Build frontend and compile binary for Linux
+RUN bun run build
+RUN bun build backend/src/index.ts --compile --external puppeteer --outfile=./dist/iris-server
 
-# Create workspace directory
-RUN mkdir -p /app/backend/workspace && chmod 777 /app/backend/workspace
+# Production stage - LinuxServer.io webtop
+FROM lscr.io/linuxserver/webtop:ubuntu-mate
+
+# Set environment variables
+ENV TITLE="Iris AI Platform"
+ENV CUSTOM_USER=iris
+ENV PASSWORD=iris123
+
+# Configure puppeteer to use system Chrome
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
+# Create app directory
+WORKDIR /app
+
+# Copy the compiled binary and frontend files from builder stage
+COPY --from=builder /app/dist/iris-server /app/iris-server
+COPY --from=builder /app/backend/public /app/public
+RUN chmod +x /app/iris-server
+
+# Create data and workspace directories with proper permissions
+# LinuxServer.io webtop runs as user 'abc' (UID 911, GID 911)
+RUN mkdir -p /app/data /app/workspace && \
+    chown -R 911:911 /app && \
+    chmod -R 755 /app
+
+# Create desktop shortcut (optional - user can double-click to start)
+USER root
+RUN mkdir -p /config/Desktop
+COPY <<EOF /config/Desktop/iris-ai.desktop
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Iris AI Platform
+Comment=AI-powered research and automation platform
+Exec=sh -c 'cd /app && ./iris-server'
+Icon=applications-internet
+Terminal=true
+Categories=Network;WebBrowser;
+EOF
+
+RUN chmod +x /config/Desktop/iris-ai.desktop
 
 # Expose ports
-EXPOSE 3001
+EXPOSE 3000 3001
+
+# No auto-start - users can manually launch via desktop shortcut
+# Access desktop at http://localhost:3000 (username: iris, password: iris123)
+# Launch Iris manually from desktop, then access at http://localhost:3001

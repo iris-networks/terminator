@@ -1,17 +1,41 @@
 services:
-  terminator:
+  iris-ai:
     build: .
-    ports:
-      - "3001:3001"
-      - "3000:3000"  # Web UI access
-    volumes:
-      - ./backend/workspace:/app/backend/workspace
-      - ./backend/uploads:/app/backend/uploads
-      - ./backend/data:/app/backend/data
+    container_name: iris-ai-platform
     environment:
+      # Required - Set your Anthropic API key
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      
+      # AI Configuration
+      - AI_PROVIDER=anthropic
+      - AI_MODEL=claude-sonnet-4-20250514
+      - AI_TEMPERATURE=0.7
+      - AI_MAX_TOKENS=4000
+      
+      # Webtop Configuration
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
+      - SUBFOLDER=/
+      - TITLE=Iris AI Platform
+      - CUSTOM_USER=iris
+      - PASSWORD=iris123
+      
+      # Optional: Custom settings
+      - WORKSPACE_PATH=/app/workspace
+      - DATABASE_PATH=/app/data/sessions.db
+      
+    ports:
+      # noVNC web interface (access desktop via browser)
+      - "3000:3000"
+      # Iris AI Platform
+      - "3001:3001"
+      
     restart: unless-stopped
-    stdin_open: true
-    tty: true
+    
+    # Security context
+    security_opt:
+      - seccomp:unconfined
+    
+    # Required for GUI applications
+    shm_size: "1gb"

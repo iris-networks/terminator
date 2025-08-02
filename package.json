@@ -9,15 +9,18 @@
     "backend"
   ],
   "scripts": {
-    "dev": "pnpm --parallel --filter frontend --filter backend dev",
-    "dev:watch": "concurrently \"pnpm --filter ./frontend dev\" \"pnpm --filter ./backend dev\" \"pnpm run watch:build\"",
-    "watch:build": "chokidar \"frontend/src/**/*\" -c \"pnpm --filter ./frontend build && cp -r frontend/.next backend/public\"",
-    "build": "pnpm --filter ./frontend build && cp -r frontend/.next backend/public/ && pnpm --filter ./backend build",
-    "start": "pnpm --filter ./backend start",
-    "clean": "pnpm --recursive clean",
-    "lint": "pnpm --recursive lint",
-    "type-check": "pnpm --recursive type-check",
-    "test": "pnpm --recursive test"
+    "dev": "concurrently \"cd frontend && bun run dev\" \"cd backend && bun run dev\"",
+    "dev:watch": "concurrently \"cd backend && bun run dev\" \"bun run watch:build\"",
+    "watch:build": "chokidar \"frontend/src/**/*\" -c \"bun --cwd frontend run build && cp -r frontend/.next backend/public\"",
+    "build": "cd frontend && bun run build && cd .. && cp -r frontend/.next backend/public/",
+    "start": "bun --cwd backend run start",
+    "compile": "bun run build && mkdir -p ./dist && bun build backend/src/index.ts --compile --external puppeteer --outfile=./dist/iris-server",
+    "compile:linux": "mkdir -p ./dist && bun build backend/src/index.ts --compile --target=bun-linux-x64 --outfile=./dist/iris-server-linux",
+    "compile:windows": "mkdir -p ./dist && bun build backend/src/index.ts --compile --target=bun-windows-x64 --outfile=./dist/iris-server.exe",
+    "clean": "bun run clean --workspaces",
+    "lint": "bun run lint --workspaces",
+    "type-check": "bun run type-check --workspaces",
+    "test": "bun run test --workspaces"
   },
   "devDependencies": {
     "@types/node": "^20.19.9",
@@ -27,9 +30,8 @@
   },
   "engines": {
     "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
+    "bun": ">=1.0.0"
   },
-  "packageManager": "pnpm@8.15.1",
   "keywords": [
     "ai",
     "chat",

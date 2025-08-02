@@ -1,10 +1,119 @@
-# Terminator
+# Iris AI Platform
 
 **Important**: Sessions are not auto-created. Don't forget to click the blue plus icon to create a new session!
 
-Multi-agent AI platform for code execution, research, and browser automation.
+Multi-agent AI platform for code execution, research, and browser automation with standalone binary deployment.
 
 ![Demo](./demo.gif)
+
+## 🚀 Quick Start with Docker
+
+The easiest way to run Iris is using Docker with a full desktop environment:
+
+```bash
+# 1. Set your API key
+export ANTHROPIC_API_KEY=your-api-key-here
+
+# 2. Build for Linux and start container
+bun run build && bun run compile:linux
+docker-compose up -d
+
+# 3. Access the desktop environment
+open http://localhost:3000
+```
+
+**Access Points:**
+- 🖥️ **Desktop Environment**: http://localhost:3000 (username: `iris`, password: `iris123`)
+- 🤖 **Iris AI Platform**: Double-click "Iris AI Platform" icon on desktop, then access http://localhost:3001
+
+## 📦 Standalone Binary
+
+Iris is compiled into a single binary with zero dependencies (except Chrome/Chromium):
+
+```bash
+# Build the binary
+bun run compile
+
+# Run with environment variables
+ANTHROPIC_API_KEY=your-key \
+AI_PROVIDER=anthropic \
+AI_MODEL=claude-sonnet-4-20250514 \
+./dist/iris-server
+```
+
+**Cross-platform binaries:**
+```bash
+bun run compile:linux    # Linux x64 binary
+bun run compile:windows  # Windows x64 binary
+```
+
+## 🐳 Docker Deployment
+
+### Architecture
+
+The Docker setup uses **LinuxServer.io webtop** providing:
+- ✅ **Full Ubuntu MATE Desktop** accessible via web browser
+- ✅ **Chrome/Chromium** pre-installed for browser automation
+- ✅ **NoVNC Web Interface** - no client software needed
+- ✅ **Persistent Storage** for data and workspace
+- ✅ **Manual Launch** - Desktop icon to start Iris when needed
+
+### Configuration
+
+**Environment Variables:**
+```yaml
+# Required
+ANTHROPIC_API_KEY=your-api-key-here
+
+# AI Configuration  
+AI_PROVIDER=anthropic
+AI_MODEL=claude-sonnet-4-20250514
+AI_TEMPERATURE=0.7
+AI_MAX_TOKENS=4000
+
+# Desktop Environment
+CUSTOM_USER=iris
+PASSWORD=iris123
+TZ=Etc/UTC
+```
+
+**Ports:**
+- `3000`: noVNC web desktop interface
+- `3001`: Iris AI Platform
+
+**Volumes:**
+- `iris_data`: SQLite database and sessions
+- `iris_workspace`: Code execution workspace  
+- `iris_config`: Desktop configuration
+
+### Production Deployment
+
+**1. Server Deployment:**
+```bash
+# Clone and configure
+git clone <repository>
+cd terminator
+export ANTHROPIC_API_KEY=your-key
+
+# Build for Linux and deploy
+bun run build && bun run compile:linux
+docker-compose up -d
+
+# Access via reverse proxy (recommended)
+# Point your domain to http://localhost:3000
+```
+
+**2. Manual Binary Deployment:**
+```bash
+# Build for target platform
+bun run compile:linux
+
+# Copy binary to server
+scp ./dist/iris-server-linux user@server:/opt/iris-server
+
+# Run with systemd or supervisor
+ANTHROPIC_API_KEY=key ./iris-server
+```
 
 ## Features
 
