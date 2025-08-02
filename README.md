@@ -83,17 +83,24 @@ cd terminator
 
 **2. Set up your environment:**
 
-Copy the example environment file and add your API keys.
-
+Copy the example environment file:
 ```bash
 cp .env.example .env
 ```
 
-**3. Install dependencies and run in watch mode:**
+A simple quickstart only needs three things. Add the following to your `.env` file:
+```
+AI_MODEL=claude-sonnet-4-20250514
+AI_PROVIDER=anthropic
+ANTHROPIC_API_KEY=<your-anthropic-api-key>
+```
+
+**3. Install dependencies and run the app:**
+
+This single command installs dependencies and starts both the backend and frontend in parallel.
 
 ```bash
-bun install
-bun run dev:watch
+bun dev:watch
 ```
 
 Once running, you can access the Terminator platform at [http://localhost:3000](http://localhost:3000).
