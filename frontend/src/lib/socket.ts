@@ -4,7 +4,7 @@ import { io, Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
 
-export const initializeSocket = (serverUrl: string = 'http://localhost:3001') => {
+export const initializeSocket = (serverUrl: string = 'http://localhost:3000') => {
   if (!socket) {
     socket = io(serverUrl, {
       autoConnect: true,
