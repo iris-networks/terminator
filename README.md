@@ -81,18 +81,24 @@ git clone https://github.com/iris-networks/terminator.git
 cd terminator
 ```
 
-**2. Set up your environment:**
+**2. Install dependencies:**
 
-Copy the example environment file:
+```bash
+bun install
+```
+
+**3. Set up your environment:**
+
+Copy the example environment file and configure your AI provider:
 ```bash
 cp .env.example .env
 ```
 
-A simple quickstart only needs three things. Add the following to your `.env` file:
-```
+Edit the `.env` file with your API key:
+```bash
 AI_MODEL=claude-sonnet-4-20250514
 AI_PROVIDER=anthropic
-ANTHROPIC_API_KEY=<your-anthropic-api-key>
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
 ```
 
 ### Supported AI Providers
@@ -101,9 +107,7 @@ Terminator supports multiple AI providers including Anthropic, OpenAI, Google Ge
 
 For detailed setup instructions for each provider, see the [AI Providers Documentation](./docs/AI_PROVIDERS.md).
 
-**3. Install dependencies and run the app:**
-
-This single command installs dependencies and starts both the backend and frontend in parallel.
+**4. Start the application:**
 
 ```bash
 bun dev:watch
