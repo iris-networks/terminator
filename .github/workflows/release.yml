@@ -46,11 +46,28 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+            frontend/node_modules
+            backend/node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb', '**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
       - name: Install dependencies
-        run: bun install
+        run: PUPPETEER_SKIP_DOWNLOAD=true bun install
 
       - name: Build frontend
-        run: bun run build
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Listing contents:"
+          ls -la
+          echo "Building frontend..."
+          bun run build
 
       - name: Determine target and output name
         id: target
@@ -96,11 +113,28 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+            frontend/node_modules
+            backend/node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb', '**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
       - name: Install dependencies
-        run: bun install
+        run: PUPPETEER_SKIP_DOWNLOAD=true bun install
 
       - name: Build frontend
-        run: bun run build
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Listing contents:"
+          ls -la
+          echo "Building frontend..."
+          bun run build
 
       - name: Package frontend
         run: tar -czvf frontend.tar.gz -C backend/public .
