@@ -1,0 +1,17 @@
+# Bun configuration for binary compilation
+[build]
+target = "bun"
+outdir = "./dist"
+entrypoints = ["./backend/src/index.ts"]
+minify = true
+splitting = false
+sourcemap = "none"
+
+# Binary compilation settings
+[compile]
+# Output name for the binary
+name = "iris-server"
+# Include all dependencies in the binary
+standalone = true
+# Target platform (can be "linux", "darwin", "windows")
+target = "current"
