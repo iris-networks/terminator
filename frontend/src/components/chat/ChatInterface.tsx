@@ -133,10 +133,7 @@ export const ChatInterface: React.FC = () => {
                 transition={{ delay: 0.2 }}
                 className="text-gray-600 dark:text-gray-400 mb-5 text-sm leading-relaxed"
               >
-                {currentSessionId 
-                  ? 'Start a conversation with your AI assistant. Iris can help with web research, file operations, and complex tasks.'
-                  : 'Create a new session from the sidebar to begin chatting with Iris.'
-                }
+                Start a conversation with your AI assistant. Iris can help with web research, file operations, and complex tasks.
               </motion.p>
               <motion.div
                 initial={{ y: 20, opacity: 0 }}
