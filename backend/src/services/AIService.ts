@@ -1,8 +1,12 @@
 import { generateText, streamText, CoreMessage, LanguageModelV1 } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { anthropic } from '@ai-sdk/anthropic';
+import { google } from '@ai-sdk/google';
+import { ollama } from '@ai-sdk/ollama';
+import { openrouter } from '@ai-sdk/openrouter';
 import { AgentConfig, AgentResponse, ChatMessage, ToolCall } from '../types/index.js';
 import { defaultAgentTools, getAgentTools, AgentType } from '../agents/AgentTARS.js';
+import { validateProviderConfig } from '../config/providers.js';
 import { readFile, writeFile } from 'fs/promises';
 import mime from 'mime-types';
 import { join } from 'path';
@@ -11,6 +15,8 @@ export class AIService {
   private config: AgentConfig;
 
   constructor(config: AgentConfig) {
+    // Validate provider configuration before initializing
+    validateProviderConfig(config.provider, config.model);
     this.config = config;
   }
 
@@ -22,6 +28,12 @@ export class AIService {
         return openai(model);
       case 'anthropic':
         return anthropic(model);
+      case 'google':
+        return google(model);
+      case 'ollama':
+        return ollama(model);
+      case 'openrouter':
+        return openrouter(model);
       default:
         throw new Error(`Unsupported AI provider: ${provider}`);
     }

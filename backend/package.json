@@ -13,7 +13,10 @@
   "dependencies": {
     "@agent-infra/browser": "^0.1.1",
     "@ai-sdk/anthropic": "^0.0.20",
+    "@ai-sdk/google": "^0.0.20",
+    "@ai-sdk/ollama": "^0.0.11",
     "@ai-sdk/openai": "^0.0.24",
+    "@ai-sdk/openrouter": "^0.0.11",
     "@modelcontextprotocol/sdk": "^1.17.0",
     "@mozilla/readability": "^0.6.0",
     "@types/turndown": "^5.0.5",
