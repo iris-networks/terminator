@@ -310,12 +310,19 @@ export const useChat = () => {
     };
   }, [socket, currentSessionId, joinSession]);
 
-  // Load sessions when connected
+  // Load sessions when connected and auto-create session if needed
   useEffect(() => {
     if (connected) {
       loadSessions();
     }
   }, [connected, loadSessions]);
+
+  // Auto-create session when connected and no active session
+  useEffect(() => {
+    if (connected && !currentSessionId) {
+      createSession();
+    }
+  }, [connected, currentSessionId, createSession]);
 
   return {
     // State

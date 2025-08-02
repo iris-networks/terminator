@@ -56,7 +56,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onClose }) => {
                 <FiCode className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-display font-bold">Iris</h1>
+                <h1 className="text-3xl font-display font-bold">Terminator</h1>
                 <p className="text-accent-100 text-lg">AI Agent Platform</p>
               </div>
             </div>
