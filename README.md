@@ -107,6 +107,10 @@ Terminator supports multiple AI providers including Anthropic, OpenAI, Google Ge
 
 For detailed setup instructions for each provider, see the [AI Providers Documentation](./docs/AI_PROVIDERS.md).
 
+
+**3. Install dependencies and run the app:**
+
+
 **4. Start the application:**
 
 ```bash
