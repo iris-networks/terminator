@@ -97,7 +97,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 onKeyDown={handleKeyDownCtrl}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
-                placeholder={disabled ? "Please wait..." : "Ask Iris something... (Ctrl+Enter to send)"}
+                placeholder={disabled ? "Please wait..." : "Ask Terminator something... (Ctrl+Enter to send)"}
                 disabled={disabled || isLoading}
                 className="flex-1 resize-none border-0 bg-transparent px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-0"
                 style={{

@@ -5,8 +5,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata = {
-  title: 'Iris - AI Assistant',
-  description: 'Modern agentic chat interface powered by Vercel AI SDK',
+  title: 'Terminator - AI Assistant',
+  description: 'The AI-powered research and automation platform.',
 };
 
 export default function RootLayout({

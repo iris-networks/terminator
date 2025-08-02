@@ -412,7 +412,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
                   connected ? 'bg-green-500 animate-pulse-slow' : 'bg-gray-400'
                 }`} />
                 <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                  Iris • {connected ? 'Connected' : 'Disconnected'}
+                  Terminator • {connected ? 'Connected' : 'Disconnected'}
                 </span>
               </div>
             </div>

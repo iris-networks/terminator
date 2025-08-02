@@ -1,8 +1,8 @@
 <div align="center">
   <a href="https://github.com/iris-networks/terminator">
-    <img src="https://raw.githubusercontent.com/hivelogic-dev/terminator/main/frontend/src/app/icon.svg" alt="Iris Logo" width="100" height="100">
+    <img src="https://raw.githubusercontent.com/hivelogic-dev/terminator/main/terminator.png" alt="Terminator Logo" width="100" height="100">
   </a>
-  <h1 align="center">Iris</h1>
+  <h1 align="center">Terminator</h1>
   <p align="center">
     The AI-powered research and automation platform.
   </p>
@@ -64,13 +64,13 @@
   </div>
 </div>
 
-## What is Iris?
+## What is Terminator?
 
-Iris is a modern AI-powered research and automation platform with advanced web capabilities. It's designed to be a multi-agent AI platform for code execution, research, and browser automation with standalone binary deployment.
+Terminator is a modern AI-powered research and automation platform with advanced web capabilities. It's designed to be a multi-agent AI platform for code execution, research, and browser automation with standalone binary deployment.
 
 ## Getting Started
 
-The easiest way to get started with Iris is by using the provided Docker setup.
+The easiest way to get started with Terminator is by using the provided Docker setup.
 
 **1. Clone the repository:**
 
@@ -93,7 +93,7 @@ cp .env.example .env
 docker-compose up --build
 ```
 
-Once the containers are running, you can access the Iris platform at [http://localhost:3000](http://localhost:3000).
+Once the containers are running, you can access the Terminator platform at [http://localhost:3000](http://localhost:3000).
 
 ## Features
 
@@ -105,7 +105,7 @@ Once the containers are running, you can access the Iris platform at [http://loc
 
 ## Documentation
 
-For more detailed information on how to use and configure Iris, please refer to the [documentation](./docs/README.md).
+For more detailed information on how to use and configure Terminator, please refer to the [documentation](./docs/README.md).
 
 ## Contributing
 
@@ -113,4 +113,4 @@ We welcome contributions from the community! Please read our [contributing guide
 
 ## License
 
-Iris is licensed under the [MIT License](./LICENSE).
+Terminator is licensed under the [MIT License](./LICENSE).
