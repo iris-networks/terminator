@@ -68,6 +68,8 @@
 
 Terminator is a modern AI-powered research and automation platform with advanced web capabilities. It's designed to be a multi-agent AI platform for code execution, research, and browser automation with standalone binary deployment.
 
+![Demo](demo.gif)
+
 ## Getting Started
 
 The easiest way to get started with Terminator is by cloning the repository and running the watch command.
