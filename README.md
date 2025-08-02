@@ -113,4 +113,4 @@ We welcome contributions from the community! Please read our [contributing guide
 
 ## License
 
-Terminator is licensed under the [MIT License](./LICENSE).
+Terminator is licensed under the [Apache License 2.0](./LICENSE).

@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   create_release:
     name: Create Release
@@ -13,20 +16,21 @@ jobs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
       tag_name: ${{ steps.create_release.outputs.tag_name }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ github.run_number }}
-          release_name: Release v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
           draft: false
           prerelease: false
+          generate_release_notes: true
 
   build_and_upload:
     name: Build and Upload
-    needs: create_release
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -35,7 +39,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v1
@@ -54,18 +58,18 @@ jobs:
           if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
             if [ "${{ matrix.arch }}" == "x64" ]; then
               echo "TARGET=bun-linux-x64" >> $GITHUB_ENV
-              echo "OUTPUT_NAME=iris-server-linux-x64" >> $GITHUB_ENV
+              echo "OUTPUT_NAME=terminator-linux-x64" >> $GITHUB_ENV
             else
               echo "TARGET=bun-linux-aarch64" >> $GITHUB_ENV
-              echo "OUTPUT_NAME=iris-server-linux-arm64" >> $GITHUB_ENV
+              echo "OUTPUT_NAME=terminator-linux-arm64" >> $GITHUB_ENV
             fi
           else
             if [ "${{ matrix.arch }}" == "x64" ]; then
               echo "TARGET=bun-darwin-x64" >> $GITHUB_ENV
-              echo "OUTPUT_NAME=iris-server-macos-x64" >> $GITHUB_ENV
+              echo "OUTPUT_NAME=terminator-macos-x64" >> $GITHUB_ENV
             else
               echo "TARGET=bun-darwin-aarch64" >> $GITHUB_ENV
-              echo "OUTPUT_NAME=iris-server-macos-arm64" >> $GITHUB_ENV
+              echo "OUTPUT_NAME=terminator-macos-arm64" >> $GITHUB_ENV
             fi
           fi
 
@@ -75,22 +79,17 @@ jobs:
           bun build backend/src/index.ts --compile --target=${{ env.TARGET }} --outfile=./dist/${{ env.OUTPUT_NAME }}
 
       - name: Upload backend binary
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./dist/${{ env.OUTPUT_NAME }}
-          asset_name: ${{ env.OUTPUT_NAME }}
-          asset_content_type: application/octet-stream
+          tag_name: v${{ github.run_number }}
+          files: ./dist/${{ env.OUTPUT_NAME }}
 
   package_and_upload_frontend:
     name: Package and Upload Frontend
-    needs: create_release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v1
@@ -107,11 +106,7 @@ jobs:
         run: tar -czvf frontend.tar.gz -C backend/public .
 
       - name: Upload frontend artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          asset_path: ./frontend.tar.gz
-          asset_name: frontend.tar.gz
-          asset_content_type: application/gzip
+          tag_name: v${{ github.run_number }}
+          files: ./frontend.tar.gz
