@@ -1,14 +1,16 @@
 deploy:
-	docker build -t shanurcsenitap/iris:latest .
-	docker push shanurcsenitap/iris:latest
+	docker buildx build --platform linux/amd64 -t shanurcsenitap/iris:latest . --push
 
 build:
-	docker build -t shanurcsenitap/iris:latest .
+	docker buildx build --platform linux/amd64 -t shanurcsenitap/iris:latest .
 
 run:
 	docker run -it --rm shanurcsenitap/iris:latest
 
 build-run: build run
+
+build-amd64:
+	docker buildx build --platform linux/amd64 -t shanurcsenitap/iris:latest . --push
 
 exec:
 	docker run -it --rm \

@@ -8,3 +8,7 @@ Iris comes with a variety of features to help you with your research and automat
 -   **Research**: Automate research tasks with AI.
 -   **Browser Automation**: Control a web browser with natural language.
 -   **Multi-Agent System**: Use multiple AI agents to accomplish complex tasks.
+
+---
+
+**Previous:** [Configuration](./CONFIGURATION.md) | **Next:** [Project Architecture](./PROJECT_ARCHITECTURE.md)
