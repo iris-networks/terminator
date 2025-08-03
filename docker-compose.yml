@@ -1,41 +1,38 @@
+version: '3.8'
+
 services:
-  iris-ai:
+  terminator:
     build: .
-    container_name: iris-ai-platform
+    container_name: terminator-webtop
     environment:
-      # Required - Set your Anthropic API key
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      
-      # AI Configuration
-      - AI_PROVIDER=anthropic
-      - AI_MODEL=claude-sonnet-4-20250514
-      - AI_TEMPERATURE=0.7
-      - AI_MAX_TOKENS=4000
-      
-      # Webtop Configuration
       - PUID=1000
       - PGID=1000
       - TZ=Etc/UTC
-      - SUBFOLDER=/
-      - TITLE=Iris AI Platform
-      - CUSTOM_USER=iris
-      - PASSWORD=iris123
-      
-      # Optional: Custom settings
-      - WORKSPACE_PATH=/app/workspace
-      - DATABASE_PATH=/app/data/sessions.db
-      
+      - SUBFOLDER=/ # optional
+      - KEYBOARD=en-us-qwerty # optional
+      - TITLE=Terminator # optional
+    volumes:
+      - ./config:/config
+      - /var/run/docker.sock:/var/run/docker.sock # optional for Docker access
     ports:
-      # noVNC web interface (access desktop via browser)
-      - "3000:3000"
-      # Iris AI Platform
-      - "3001:3001"
-      
+      - 3000:3000   # Terminator web interface
+      - 3001:3001   # Webtop web interface
     restart: unless-stopped
-    
-    # Security context
+    shm_size: "1gb" # Increase shared memory for browser operations
     security_opt:
-      - seccomp:unconfined
-    
-    # Required for GUI applications
-    shm_size: "1gb"
+      - seccomp:unconfined # Optional: for advanced browser features
+    cap_add:
+      - SYS_ADMIN # Optional: for browser sandbox
+
+  # Optional: Redis for session storage (if needed)
+  redis:
+    image: redis:alpine
+    container_name: terminator-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
