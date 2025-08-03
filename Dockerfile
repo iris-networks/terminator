@@ -1,4 +1,4 @@
-FROM lscr.io/linuxserver/webtop:ubuntu-kde
+FROM lscr.io/linuxserver/webtop:ubuntu-xfce
 
 # Set metadata
 LABEL org.opencontainers.image.title="Terminator"
@@ -29,15 +29,17 @@ RUN mkdir -p /app/terminator
 # Copy the compiled binary and assets
 COPY ./dist/terminator-linux /app/terminator/terminator
 COPY ./dist/public /app/terminator/public
-COPY ./.env.example /app/terminator/.env
+# COPY ./.env.example /app/terminator/.env
 
 # Make the binary executable
 RUN chmod +x /app/terminator/terminator
 
-# Set up environment for Chromium
+# Set up environment for Chromium and Terminator
 ENV CHROME_BIN=/usr/bin/chromium-browser
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV PORT=8080
+ENV CUSTOM_PORT=6901
 
 # Set working directory
 WORKDIR /app/terminator
@@ -45,10 +47,11 @@ WORKDIR /app/terminator
 # Create a startup script
 RUN echo '#!/bin/bash\n\
 echo "Starting Terminator..."\n\
-echo "Terminator will be available at http://localhost:3000"\n\
+echo "Terminator will be available at http://localhost:3000 (container port 8080)"\n\
 echo "Configure your AI provider by editing /app/terminator/.env"\n\
 echo ""\n\
 cd /app/terminator\n\
+export PORT=8080\n\
 ./terminator\n\
 ' > /app/start-terminator.sh && chmod +x /app/start-terminator.sh
 
@@ -67,8 +70,7 @@ Categories=Network;WebBrowser;\n\
 ' > /config/Desktop/terminator.desktop && \
     chmod +x /config/Desktop/terminator.desktop
 
-# Expose the default port
-EXPOSE 3000
+EXPOSE 6901
 
 # The base image will handle the desktop environment
 # Users can manually start Terminator from the desktop or terminal
