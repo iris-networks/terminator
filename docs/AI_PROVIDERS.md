@@ -147,3 +147,7 @@ Visit [OpenRouter Models](https://openrouter.ai/models) to see all available mod
 - Check your account billing and usage on the provider's platform
 - Consider switching to a different model or provider temporarily
 - For development, Ollama provides unlimited local usage
+
+---
+
+**Previous:** [Project Architecture](./PROJECT_ARCHITECTURE.md) | **Next:** [API Reference](./API_REFERENCE.md)

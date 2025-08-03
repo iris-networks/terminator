@@ -8,3 +8,7 @@ This section provides a reference for the Iris API.
 -   `GET /api/sessions`: Get a list of all sessions.
 -   `GET /api/sessions/:id`: Get a specific session.
 -   `POST /api/replay`: Replay a session.
+
+---
+
+**Previous:** [AI Providers](./AI_PROVIDERS.md)

@@ -29,3 +29,7 @@ This guide will help you get up and running with Iris.
 ```bash
 bun run dev:watch
 ```
+
+---
+
+**Previous:** [Introduction](./INTRODUCTION.md) | **Next:** [Configuration](./CONFIGURATION.md)

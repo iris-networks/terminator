@@ -62,3 +62,7 @@ The root directory contains configuration files for the entire project.
 -   **`Makefile` / `*.sh`**: Utility scripts for development and deployment.
 -   **`package.json`**: Root package file with scripts to run frontend and backend concurrently.
 -   **`tsconfig.json`**: TypeScript configuration.
+
+---
+
+**Previous:** [Features](./FEATURES.md) | **Next:** [AI Providers](./AI_PROVIDERS.md)
