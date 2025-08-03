@@ -1,9 +1,17 @@
-backend/.env*
-backend/node_modules
-frontend/node_modules
 node_modules
-*.log
+frontend/node_modules
+backend/node_modules
 .git
-.gitignore
+.github
+.next
+*.log
+.env
 README.md
+docs/
+*.md
+.gitignore
 .DS_Store
+Thumbs.db
+# Keep these for the build
+!dist/
+!.env.example
