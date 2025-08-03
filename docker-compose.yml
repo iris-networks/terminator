@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   terminator:
     build: .
@@ -11,28 +9,16 @@ services:
       - SUBFOLDER=/ # optional
       - KEYBOARD=en-us-qwerty # optional
       - TITLE=Terminator # optional
+      - CUSTOM_PORT=6901 # webtop internal port
     volumes:
       - ./config:/config
       - /var/run/docker.sock:/var/run/docker.sock # optional for Docker access
     ports:
-      - 3000:3000   # Terminator web interface
-      - 3001:3001   # Webtop web interface
+      - 6901:6901
+      - 3000:3000
     restart: unless-stopped
     shm_size: "1gb" # Increase shared memory for browser operations
     security_opt:
       - seccomp:unconfined # Optional: for advanced browser features
     cap_add:
       - SYS_ADMIN # Optional: for browser sandbox
-
-  # Optional: Redis for session storage (if needed)
-  redis:
-    image: redis:alpine
-    container_name: terminator-redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-
-volumes:
-  redis_data:
