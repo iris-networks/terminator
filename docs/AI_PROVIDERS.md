@@ -38,6 +38,24 @@ OPENAI_API_KEY=your_openai_api_key
 - `gpt-4o-mini` - Faster and cheaper variant
 - `gpt-4-turbo` - Previous generation turbo model
 
+### Custom Base URL (LiteLLM Support)
+
+You can use a custom OpenAI-compatible endpoint by setting `OPENAI_BASE_URL`:
+
+```bash
+AI_PROVIDER=openai
+AI_MODEL=gpt-4o
+OPENAI_API_KEY=your_api_key
+OPENAI_BASE_URL=http://your-litellm-host:4000
+```
+
+This enables support for:
+- **LiteLLM** - Proxy for 100+ LLMs with OpenAI format
+- **vLLM** - High-performance inference server
+- **LocalAI** - Self-hosted OpenAI alternative
+- **Ollama with OpenAI compatibility** - Local models via OpenAI API
+- Any other OpenAI-compatible API endpoint
+
 ## Google Gemini
 
 ```bash

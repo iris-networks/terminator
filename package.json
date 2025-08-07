@@ -40,5 +40,8 @@
     "agentic",
     "multimodal"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "ollama-ai-provider": "^1.2.0"
+  }
 }

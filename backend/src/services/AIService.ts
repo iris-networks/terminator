@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { generateText, streamText, CoreMessage, LanguageModelV1 } from 'ai';
-import { openai } from '@ai-sdk/openai';
+import { openai, createOpenAI } from '@ai-sdk/openai';
 import { anthropic } from '@ai-sdk/anthropic';
 import { google } from '@ai-sdk/google';
 import { ollama } from 'ollama-ai-provider';
@@ -40,6 +40,14 @@ export class AIService {
     
     switch (provider) {
       case 'openai':
+        // Check if custom base URL is configured for LiteLLM
+        if (process.env.OPENAI_BASE_URL) {
+          const customOpenAI = createOpenAI({
+            baseURL: process.env.OPENAI_BASE_URL,
+            apiKey: process.env.OPENAI_API_KEY,
+          });
+          return customOpenAI(model);
+        }
         return openai(model);
       case 'anthropic':
         return anthropic(model);

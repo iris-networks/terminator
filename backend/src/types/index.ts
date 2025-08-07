@@ -70,11 +70,14 @@ export interface StreamChunk {
   timestamp: Date;
 }
 
+export type AIProvider = 'openai' | 'anthropic' | 'google' | 'ollama' | 'openrouter';
+
 export interface AgentConfig {
   model: string;
-  provider: 'openai' | 'anthropic';
+  provider: AIProvider;
   temperature?: number;
   maxTokens?: number;
+  baseURL?: string;
   agentType?: 'basic' | 'codeact' | 'deep_research' | 'gui' | 'multi_agent';
 }
 
