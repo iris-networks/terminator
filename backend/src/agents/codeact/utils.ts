@@ -1,9 +1,11 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import os from 'os';
 
-// CodeAct workspace path - sandboxed environment for code execution
-export const CODEACT_WORKSPACE = process.env.CODEACT_WORKSPACE || path.join(os.homedir(), '.codeact');
+// Import WORKSPACE_PATH to ensure consistency with the main workspace system
+const WORKSPACE_PATH = process.env.WORKSPACE_PATH || path.join(process.cwd(), 'workspace');
+
+// CodeAct workspace path - sandboxed environment for code execution within the main workspace
+export const CODEACT_WORKSPACE = process.env.CODEACT_WORKSPACE || path.join(WORKSPACE_PATH, '.codeact');
 
 // Ensure CodeAct workspace directory exists with proper structure
 export async function ensureCodeActWorkspace(): Promise<void> {
