@@ -15,7 +15,9 @@
         "command": "npx",
         "args": [
           "@agent-infra/mcp-server-browser@1.2.17",
-          "--vision"
+          "--vision",
+          "--user-data-dir",
+          "~/.terminator-chrome-profile"
         ],
         "env": {}
       }

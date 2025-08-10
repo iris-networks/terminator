@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Sidebar } from '@/components/sidebar/Sidebar';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { ChromeButton } from '@/components/ui/ChromeButton';
 import { AboutPage } from '@/components/about/AboutPage';
 import { WorkspacePanel } from '@/components/workspace/WorkspacePanel';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -60,6 +61,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </motion.button>
+          <ChromeButton />
           <ThemeToggle />
         </div>
       </div>

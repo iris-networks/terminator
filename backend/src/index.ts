@@ -10,6 +10,7 @@ import { fileURLToPath } from 'url';
 import { chatRouter } from './routes/chat.js';
 import { sessionRouter } from './routes/sessions.js';
 import createReplayRouter from './routes/replay.js';
+import { chromeRouter } from './routes/chrome.js';
 import { SocketService } from './services/SocketService.js';
 import { errorHandler } from './utils/errorHandler.js';
 import fs from 'fs';
@@ -151,6 +152,7 @@ socketService.initialize();
 app.use('/api/chat', chatRouter);
 app.use('/api/sessions', sessionRouter);
 app.use('/api/replay', createReplayRouter(socketService));
+app.use('/api/chrome', chromeRouter);
 
 // Export socketService for use in routes
 export { socketService };
