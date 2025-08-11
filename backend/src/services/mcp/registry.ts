@@ -3,7 +3,7 @@ import { MCPConfig, MCPConfigSchema, MCPToolCall } from '../../types/mcp.js';
 import { promises as fs } from 'fs';
 import path from 'path';
 
-const CONFIG_PATH = process.env.MCP_CONFIG_PATH || path.join(process.cwd(), 'mcp-config.json');
+const CONFIG_PATH = process.env.MCP_CONFIG_PATH || path.join(process.cwd(), 'mcp-config.ts');
 
 export class MCPToolRegistry {
   private static instance: MCPToolRegistry;
@@ -50,8 +50,9 @@ export class MCPToolRegistry {
 
   private async loadConfiguration(): Promise<MCPConfig> {
     try {
-      const configContent = await fs.readFile(CONFIG_PATH, 'utf-8');
-      const config = JSON.parse(configContent);
+      // Import the TypeScript config file
+      const configModule = await import(CONFIG_PATH);
+      const config = configModule.mcpConfig;
       
       // Validate configuration
       const validatedConfig = MCPConfigSchema.parse(config);

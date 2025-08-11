@@ -1,55 +1,63 @@
 import { Router } from 'express';
-import puppeteer from 'puppeteer';
-import { BrowserFinder } from '@agent-infra/browser-finder';
+import { connect } from 'puppeteer-real-browser';
 import * as path from 'path';
 import * as os from 'os';
 
 const router = Router();
 
-// Shared Chrome user data directory
+// Shared Chrome user data directory - matches MCP config tilde expansion
 const CHROME_USER_DATA_DIR = path.join(os.homedir(), '.terminator-chrome-profile');
+
+// Standard Chrome debugging port for consistency with MCP server
+const CHROME_DEBUG_PORT = 9222;
+
 
 router.post('/open', async (req, res) => {
   try {
-    console.log('Opening Chrome with Puppeteer...');
+    console.log('Opening Chrome with puppeteer-real-browser...');
     
-    // Find Chrome executable using @agent-infra/browser-finder
-    let executablePath;
-    try {
-      const chromeInfo = new BrowserFinder().findBrowser('chrome');
-      executablePath = chromeInfo.path;
-      console.log('Found Chrome at:', executablePath);
-    } catch (error) {
-      console.warn('Could not find Chrome executable:', error);
-      executablePath = undefined; // Let Puppeteer find Chrome
-    }
-
-    // Launch Chrome with shared user data directory
-    const browser = await puppeteer.launch({
-      userDataDir: CHROME_USER_DATA_DIR,
-      executablePath: executablePath,
-      headless: false, // Always run headed
+    // Use puppeteer-real-browser to launch a real, undetectable browser
+    const { browser, page } = await connect({
+      headless: false,
       args: [
         `--user-data-dir=${CHROME_USER_DATA_DIR}`,
-        '--no-first-run',
-        '--disable-default-apps',
-        '--disable-popup-blocking',
-        '--start-maximized'
+        `--remote-debugging-port=${CHROME_DEBUG_PORT}`,
+        '--kiosk'
       ],
+      turnstile: true,
+      connectOption: {
+        defaultViewport: null
+      },
+      disableXvfb: true,
+      ignoreAllFlags: false
     });
 
-    // Open a new page to Google
-    const page = await browser.newPage();
-    await page.goto('https://google.com');
+    // Navigate to DuckDuckGo
+    await page.goto('https://duckduckgo.com', {
+      waitUntil: 'networkidle2'
+    });
+
+    // Get screen dimensions and adjust viewport
+    const screenSize = await page.evaluate(() => {
+      return {
+        width: window.screen.width,
+        height: window.screen.height,
+        availWidth: window.screen.availWidth,
+        availHeight: window.screen.availHeight
+      };
+    });
+    
+    console.log('Detected screen size:', screenSize);
 
     // Keep the browser open (don't close it)
-    console.log('Chrome opened successfully with shared profile');
+    console.log('Chrome opened successfully with puppeteer-real-browser');
 
     res.json({
       success: true,
-      message: 'Chrome opened successfully',
+      message: 'Chrome opened successfully with puppeteer-real-browser',
       userDataDir: CHROME_USER_DATA_DIR,
-      executablePath: executablePath
+      debugPort: CHROME_DEBUG_PORT,
+      screenSize: screenSize
     });
   } catch (error) {
     console.error('Failed to open Chrome:', error);

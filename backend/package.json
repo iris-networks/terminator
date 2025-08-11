@@ -29,6 +29,7 @@
     "mime-types": "^3.0.1",
     "ollama-ai-provider": "^1.2.0",
     "puppeteer": "^21.11.0",
+    "puppeteer-real-browser": "^1.4.3",
     "socket.io": "^4.8.1",
     "turndown": "^7.2.0",
     "uuid": "^9.0.1",
