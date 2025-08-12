@@ -37,11 +37,29 @@ interface ChatSession {
 
 export const useChat = () => {
   const { socket, connected } = useSocket();
+  
   const [sessions, setSessions] = useState<ChatSession[]>([]);
-  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('currentSessionId');
+    }
+    return null;
+  });
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+
+  // Helper to update session ID in both state and localStorage
+  const updateCurrentSessionId = useCallback((sessionId: string | null) => {
+    setCurrentSessionId(sessionId);
+    if (typeof window !== 'undefined') {
+      if (sessionId) {
+        localStorage.setItem('currentSessionId', sessionId);
+      } else {
+        localStorage.removeItem('currentSessionId');
+      }
+    }
+  }, []);
 
   // Create a new session
   const createSession = useCallback(() => {
@@ -61,9 +79,9 @@ export const useChat = () => {
     
     // Join new session
     socket.emit('join_session', sessionId);
-    setCurrentSessionId(sessionId);
+    updateCurrentSessionId(sessionId);
     setMessages([]);
-  }, [socket, currentSessionId]);
+  }, [socket, currentSessionId, updateCurrentSessionId]);
 
   // Send a message
   const sendMessage = useCallback(async (
@@ -143,7 +161,7 @@ export const useChat = () => {
     const handleSessionDeleted = (sessionId: string) => {
       setSessions(prev => prev.filter(s => s.id !== sessionId));
       if (currentSessionId === sessionId) {
-        setCurrentSessionId(null);
+        updateCurrentSessionId(null);
         setMessages([]);
       }
     };
@@ -317,12 +335,29 @@ export const useChat = () => {
     }
   }, [connected, loadSessions]);
 
-  // Auto-create session when connected and no active session
+  // Restore or create session when connected
   useEffect(() => {
-    if (connected && !currentSessionId) {
+    if (connected && sessions.length > 0) {
+      if (currentSessionId) {
+        // Check if stored session still exists
+        const sessionExists = sessions.find(s => s.id === currentSessionId);
+        if (sessionExists) {
+          // Rejoin the stored session
+          joinSession(currentSessionId);
+        } else {
+          // Stored session doesn't exist, clear it and create new one
+          updateCurrentSessionId(null);
+          createSession();
+        }
+      } else {
+        // No stored session, create a new one
+        createSession();
+      }
+    } else if (connected && sessions.length === 0 && !currentSessionId) {
+      // No sessions exist at all, create the first one
       createSession();
     }
-  }, [connected, currentSessionId, createSession]);
+  }, [connected, sessions, currentSessionId, joinSession, createSession, updateCurrentSessionId]);
 
   return {
     // State
