@@ -10,6 +10,7 @@ import { BrowserResultRenderer } from './BrowserResultRenderer';
 import { BrowserControlRenderer } from './BrowserControlRenderer';
 import { CodeActRenderer } from './CodeActRenderer';
 import { DeepResearchRenderer } from './DeepResearchRenderer';
+import { PdfRenderer } from './PdfRenderer';
 import {
   FormFillRenderer,
   WaitActionRenderer,
@@ -108,6 +109,12 @@ const CONTENT_RENDERERS: Record<
   deep_dive: DeepResearchRenderer,
   research_plan: DeepResearchRenderer,
   research_report: DeepResearchRenderer,
+  
+  // LaTeX PDF generation
+  generate_latex_pdf: PdfRenderer,
+  latex_pdf: PdfRenderer,
+  pdf_generate: PdfRenderer,
+  
   generic: GenericResultRenderer,
 };
 
@@ -180,7 +187,13 @@ export const EnhancedToolResultRenderer: React.FC<EnhancedToolResultRendererProp
             'browser_hover': 'browser_hover',
             'browser_double_click': 'browser_double_click',
             'browser_right_click': 'browser_right_click',
+            
             'browser_key_press': 'browser_key_press',
+            
+            // LaTeX PDF generation  
+            'generate_latex_pdf': 'generate_latex_pdf',
+            'latex_pdf': 'generate_latex_pdf',
+            'pdf_generate': 'generate_latex_pdf',
             'browser_extract': 'browser_extract',
             'browser_get_text': 'browser_get_text',
             'browser_get_links': 'browser_get_links',
@@ -219,6 +232,11 @@ export const EnhancedToolResultRenderer: React.FC<EnhancedToolResultRendererProp
         // Determine if it's a command based on content
         if (part.command || (part.stdout && !part.script)) {
           rendererKey = 'command_result';
+        }
+        
+        // Determine if it's a PDF generation result based on unique fields
+        if (part.toolResult && (part.toolResult.pdfGenerated !== undefined || part.toolResult.texContent || part.toolResult.pdfPath)) {
+          rendererKey = 'generate_latex_pdf';
         }
 
         const Renderer = CONTENT_RENDERERS[rendererKey] || GenericResultRenderer;

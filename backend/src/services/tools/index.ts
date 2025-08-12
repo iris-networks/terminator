@@ -10,6 +10,7 @@ import {
   createDirectoryTool 
 } from './categories/file-system.js';
 import { executeCommandTool } from './categories/command-execution.js';
+import { generateLatexPdfTool } from './categories/latex-pdf.js';
 import { getMCPTools, initializeMCP, getMCPStatus } from './mcp/mcp-integration.js';
 
 // Core utilities (re-exported for convenience)
@@ -32,6 +33,9 @@ export {
   
   // Command execution
   executeCommandTool,
+  
+  // LaTeX PDF generation
+  generateLatexPdfTool,
 };
 
 // Export MCP utilities
@@ -45,6 +49,7 @@ export const tools = {
   list_files: listFilesTool,
   create_directory: createDirectoryTool,
   execute_command: executeCommandTool,
+  generate_latex_pdf: generateLatexPdfTool,
 };
 
 /**
@@ -88,4 +93,5 @@ export default {
   listFilesTool,
   createDirectoryTool,
   executeCommandTool,
+  generateLatexPdfTool,
 };

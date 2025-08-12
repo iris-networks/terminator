@@ -156,6 +156,45 @@ app.use('/api/chat', chatRouter);
 app.use('/api/sessions', sessionRouter);
 app.use('/api/replay', createReplayRouter(socketService));
 
+// PDF serving route
+app.get('/api/pdf/:filename', (req, res) => {
+  const filename = req.params.filename;
+  
+  // Sanitize filename to prevent directory traversal
+  const sanitizedFilename = filename.replace(/[^a-zA-Z0-9_.-]/g, '');
+  if (!sanitizedFilename.endsWith('.pdf')) {
+    return res.status(400).json({ error: 'Invalid file type' });
+  }
+  
+  const workspacePath = path.resolve(__dirname, '../workspace');
+  const filePath = path.join(workspacePath, sanitizedFilename);
+  
+  // Ensure the file is within the workspace directory
+  if (!filePath.startsWith(workspacePath)) {
+    return res.status(403).json({ error: 'Access denied' });
+  }
+  
+  // Check if file exists
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ error: 'PDF not found' });
+  }
+  
+  // Set appropriate headers for PDF
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `inline; filename="${sanitizedFilename}"`);
+  
+  // Stream the file
+  const fileStream = fs.createReadStream(filePath);
+  fileStream.pipe(res);
+  
+  fileStream.on('error', (err) => {
+    console.error('Error serving PDF:', err);
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Error serving PDF' });
+    }
+  });
+});
+
 // Export socketService for use in routes
 export { socketService };
 
