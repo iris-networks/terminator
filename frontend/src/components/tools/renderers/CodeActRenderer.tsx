@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { FiCode, FiCopy, FiCheck, FiTerminal, FiClock, FiPackage, FiSave, FiPlay, FiCheckCircle, FiXCircle, FiCpu } from 'react-icons/fi';
 import { ToolResultContentPart } from './EnhancedToolResultRenderer';
-import { CodeEditor } from './CodeEditor';
+import { SimpleCodeEditor } from './SimpleCodeEditor';
 
 interface CodeActRendererProps {
   part: ToolResultContentPart;
@@ -92,7 +92,7 @@ export const CodeActRenderer: React.FC<CodeActRendererProps> = ({ part }) => {
     <div className="codeact-result space-y-4">
       {/* Code content */}
       <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-        <CodeEditor
+        <SimpleCodeEditor
           code={code}
           language={langInfo.language}
           fileName={filename}

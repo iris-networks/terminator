@@ -90,16 +90,19 @@ app.use(helmet({
         "'self'", 
         "'unsafe-inline'", 
         "'unsafe-eval'",
-        "https://vercel.live"
+        "https://vercel.live",
+        "https://cdn.jsdelivr.net"
       ],
       styleSrc: [
         "'self'", 
         "'unsafe-inline'",
-        "https://fonts.googleapis.com"
+        "https://fonts.googleapis.com",
+        "https://cdn.jsdelivr.net"
       ],
       fontSrc: [
         "'self'",
-        "https://fonts.gstatic.com"
+        "https://fonts.gstatic.com",
+        "https://cdn.jsdelivr.net"
       ],
       imgSrc: [
         "'self'", 
@@ -112,9 +115,10 @@ app.use(helmet({
         "wss://localhost:3001",
         "http://localhost:3001",
         "https://api.openai.com",
-        "https://api.anthropic.com"
+        "https://api.anthropic.com",
+        "https://cdn.jsdelivr.net"
       ],
-      workerSrc: ["'self'", "blob:"],
+      workerSrc: ["'self'", "blob:", "https://cdn.jsdelivr.net"],
       childSrc: ["'self'"],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],

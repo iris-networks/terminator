@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiPlay, FiCode, FiTerminal, FiCopy, FiCheck } from 'react-icons/fi';
-import { CodeEditor } from './CodeEditor';
+import { SimpleCodeEditor } from './SimpleCodeEditor';
 import { ToolResultContentPart } from './EnhancedToolResultRenderer';
 
 interface ScriptResultRendererProps {
@@ -159,7 +159,7 @@ export const ScriptResultRenderer: React.FC<ScriptResultRendererProps> = ({ part
           animate={{ opacity: 1, y: 0 }}
           className="space-y-2"
         >
-          <CodeEditor
+          <SimpleCodeEditor
             code={script}
             language={language}
             fileName={`script.${LANGUAGE_EXTENSIONS[language] || 'txt'}`}

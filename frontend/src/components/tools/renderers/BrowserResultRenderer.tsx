@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { FiExternalLink, FiGlobe, FiCopy, FiCheck } from 'react-icons/fi';
 import { BrowserShell } from './BrowserShell';
 import { ToolResultContentPart } from './EnhancedToolResultRenderer';
-import { CodeEditor } from './CodeEditor';
+import { SimpleCodeEditor } from './SimpleCodeEditor';
 
 interface BrowserResultRendererProps {
   part: ToolResultContentPart;
@@ -121,7 +121,7 @@ export const BrowserResultRenderer: React.FC<BrowserResultRendererProps> = ({ pa
             {(typeof extractedContent === 'string') && extractedContent ? (
               shouldUseMarkdownEditor ? (
                 <div className="py-4">
-                  <CodeEditor
+                  <SimpleCodeEditor
                     code={extractedContent}
                     language="markdown"
                     fileName="content.md"

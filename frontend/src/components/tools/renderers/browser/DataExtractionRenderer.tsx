@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { FiDownload, FiCheck, FiX, FiCopy, FiEye } from 'react-icons/fi';
 import { BrowserShell } from '../BrowserShell';
 import { ToolResultContentPart } from '../EnhancedToolResultRenderer';
-import { CodeEditor } from '../CodeEditor';
+import { SimpleCodeEditor } from '../SimpleCodeEditor';
 
 interface DataExtractionRendererProps {
   part: ToolResultContentPart;
@@ -79,7 +79,7 @@ export const DataExtractionRenderer: React.FC<DataExtractionRendererProps> = ({ 
 
     return (
       <div className="bg-gray-50 dark:bg-gray-800/90 rounded-lg border border-gray-100/50 dark:border-gray-700/30 overflow-hidden">
-        <CodeEditor
+        <SimpleCodeEditor
           code={JSON.stringify(extractedData, null, 2)}
           language="json"
           fileName="extracted-data.json"
@@ -180,7 +180,7 @@ export const DataExtractionRenderer: React.FC<DataExtractionRendererProps> = ({ 
                 {activeTab === 'data' ? (
                   renderExtractedData()
                 ) : (
-                  <CodeEditor
+                  <SimpleCodeEditor
                     code={JSON.stringify({ extractedData, selector, extractionType, status }, null, 2)}
                     language="json"
                     fileName="extraction-result.json"
