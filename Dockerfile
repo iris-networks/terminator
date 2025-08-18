@@ -47,7 +47,7 @@ WORKDIR /app/terminator
 # Create a startup script
 RUN echo '#!/bin/bash\n\
 echo "Starting Terminator..."\n\
-echo "Terminator will be available at http://localhost:3000 (container port 8080)"\n\
+echo "Terminator will be available at http://localhost:9005 (container port 8080)"\n\
 echo "Configure your AI provider by editing /app/terminator/.env"\n\
 echo ""\n\
 cd /app/terminator\n\
