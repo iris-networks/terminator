@@ -21,7 +21,7 @@ This setup uses the LinuxServer WebTop image to provide a complete desktop envir
 4. **Start Terminator:**
    - On the desktop, double-click the "Terminator" shortcut
    - Or open a terminal and run: `/app/start-terminator.sh`
-   - Terminator will be available at `http://localhost:3000`
+   - Terminator will be available at `http://localhost:9005`
 
 ## Configuration
 
@@ -47,7 +47,7 @@ This setup uses the LinuxServer WebTop image to provide a complete desktop envir
 
 ## Ports
 
-- `3000`: Terminator web interface
+- `9005`: Terminator web interface
 - `3001`: WebTop desktop environment
 - `6379`: Redis (optional, for session storage)
 

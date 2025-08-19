@@ -15,7 +15,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock # optional for Docker access
     ports:
       - 6901:6901
-      - 3000:3000
+      - 9005:9005
     restart: unless-stopped
     shm_size: "1gb" # Increase shared memory for browser operations
     security_opt:

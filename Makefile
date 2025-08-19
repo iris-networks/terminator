@@ -27,7 +27,7 @@ exec:
 		-e PROVIDER=$(PROVIDER) \
 		-e MODEL=$(MODEL) \
 		-p 3001:3001 \
-		-p 3000:3000 \
+		-p 9005:9005 \
 		$(LATEST_TAG) \
 		/app/start-server.sh
 

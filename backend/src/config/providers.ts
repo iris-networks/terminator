@@ -1,7 +1,8 @@
 
 import { config } from 'dotenv';
+import path from 'path';
 
-config();
+config({ path: path.resolve(__dirname, '../../../.env') });
 
 type ProviderType = 'anthropic' | 'openai' | 'google' | 'ollama' | 'openrouter';
 

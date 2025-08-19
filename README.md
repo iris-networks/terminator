@@ -117,7 +117,7 @@ For detailed setup instructions for each provider, see the [AI Providers Documen
 bun dev:watch
 ```
 
-Once running, you can access the Terminator platform at [http://localhost:3000](http://localhost:3000).
+Once running, you can access the Terminator platform at [http://localhost:9005](http://localhost:9005).
 
 ## Features
 
