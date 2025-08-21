@@ -61,6 +61,9 @@
     <a href="https://discord.gg/uuNbJQyw6g">
       <img src="https://img.shields.io/discord/1262528773294067712?logo=discord&colorB=5865F2" alt="Discord">
     </a>
+    <a href="https://github.com/iris-networks/irisland">
+      <img src="https://img.shields.io/badge/Landing%20Page-IrisLand-blue?style=flat-square" alt="Landing Page">
+    </a>
   </div>
 </div>
 
